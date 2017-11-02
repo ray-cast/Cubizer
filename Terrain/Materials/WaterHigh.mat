@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: WaterHigh
+  m_Shader: {fileID: 4800000, guid: 6cb9d13277095b44086b3eb2a0dd5744, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BumpMap:
+        m_Texture: {fileID: 2800000, guid: fb6566c21f717904f83743a5a76dd0b0, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ReflectionTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _FresnelScale: 0.15
+    - _GerstnerIntensity: 0.1
+    - _GerstnerScale: 0.1
+    - _Glossiness: 0.5
+    - _Metallic: 0
+    - _Shininess: 65535
+    m_Colors:
+    - _AnimationDirection: {r: 2, g: 1, b: -1, a: 1}
+    - _AnimationTiling: {r: 0.4, g: 0.391, b: 0.56, a: 0.7}
+    - _BaseColor: {r: 0.08235, g: 0.29411, b: 0.4838, a: 0.8}
+    - _BumpDirection: {r: 1, g: 30, b: 20, a: -20}
+    - _BumpTiling: {r: 0.02, g: 0.02, b: 0.02, a: 0.02}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _DistortParams: {r: 0.5, g: 0.05, b: 5, a: 0.02}
+    - _GAmplitude: {r: 0.1, g: 0, b: 0.07, a: 0.04}
+    - _GDirectionAB: {r: 0.3, g: 0.85, b: 0.85, a: 0.25}
+    - _GDirectionCD: {r: 0.1, g: 0.9, b: 0.5, a: 0.5}
+    - _GFrequency: {r: 5, g: 5, b: 5, a: 1.25}
+    - _GSpeed: {r: 1.2, g: 1.375, b: 1.1, a: 1.5}
+    - _GSteepness: {r: 1, g: 1, b: 1, a: 1}
+    - _InvFadeParemeter: {r: 2, g: 0, b: 0, a: 0}
+    - _ReflectionColor: {r: 0.8627451, g: 0.9607843, b: 1, a: 0.8}
+    - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
+    - _WorldLightDir: {r: -0.14, g: -0.9, b: 0.85, a: 0}
+--- !u!1002 &2100001
+EditorExtensionImpl:
+  serializedVersion: 6
