@@ -1,7 +1,7 @@
-Cube World
+Cubizer
 ========
-### Minecraft for Unity ###
-The aim of project is to create a minecraft-like world for Unity 2017
+### Voxel-style for Unity 2017 ###
+Sandbox design tool built on Unity 2017 to work with voxel generation and meshing and chunk
 
 ![Alt](./Resources/Textures/screenshots.jpg)
 
