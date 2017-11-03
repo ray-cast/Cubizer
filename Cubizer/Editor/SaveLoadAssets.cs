@@ -6,13 +6,13 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 
-using UnityEditor;
 using UnityEngine;
+using UnityEditor;
 
 using Cubizer;
 using Cubizer.Model;
 
-public class ChunkEditor : EditorWindow
+public class CubizerEditor : EditorWindow
 {
 	public bool _isSelectCreatePrefab = true;
 	public bool _isSelectCreateAssetbundle = true;
@@ -40,85 +40,141 @@ public class ChunkEditor : EditorWindow
 
 	public static GameObject LoadVoxelFileAsPrefab(string path)
 	{
-		var gameObject = LoadVoxelFileAsGameObject(path);
-		if (gameObject)
-		{
-			var meshFilter = gameObject.GetComponent<MeshFilter>();
-			if (meshFilter == null)
-			{
-				DestroyImmediate(gameObject);
-				return gameObject;
-			}
+		GameObject gameObject = null;
 
-			var outpath = "Assets/" + Selection.activeObject.name + ".obj";
-			ChunkUtility.SaveMeshAsObjFile(outpath, meshFilter, new Vector3(-1f, 1f, 1f));
+		try
+		{
+			gameObject = LoadVoxelFileAsGameObject(path);
+			if (gameObject == null)
+				return null;
+
+			var name = Path.GetFileNameWithoutExtension(path);
+
+			var meshFilter = gameObject.GetComponent<MeshFilter>();
+			if (meshFilter != null)
+			{
+				var outpath = "Assets/" + name + ".obj";
+
+				ObjFileExport.WriteToFile(outpath, meshFilter, new Vector3(-0.1f, 0.1f, 0.1f));
+
+				AssetDatabase.Refresh();
+
+				meshFilter.mesh = AssetDatabase.LoadAssetAtPath<Mesh>(outpath);
+
+				var collider = gameObject.GetComponent<MeshCollider>();
+				if (collider != null)
+					collider.sharedMesh = meshFilter.sharedMesh;
+			}
 
 			AssetDatabase.Refresh();
 
-			meshFilter.mesh = AssetDatabase.LoadAssetAtPath<Mesh>(outpath);
+			var renderer = gameObject.GetComponent<MeshRenderer>();
+			if (renderer != null)
+			{
+				if (renderer.sharedMaterial != null)
+				{
+					var material = AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/" + name + "Mat.mat");
+					if (material != null)
+					{
+						material.mainTexture = renderer.sharedMaterial.mainTexture;
 
-			UnityEngine.Object prefab = PrefabUtility.CreatePrefab("Assets/" + Selection.activeObject.name + ".prefab", gameObject);
+						renderer.sharedMaterial = material;
+					}
+				}
+			}
+
+			UnityEngine.Object prefab = PrefabUtility.CreatePrefab("Assets/" + name + ".prefab", gameObject);
 			if (prefab == null)
 				UnityEngine.Debug.LogError(Selection.activeObject.name + ": failed to save prefab");
+		}
+		catch (Exception)
+		{
+			DestroyImmediate(gameObject);
 		}
 
 		return gameObject;
 	}
 
-	[MenuItem("Tools/Chunk/Show Inspector")]
+	[MenuItem("Tools/Cubizer/Show Cubizer Inspector")]
 	public static void ShowWindow()
 	{
-		ChunkEditor.CreateInstance<ChunkEditor>().Show();
+		CubizerEditor.CreateInstance<CubizerEditor>().Show();
 	}
 
-	[MenuItem("Tools/Chunk/Load .vox file as Prefab")]
+	[MenuItem("Tools/Cubizer/Load .vox file as Prefab")]
 	public static void LoadVoxelFileAsPrefab()
 	{
 		var filepath = EditorUtility.OpenFilePanel("Load .vox file", "", "vox");
 		if (filepath != null)
 		{
+			if (filepath.Remove(0, filepath.LastIndexOf('.')) != ".vox")
+			{
+				UnityEngine.Debug.LogError("The end of the path wasn't \".vox\"");
+				return;
+			}
+
 			var gameObject = LoadVoxelFileAsPrefab(filepath);
 			DestroyImmediate(gameObject);
 		}
 	}
 
-	[MenuItem("Tools/Chunk/Load .vox file as GameObject")]
+	[MenuItem("Tools/Cubizer/Load .vox file as GameObject")]
 	public static void LoadVoxelFileAsGameObject()
 	{
 		var filepath = EditorUtility.OpenFilePanel("Load .vox file", "", "vox");
 		if (filepath != null)
 		{
+			if (filepath.Remove(0, filepath.LastIndexOf('.')) != ".vox")
+			{
+				UnityEngine.Debug.LogError("The end of the path wasn't \".vox\"");
+				return;
+			}
+
 			LoadVoxelFileAsGameObject(filepath);
 		}
 	}
 
-	public static void CreateVoxelPrefabsFromSelection()
+	public static bool CreateVoxelPrefabsFromSelection()
 	{
 		var SelectedAsset = Selection.GetFiltered(typeof(UnityEngine.Object), SelectionMode.DeepAssets);
+		if (SelectedAsset.Length == 0)
+		{
+			EditorUtility.DisplayDialog("No Object Selected", "Please select any .vox file to create to prefab", "Ok");
+			return false;
+		}
 
 		foreach (var asset in SelectedAsset)
 		{
 			var path = AssetDatabase.GetAssetPath(asset);
-			if (path.Contains(".vox"))
+			if (path.Remove(0, path.LastIndexOf('.')) == ".vox")
 			{
 				var gameObject = LoadVoxelFileAsPrefab(path);
 				DestroyImmediate(gameObject);
 			}
 		}
+
+		return true;
 	}
 
-	public static void CreateVoxelGameObjectFromSelection()
+	public static bool CreateVoxelGameObjectFromSelection()
 	{
 		var SelectedAsset = Selection.GetFiltered(typeof(UnityEngine.Object), SelectionMode.DeepAssets);
+		if (SelectedAsset.Length == 0)
+		{
+			EditorUtility.DisplayDialog("No Object Selected", "Please select any .vox file to create to prefab", "Ok");
+			return false;
+		}
 
 		foreach (var asset in SelectedAsset)
 		{
 			var path = AssetDatabase.GetAssetPath(asset);
-			if (path.Contains(".vox"))
+			if (path.Remove(0, path.LastIndexOf('.')) == ".vox")
 			{
 				var gameObject = LoadVoxelFileAsGameObject(path);
 			}
 		}
+
+		return true;
 	}
 
 	public static void CreateAssetBunldesFromSelectionToStreamingAssets()

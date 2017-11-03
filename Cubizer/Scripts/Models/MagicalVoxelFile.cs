@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 
 using UnityEngine;
+using UnityEditor;
 
 namespace Cubizer
 {
@@ -79,12 +77,12 @@ namespace Cubizer
 		{
 			private class ChunkColor : ChunkEntity
 			{
-				public Color32 color;
+				public uint palette;
 
-				public ChunkColor(Color32 _color)
+				public ChunkColor(uint _palette)
 				{
 					name = "MagicalVoxel";
-					color = _color;
+					palette = _palette;
 				}
 			}
 
@@ -315,7 +313,13 @@ namespace Cubizer
 						var z = chunk.xyzi.voxels[j + 2];
 						var c = chunk.xyzi.voxels[j + 3];
 
-						uint palette = voxel.palette[c];
+						map.Set(x, y, z, new ChunkColor(c));
+					}
+
+					Color32[] colors = new Color32[256];
+					for (int j = 0; j < voxel.palette.Length; j++)
+					{
+						uint palette = voxel.palette[j];
 
 						Color32 color;
 						color.r = (byte)((palette >> 0) & 0xFF);
@@ -323,8 +327,12 @@ namespace Cubizer
 						color.b = (byte)((palette >> 16) & 0xFF);
 						color.a = (byte)((palette >> 24) & 0xFF);
 
-						map.Set(x, y, z, new ChunkColor(color));
+						colors[j] = color;
 					}
+
+					Texture2D texture = new Texture2D(16, 16, TextureFormat.ARGB32, false, false);
+					texture.SetPixels32(colors);
+					texture.Apply();
 
 					var entities = new Dictionary<string, int>();
 					if (CalcFaceCountAsAllocate(map, 32, ref entities) == 0)
@@ -337,7 +345,6 @@ namespace Cubizer
 						var faces = new VisiableFaces();
 						var allocSize = entity.Value * 6;
 
-						data.colors = new Color32[allocSize];
 						data.vertices = new Vector3[allocSize];
 						data.normals = new Vector3[allocSize];
 						data.uv = new Vector2[allocSize];
@@ -351,7 +358,7 @@ namespace Cubizer
 								continue;
 
 							if (GetVisiableFaces(map, it, 32, ref faces))
-								ChunkEntity.CreateCubeMesh(ref data, ref index, faces, it.position, ((ChunkColor)it.element).color);
+								ChunkEntity.CreateCubeMesh(ref data, ref index, faces, it.position, ((ChunkColor)it.element).palette);
 
 							isTransparent |= it.element.is_transparent;
 						}
@@ -360,7 +367,6 @@ namespace Cubizer
 						{
 							Mesh mesh = new Mesh();
 							mesh.vertices = data.vertices;
-							mesh.colors32 = data.colors;
 							mesh.normals = data.normals;
 							mesh.uv = data.uv;
 							mesh.triangles = data.triangles;
@@ -368,7 +374,15 @@ namespace Cubizer
 							gameObject.isStatic = true;
 							gameObject.name = entity.Key;
 							gameObject.AddComponent<MeshFilter>().mesh = mesh;
-							gameObject.AddComponent<MeshRenderer>().material = (Material)Resources.Load("Materials/VertexColorShading");
+
+							var renderer = gameObject.AddComponent<MeshRenderer>();
+#if UNITY_EDITOR
+							renderer.sharedMaterial = new Material(Shader.Find("Mobile/Diffuse"));
+							renderer.sharedMaterial.mainTexture = texture;
+#else
+							renderer.material = new Material(Shader.Find("Mobile/Diffuse"));
+							renderer.material.mainTexture = texture;
+#endif
 
 							if (!isTransparent)
 								gameObject.AddComponent<MeshCollider>().sharedMesh = mesh;
