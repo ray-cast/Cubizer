@@ -3,7 +3,7 @@ Cube World
 ### Minecraft for Unity ###
 The aim of project is to create a minecraft-like world for Unity 2017
 
-![Alt](./Terrain/Textures/screenshots.jpg)
+![Alt](./Resources/Textures/screenshots.jpg)
 
 Install:
 ========
