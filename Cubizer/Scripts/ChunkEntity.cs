@@ -297,7 +297,7 @@ namespace Cubizer
 			CreateCubeMesh(ref mesh, ref index, faces, position, scale);
 		}
 
-		public virtual bool Update(ref ChunkMap map, ChunkPosition translate)
+		public virtual bool OnUpdateChunk(ref ChunkMap map, ChunkPosition translate)
 		{
 			return false;
 		}

@@ -262,7 +262,7 @@ namespace Cubizer
 
 			bool needUpdate = false;
 			foreach (var it in _chunkEntitiesDynamic)
-				needUpdate |= it.Value.Update(ref _chunkMap, it.Key);
+				needUpdate |= it.Value.OnUpdateChunk(ref _chunkMap, it.Key);
 
 			if (needUpdate)
 				this.UpdateChunk();

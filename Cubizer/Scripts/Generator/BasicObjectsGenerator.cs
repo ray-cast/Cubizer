@@ -15,8 +15,8 @@ namespace Cubizer
 		[Serializable]
 		public class ChunkGrass : ChunkEntity
 		{
-			public ChunkGrass()
-				: base("Grass", (Material)Resources.Load("Materials/Grass"))
+			public ChunkGrass(Material material)
+				: base("Grass", material)
 			{
 			}
 		}
@@ -24,8 +24,8 @@ namespace Cubizer
 		[Serializable]
 		public class ChunkItemTree : ChunkEntity
 		{
-			public ChunkItemTree()
-				: base("Tree", (Material)Resources.Load("Materials/Tree"))
+			public ChunkItemTree(Material material)
+				: base("Tree", material)
 			{
 			}
 		}
@@ -33,8 +33,8 @@ namespace Cubizer
 		[Serializable]
 		public class ChunkTreeLeaf : ChunkEntity
 		{
-			public ChunkTreeLeaf()
-				: base("TreeLeaf", (Material)Resources.Load("Materials/TreeLeaf"))
+			public ChunkTreeLeaf(Material material)
+				: base("TreeLeaf", material)
 			{
 			}
 		}
@@ -42,8 +42,8 @@ namespace Cubizer
 		[Serializable]
 		public class ChunkFlower : ChunkEntity
 		{
-			public ChunkFlower()
-				: base("Flower", (Material)Resources.Load("Materials/Flower"), true, false, true)
+			public ChunkFlower(Material material)
+				: base("Flower", material, true, false, true)
 			{
 			}
 
@@ -56,8 +56,8 @@ namespace Cubizer
 		[Serializable]
 		public class ChunkWeed : ChunkEntity
 		{
-			public ChunkWeed()
-				: base("Weed", (Material)Resources.Load("Materials/Weed"), true, false, true)
+			public ChunkWeed(Material material)
+				: base("Weed", material, true, false, true)
 			{
 			}
 
@@ -70,8 +70,8 @@ namespace Cubizer
 		[Serializable]
 		public class ChunkGroundFog : ChunkEntity
 		{
-			public ChunkGroundFog()
-				: base("GroundFog", (Material)Resources.Load("Materials/GroundFog"), true)
+			public ChunkGroundFog(Material material)
+				: base("GroundFog", material, true)
 			{
 			}
 		}
@@ -79,8 +79,8 @@ namespace Cubizer
 		[Serializable]
 		public class ChunkObsidian : ChunkEntity
 		{
-			public ChunkObsidian()
-				: base("Obsidian", (Material)Resources.Load("Materials/Obsidian"))
+			public ChunkObsidian(Material material)
+				: base("Obsidian", material)
 			{
 			}
 		}
@@ -88,8 +88,8 @@ namespace Cubizer
 		[Serializable]
 		public class ChunkCloud : ChunkEntity
 		{
-			public ChunkCloud()
-				: base("Cloud", (Material)Resources.Load("Materials/Cloud"), false, false)
+			public ChunkCloud(Material material)
+				: base("Cloud", material, false, false)
 			{
 			}
 		}
@@ -97,12 +97,12 @@ namespace Cubizer
 		[Serializable]
 		public class ChunkWater : ChunkEntity
 		{
-			public ChunkWater()
-				: base("WaterHigh", (Material)Resources.Load("Materials/WaterHigh"), true, true)
+			public ChunkWater(Material material)
+				: base("WaterHigh", material, true, true)
 			{
 			}
 
-			public override bool Update(ref ChunkTree map, ChunkTranslate translate)
+			public override bool OnUpdateChunk(ref ChunkTree map, ChunkTranslate translate)
 			{
 				if (translate.y > 1)
 				{
@@ -150,14 +150,45 @@ namespace Cubizer
 
 			public void Start()
 			{
-				_entityGrass = new ChunkGrass();
-				_entityTree = new ChunkItemTree();
-				_entityTreeLeaf = new ChunkTreeLeaf();
-				_entityFlower = new ChunkFlower();
-				_entityWeed = new ChunkWeed();
-				_entityObsidian = new ChunkObsidian();
-				_entityWater = new ChunkWater();
-				_entityCloud = new ChunkCloud();
+				for (int i = 0; i < transform.childCount; i++)
+				{
+					var material = transform.GetChild(i).GetComponent<MeshRenderer>().material;
+
+					switch (transform.GetChild(i).name)
+					{
+						case "Grass":
+							_entityGrass = new ChunkGrass(material);
+							break;
+
+						case "Tree":
+							_entityTree = new ChunkItemTree(material);
+							break;
+
+						case "TreeLeaf":
+							_entityTreeLeaf = new ChunkTreeLeaf(material);
+							break;
+
+						case "Flower":
+							_entityFlower = new ChunkFlower(material);
+							break;
+
+						case "Weed":
+							_entityWeed = new ChunkWeed(material);
+							break;
+
+						case "Obsidian":
+							_entityObsidian = new ChunkObsidian(material);
+							break;
+
+						case "Water":
+							_entityWater = new ChunkWater(material);
+							break;
+
+						case "Cloud":
+							_entityCloud = new ChunkCloud(material);
+							break;
+					}
+				}
 			}
 
 			public override void OnCreateChunk(ChunkTree map)

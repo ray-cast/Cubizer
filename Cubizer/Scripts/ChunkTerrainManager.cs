@@ -123,9 +123,13 @@ namespace Cubizer
 
 			if (HitTestByRay(ray, ref chunkNow, out x, out y, out z, ref chunkLast, out lx, out ly, out lz))
 			{
-				var chunk = chunkLast != null ? chunkLast : chunkNow;
-				chunk.Set(lx, ly, lz, new Cubizer.Generator.ChunkWater());
-				chunk.OnChunkChange();
+				var grass = GameObject.Find("Grass");
+				if (grass != null)
+				{
+					var chunk = chunkLast != null ? chunkLast : chunkNow;
+					chunk.Set(lx, ly, lz, new Cubizer.ChunkEntity(grass.name, grass.GetComponent<MeshRenderer>().material, false, false, false));
+					chunk.OnChunkChange();
+				}
 
 				return true;
 			}
