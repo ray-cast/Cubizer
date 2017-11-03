@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-namespace Chunk
+namespace Cubizer
 {
 	using ChunkVector3 = Vector3Int;
 	using ChunkMap = ChunkTree;
 	using ChunkPos = System.Byte;
-	using ChunkPosition = ChunkPosition<System.Byte>;
+	using ChunkPosition = Cubizer.Math.Vector3<System.Byte>;
 
 	public struct ChunkMesh
 	{
@@ -87,14 +87,14 @@ namespace Chunk
 
 			if (it.element.is_transparent)
 			{
-				var name = it.element.material;
+				var name = it.element.name;
 
-				bool f1 = (instanceID[0] == null) ? true : instanceID[0].material != name ? true : false;
-				bool f2 = (instanceID[1] == null) ? true : instanceID[1].material != name ? true : false;
-				bool f3 = (instanceID[2] == null) ? true : instanceID[2].material != name ? true : false;
-				bool f4 = (instanceID[3] == null) ? true : instanceID[3].material != name ? true : false;
-				bool f5 = (instanceID[4] == null) ? true : instanceID[4].material != name ? true : false;
-				bool f6 = (instanceID[5] == null) ? true : instanceID[5].material != name ? true : false;
+				bool f1 = (instanceID[0] == null) ? true : instanceID[0].name != name ? true : false;
+				bool f2 = (instanceID[1] == null) ? true : instanceID[1].name != name ? true : false;
+				bool f3 = (instanceID[2] == null) ? true : instanceID[2].name != name ? true : false;
+				bool f4 = (instanceID[3] == null) ? true : instanceID[3].name != name ? true : false;
+				bool f5 = (instanceID[4] == null) ? true : instanceID[4].name != name ? true : false;
+				bool f6 = (instanceID[5] == null) ? true : instanceID[5].name != name ? true : false;
 
 				if (!it.element.is_actor)
 				{
@@ -167,10 +167,10 @@ namespace Chunk
 
 					if (facesCount > 0)
 					{
-						if (!entities.ContainsKey(it.element.material))
-							entities.Add(it.element.material, facesCount);
+						if (!entities.ContainsKey(it.element.name))
+							entities.Add(it.element.name, facesCount);
 						else
-							entities[it.element.material] += facesCount;
+							entities[it.element.name] += facesCount;
 					}
 				}
 			}
@@ -213,16 +213,20 @@ namespace Chunk
 
 				bool isTransparent = false;
 
+				Material material = null;
+
 				foreach (var it in _chunkMap.GetEnumerator())
 				{
-					if (it.element.material != entity.Key)
+					if (it.element.name != entity.Key)
 						continue;
 
 					if (this.GetVisiableFaces(it, map.manager.Size, ref faces))
 						it.element.OnCreateBlock(ref data, ref index, faces, it.position);
 
 					if (it.element.is_dynamic)
-						_chunkEntitiesDynamic.Add(new KeyValuePair<ChunkPosition<ChunkPos>, ChunkEntity>(it.position, it.element));
+						_chunkEntitiesDynamic.Add(new KeyValuePair<Cubizer.Math.Vector3<ChunkPos>, ChunkEntity>(it.position, it.element));
+
+					material = it.element.material;
 
 					isTransparent |= it.element.is_transparent;
 				}
@@ -239,7 +243,7 @@ namespace Chunk
 					gameObject.isStatic = true;
 					gameObject.name = entity.Key;
 					gameObject.AddComponent<MeshFilter>().mesh = mesh;
-					gameObject.AddComponent<MeshRenderer>().material = (Material)Resources.Load("Terrain/Materials/" + entity.Key);
+					gameObject.AddComponent<MeshRenderer>().material = material;
 					gameObject.transform.parent = this.transform;
 					gameObject.transform.position = this.transform.position;
 

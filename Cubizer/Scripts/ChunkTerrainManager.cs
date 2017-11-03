@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-namespace Chunk
+namespace Cubizer
 {
 	public class ChunkTerrainManager : MonoBehaviour
 	{
@@ -124,7 +124,7 @@ namespace Chunk
 			if (HitTestByRay(ray, ref chunkNow, out x, out y, out z, ref chunkLast, out lx, out ly, out lz))
 			{
 				var chunk = chunkLast != null ? chunkLast : chunkNow;
-				chunk.Set(lx, ly, lz, new ChunkWater());
+				chunk.Set(lx, ly, lz, new Cubizer.Generator.ChunkWater());
 				chunk.OnChunkChange();
 
 				return true;
@@ -337,7 +337,7 @@ namespace Chunk
 
 		private void Awake()
 		{
-			ChunkUtility.simplex_seed(_terrainSeed);
+			Math.Noise.simplex_seed(_terrainSeed);
 		}
 
 		private void Start()

@@ -1,4 +1,4 @@
-﻿namespace Chunk
+﻿namespace Cubizer
 {
 	public class ChunkSetting
 	{

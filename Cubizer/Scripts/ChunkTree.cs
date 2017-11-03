@@ -7,11 +7,11 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 using UnityEngine;
 
-namespace Chunk
+namespace Cubizer
 {
 	using ChunkPos = System.Byte;
-	using ChunkPosition = ChunkPosition<System.Byte>;
-	using ChunkVector3 = ChunkPosition<System.Int16>;
+	using Vector3 = Cubizer.Math.Vector3<System.Byte>;
+	using ChunkVector3 = Cubizer.Math.Vector3<System.Int16>;
 
 	[Serializable]
 	public class ChunkTree
@@ -24,7 +24,7 @@ namespace Chunk
 		private int _allocSize;
 
 		private ChunkVector3 _position;
-		private ChunkNode<ChunkPosition, ChunkEntity>[] _data;
+		private ChunkNode<Vector3, ChunkEntity>[] _data;
 
 		[NonSerialized]
 		private ChunkTreeManager _manager;
@@ -191,7 +191,7 @@ namespace Chunk
 		{
 			_count = 0;
 			_allocSize = size;
-			_data = new ChunkNode<ChunkPosition, ChunkEntity>[_allocSize + 1];
+			_data = new ChunkNode<Vector3, ChunkEntity>[_allocSize + 1];
 		}
 
 		public bool Set(ChunkPos x, ChunkPos y, ChunkPos z, ChunkEntity value, bool replace = true)
@@ -222,7 +222,7 @@ namespace Chunk
 
 			if (value != null)
 			{
-				_data[index] = new ChunkNode<ChunkPosition, ChunkEntity>(new ChunkPosition(x, y, z), value);
+				_data[index] = new ChunkNode<Vector3, ChunkEntity>(new Vector3(x, y, z), value);
 				_count++;
 
 				if (_count >= _allocSize)
@@ -234,7 +234,7 @@ namespace Chunk
 			return false;
 		}
 
-		public bool Set(ChunkPosition pos, ChunkEntity instanceID, bool replace = true)
+		public bool Set(Vector3 pos, ChunkEntity instanceID, bool replace = true)
 		{
 			return this.Set(pos.x, pos.y, pos.z, instanceID, replace);
 		}
@@ -291,7 +291,7 @@ namespace Chunk
 			return false;
 		}
 
-		public bool Get(ChunkPosition pos, ref ChunkEntity instanceID)
+		public bool Get(Vector3 pos, ref ChunkEntity instanceID)
 		{
 			return this.Get(pos.x, pos.y, pos.z, ref instanceID);
 		}
@@ -302,7 +302,7 @@ namespace Chunk
 			return this.Get(x, y, z, ref instanceID);
 		}
 
-		public bool Exists(ChunkPosition pos)
+		public bool Exists(Vector3 pos)
 		{
 			ChunkEntity instanceID = null;
 			return this.Get(pos, ref instanceID);
@@ -333,12 +333,12 @@ namespace Chunk
 				_onChunkDestroy.Invoke();
 		}
 
-		public ChunkNodeEnumerable<ChunkPosition, ChunkEntity> GetEnumerator()
+		public ChunkNodeEnumerable<Vector3, ChunkEntity> GetEnumerator()
 		{
 			if (_data == null)
 				throw new System.ApplicationException("GetEnumerator: Empty data");
 
-			return new ChunkNodeEnumerable<ChunkPosition, ChunkEntity>(_data);
+			return new ChunkNodeEnumerable<Vector3, ChunkEntity>(_data);
 		}
 
 		public static bool Save(string path, ChunkTree map)
@@ -372,7 +372,7 @@ namespace Chunk
 			return map;
 		}
 
-		private bool Grow(ChunkNode<ChunkPosition, ChunkEntity> data)
+		private bool Grow(ChunkNode<Vector3, ChunkEntity> data)
 		{
 			var pos = data.position;
 			var index = ChunkUtility.HashInt(pos.x, pos.y, pos.z) & _allocSize;

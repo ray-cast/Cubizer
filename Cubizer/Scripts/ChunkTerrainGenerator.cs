@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace Chunk
+namespace Cubizer
 {
 	public abstract class ChunkTerrainGenerator : MonoBehaviour
 	{

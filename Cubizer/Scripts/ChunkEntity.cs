@@ -5,12 +5,14 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 using UnityEngine;
 
-namespace Chunk
+using Cubizer.Math;
+
+namespace Cubizer
 {
 	using ChunkVector3 = Vector3Int;
 	using ChunkMap = ChunkTree;
 	using ChunkPos = System.Byte;
-	using ChunkPosition = ChunkPosition<System.Byte>;
+	using ChunkPosition = Cubizer.Math.Vector3<System.Byte>;
 
 	[Serializable]
 	public class ChunkEntity : ICloneable
@@ -19,13 +21,15 @@ namespace Chunk
 		private bool _dynamic;
 		private bool _transparent;
 
-		private string _material;
+		private string _name;
+		private Material _material;
 
 		public bool is_actor { get { return _actor; } }
 		public bool is_dynamic { get { return _dynamic; } }
 		public bool is_transparent { get { return _transparent; } }
 
-		public string material { set { _material = value; } get { return _material; } }
+		public string name { set { _name = value; } get { return _name; } }
+		public Material material { set { _material = value; } get { return _material; } }
 
 		public ChunkEntity()
 		{
@@ -34,9 +38,10 @@ namespace Chunk
 			_transparent = false;
 		}
 
-		public ChunkEntity(string name, bool transparent = false, bool dynamic = false, bool actor = false)
+		public ChunkEntity(string name, Material material, bool transparent = false, bool dynamic = false, bool actor = false)
 		{
-			_material = name;
+			_name = name;
+			_material = material;
 			_actor = actor;
 			_dynamic = dynamic;
 			_transparent = transparent;

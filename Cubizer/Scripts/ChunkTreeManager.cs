@@ -7,10 +7,10 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 using UnityEngine;
 
-namespace Chunk
+namespace Cubizer
 {
 	using ChunkPos = System.Int16;
-	using ChunkPosition = ChunkPosition<System.Int16>;
+	using ChunkPosition = Cubizer.Math.Vector3<System.Int16>;
 
 	[Serializable]
 	public class ChunkTreeManager
