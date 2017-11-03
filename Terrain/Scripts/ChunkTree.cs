@@ -179,12 +179,12 @@ namespace Chunk
 			if (size > 0) this.Create(size);
 		}
 
-		public ChunkTree(System.Int16 x, System.Int16 y, System.Int16 z, int size = 0xFF)
+		public ChunkTree(System.Int16 x, System.Int16 y, System.Int16 z, int allocSize = 0xFF)
 		{
 			_count = 0;
 			_allocSize = 0;
 			_position = new ChunkVector3(x, y, z);
-			if (size > 0) this.Create(size);
+			if (allocSize > 0) this.Create(allocSize);
 		}
 
 		public void Create(int size)
@@ -196,8 +196,6 @@ namespace Chunk
 
 		public bool Set(ChunkPos x, ChunkPos y, ChunkPos z, ChunkEntity value, bool replace = true)
 		{
-			UnityEngine.Debug.Assert(x < manager.Size && y < manager.Size && z < manager.Size);
-
 			if (_allocSize == 0)
 				this.Create(0xFF);
 

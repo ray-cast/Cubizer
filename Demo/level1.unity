@@ -214,7 +214,7 @@ Prefab:
     - target: {fileID: 114413684352998398, guid: d6b39b9b9c02f7a4a8b0e708272b011e,
         type: 2}
       propertyPath: _floorHeightLismit
-      value: 10
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 114413684352998398, guid: d6b39b9b9c02f7a4a8b0e708272b011e,
         type: 2}
@@ -356,7 +356,7 @@ Prefab:
     - target: {fileID: 224328295561139070, guid: 52eb078de896190488e6c13e15635297,
         type: 2}
       propertyPath: m_LocalPosition.x
-      value: 662
+      value: 662.5
       objectReference: {fileID: 0}
     - target: {fileID: 224328295561139070, guid: 52eb078de896190488e6c13e15635297,
         type: 2}

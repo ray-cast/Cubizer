@@ -119,6 +119,33 @@ namespace Chunk
 					}
 				}
 			}
+
+			public static void CreateCubeMesh(ref ChunkMesh mesh, ref int index, VisiableFaces faces, ChunkPosition translate, Color32 color, float scale)
+			{
+				bool[] visiable = new bool[] { faces.left, faces.right, faces.top, faces.bottom, faces.front, faces.back };
+
+				for (int i = 0; i < 6; i++)
+				{
+					if (!visiable[i])
+						continue;
+
+					for (int j = 0; j < 6; j++, index++)
+					{
+						int k = _indices[i, j];
+
+						Vector3 v = _positions[i, k] * scale * 0.5f;
+						v.x += translate.x;
+						v.y += translate.y;
+						v.z += translate.z;
+
+						mesh.colors[index] = color;
+						mesh.vertices[index] = v;
+						mesh.normals[index] = _normals[i];
+						mesh.uv[index] = _uvs[i, k];
+						mesh.triangles[index] = index;
+					}
+				}
+			}
 		}
 
 		public struct Plant
@@ -180,6 +207,11 @@ namespace Chunk
 		public static void CreateCubeMesh(ref ChunkMesh mesh, ref int index, VisiableFaces faces, ChunkPosition translate, float scale = 1.0f)
 		{
 			Cube.CreateCubeMesh(ref mesh, ref index, faces, translate, scale);
+		}
+
+		public static void CreateCubeMesh(ref ChunkMesh mesh, ref int index, VisiableFaces faces, ChunkPosition translate, Color32 color, float scale = 1.0f)
+		{
+			Cube.CreateCubeMesh(ref mesh, ref index, faces, translate, color, scale);
 		}
 
 		public static void CreatePlantMesh(ref ChunkMesh mesh, ref int index, VisiableFaces faces, ChunkPosition translate, float scale = 1.0f)

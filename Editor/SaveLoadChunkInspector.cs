@@ -11,7 +11,7 @@ namespace Chunk
 		{
 			ChunkObjectManager chunk = (ChunkObjectManager)target;
 
-			EditorGUILayout.HelpBox("Load Chunk from Asset", MessageType.Info);
+			EditorGUILayout.HelpBox("Load chunk from Asset", MessageType.Info);
 
 			if (GUILayout.Button("Load..."))
 			{

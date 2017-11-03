@@ -63,12 +63,12 @@ namespace Chunk
 					continue;
 
 				bool isOutOfChunk = false;
-				if (ix < 0) { ix = ix + _chunkSize; origin.x += ChunkSetting.CHUNK_SIZE; chunkX--; isOutOfChunk = true; }
-				if (iy < 0) { iy = iy + _chunkSize; origin.y += ChunkSetting.CHUNK_SIZE; chunkY--; isOutOfChunk = true; }
-				if (iz < 0) { iz = iz + _chunkSize; origin.z += ChunkSetting.CHUNK_SIZE; chunkZ--; isOutOfChunk = true; }
-				if (ix + 1 > ChunkSetting.CHUNK_SIZE) { ix = ix - _chunkSize; origin.x -= ChunkSetting.CHUNK_SIZE; chunkX++; isOutOfChunk = true; }
-				if (iy + 1 > ChunkSetting.CHUNK_SIZE) { iy = iy - _chunkSize; origin.y -= ChunkSetting.CHUNK_SIZE; chunkY++; isOutOfChunk = true; }
-				if (iz + 1 > ChunkSetting.CHUNK_SIZE) { iz = iz - _chunkSize; origin.z -= ChunkSetting.CHUNK_SIZE; chunkZ++; isOutOfChunk = true; }
+				if (ix < 0) { ix = ix + _chunkSize; origin.x += _chunkSize; chunkX--; isOutOfChunk = true; }
+				if (iy < 0) { iy = iy + _chunkSize; origin.y += _chunkSize; chunkY--; isOutOfChunk = true; }
+				if (iz < 0) { iz = iz + _chunkSize; origin.z += _chunkSize; chunkZ--; isOutOfChunk = true; }
+				if (ix + 1 > _chunkSize) { ix = ix - _chunkSize; origin.x -= _chunkSize; chunkX++; isOutOfChunk = true; }
+				if (iy + 1 > _chunkSize) { iy = iy - _chunkSize; origin.y -= _chunkSize; chunkY++; isOutOfChunk = true; }
+				if (iz + 1 > _chunkSize) { iz = iz - _chunkSize; origin.z -= _chunkSize; chunkZ++; isOutOfChunk = true; }
 
 				lastX = outX;
 				lastY = outY;
@@ -188,7 +188,7 @@ namespace Chunk
 						if (hit)
 							continue;
 
-						var p = _chunkOffset + new Vector3(dx, dy, dz) * ChunkSetting.CHUNK_SIZE;
+						var p = _chunkOffset + new Vector3(dx, dy, dz) * _chunkSize;
 
 						int invisiable = GeometryUtility.TestPlanesAABB(planes, new Bounds(p, Vector3.one * _chunkSize)) ? 0 : 1;
 						int distance = Mathf.Max(Mathf.Max(Mathf.Abs(ix), Mathf.Abs(iy)), Mathf.Abs(iz));
@@ -259,7 +259,7 @@ namespace Chunk
 
 				var gameObject = new GameObject("Chunk");
 				gameObject.transform.parent = transform;
-				gameObject.transform.position = position * ChunkSetting.CHUNK_SIZE;
+				gameObject.transform.position = position * _chunkSize;
 				gameObject.AddComponent<ChunkObjectManager>().map = map;
 			}
 		}

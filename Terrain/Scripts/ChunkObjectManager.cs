@@ -12,6 +12,7 @@ namespace Chunk
 
 	public struct ChunkMesh
 	{
+		public Color32[] colors;
 		public Vector3[] vertices;
 		public Vector3[] normals;
 		public Vector2[] uv;
@@ -26,6 +27,16 @@ namespace Chunk
 		public bool top;
 		public bool back;
 		public bool front;
+
+		public VisiableFaces(bool _left, bool _right, bool _bottom, bool _top, bool _back, bool _front)
+		{
+			left = _left;
+			right = _right;
+			bottom = _bottom;
+			top = _top;
+			back = _back;
+			front = _front;
+		}
 	}
 
 	public class ChunkObjectManager : MonoBehaviour
@@ -59,7 +70,7 @@ namespace Chunk
 			}
 		}
 
-		public bool GetVisiableFaces(ChunkMap.ChunkNode<ChunkPosition, ChunkEntity> it, ref VisiableFaces faces)
+		public bool GetVisiableFaces(ChunkMap.ChunkNode<ChunkPosition, ChunkEntity> it, int chunkSize, ref VisiableFaces faces)
 		{
 			ChunkEntity[] instanceID = new ChunkEntity[6] { null, null, null, null, null, null };
 
@@ -70,9 +81,9 @@ namespace Chunk
 			if (x >= 1) _chunkMap.Get((byte)(x - 1), y, z, ref instanceID[0]);
 			if (y >= 1) _chunkMap.Get(x, (byte)(y - 1), z, ref instanceID[2]);
 			if (z >= 1) _chunkMap.Get(x, y, (byte)(z - 1), ref instanceID[4]);
-			if (x <= ChunkSetting.CHUNK_SIZE) _chunkMap.Get((byte)(x + 1), y, z, ref instanceID[1]);
-			if (y <= ChunkSetting.CHUNK_SIZE) _chunkMap.Get(x, (byte)(y + 1), z, ref instanceID[3]);
-			if (z <= ChunkSetting.CHUNK_SIZE) _chunkMap.Get(x, y, (byte)(z + 1), ref instanceID[5]);
+			if (x <= chunkSize) _chunkMap.Get((byte)(x + 1), y, z, ref instanceID[1]);
+			if (y <= chunkSize) _chunkMap.Get(x, (byte)(y + 1), z, ref instanceID[3]);
+			if (z <= chunkSize) _chunkMap.Get(x, y, (byte)(z + 1), ref instanceID[5]);
 
 			if (it.element.is_transparent)
 			{
@@ -89,8 +100,8 @@ namespace Chunk
 				{
 					if (x == 0) f1 = false;
 					if (z == 0) f5 = false;
-					if (x + 1 == ChunkSetting.CHUNK_SIZE) f2 = false;
-					if (z + 1 == ChunkSetting.CHUNK_SIZE) f6 = false;
+					if (x + 1 == chunkSize) f2 = false;
+					if (z + 1 == chunkSize) f6 = false;
 				}
 
 				faces.left = f1;
@@ -132,7 +143,7 @@ namespace Chunk
 			return faces.left | faces.right | faces.bottom | faces.top | faces.front | faces.back;
 		}
 
-		public int CalcFaceCountAsAllocate(ref Dictionary<string, int> entities)
+		public int CalcFaceCountAsAllocate(int chunkSize, ref Dictionary<string, int> entities)
 		{
 			var enumerator = _chunkMap.GetEnumerator();
 			if (enumerator == null)
@@ -142,7 +153,7 @@ namespace Chunk
 
 			foreach (var it in enumerator)
 			{
-				if (GetVisiableFaces(it, ref faces))
+				if (GetVisiableFaces(it, chunkSize, ref faces))
 				{
 					bool[] visiable = new bool[] { faces.left, faces.right, faces.top, faces.bottom, faces.front, faces.back };
 
@@ -175,14 +186,17 @@ namespace Chunk
 			if (_chunkMap == null || _chunkMap.Count == 0)
 				return;
 
-			if (_chunkEntitiesDynamic.Count > 0)
+			if (_chunkEntitiesDynamic != null)
 			{
-				StopCoroutine("OnUpdateEntities");
-				_chunkEntitiesDynamic.Clear();
+				if (_chunkEntitiesDynamic.Count > 0)
+				{
+					StopCoroutine("OnUpdateEntities");
+					_chunkEntitiesDynamic.Clear();
+				}
 			}
 
 			var entities = new Dictionary<string, int>();
-			if (this.CalcFaceCountAsAllocate(ref entities) == 0)
+			if (this.CalcFaceCountAsAllocate(map.manager.Size, ref entities) == 0)
 				return;
 
 			foreach (var entity in entities)
@@ -204,7 +218,7 @@ namespace Chunk
 					if (it.element.material != entity.Key)
 						continue;
 
-					if (this.GetVisiableFaces(it, ref faces))
+					if (this.GetVisiableFaces(it, map.manager.Size, ref faces))
 						it.element.OnCreateBlock(ref data, ref index, faces, it.position);
 
 					if (it.element.is_dynamic)
@@ -275,7 +289,7 @@ namespace Chunk
 			if (map.position.y == 0)
 			{
 				Gizmos.color = Color.black;
-				Gizmos.DrawWireCube(transform.position + (Vector3.one * ChunkSetting.CHUNK_SIZE - Vector3.one) * 0.5f, Vector3.one * ChunkSetting.CHUNK_SIZE);
+				Gizmos.DrawWireCube(transform.position + (Vector3.one * map.manager.Size - Vector3.one) * 0.5f, Vector3.one * map.manager.Size);
 			}
 		}
 	}

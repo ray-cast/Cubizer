@@ -10,6 +10,11 @@ Install:
 * Download a zip archive from the github page
 * Un-zip the archive
 * Copy the folder to Resource's Asserts folder
+* 
+Features :
+------------
+* Cube-based infinite terrain generation
+* Voxel file import for MagicalVoxel
 
 Requirements:
 ========

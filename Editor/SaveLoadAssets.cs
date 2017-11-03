@@ -1,7 +1,15 @@
-﻿using System.IO;
+﻿using System;
+using System.Diagnostics;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
 
 using UnityEditor;
 using UnityEngine;
+
+using Chunk;
 
 public class ChunkEditor : EditorWindow
 {
@@ -23,16 +31,33 @@ public class ChunkEditor : EditorWindow
 			var path = AssetDatabase.GetAssetPath(asset);
 			if (path.Contains(".vox"))
 			{
-				var loadFile = new FileStream(path, FileMode.Open, FileAccess.Read);
+				var voxel = MagicalVoxelFileLoad.Load(path);
+				if (voxel == null)
+					continue;
 
-				var voxel = AssetDatabase.LoadAssetAtPath(path, typeof(MagicalVoxelFile)) as MagicalVoxelFile;
-				if (voxel)
+				var gameObject = MagicalVoxelFileLoad.CreateGameObject(voxel);
+				if (gameObject == null)
+					continue;
+
+				var meshFilter = gameObject.GetComponent<MeshFilter>();
+				if (meshFilter == null)
 				{
-					var gameObject = new GameObject();
-
-					UnityEngine.Object prefab = PrefabUtility.CreateEmptyPrefab(Application.dataPath + "/StreamingAssets/" + Selection.activeObject.name + ".prefab");
-					PrefabUtility.ReplacePrefab(gameObject, prefab, ReplacePrefabOptions.ConnectToPrefab);
+					DestroyImmediate(gameObject);
+					continue;
 				}
+
+				var outpath = "Assets/" + Selection.activeObject.name + ".obj";
+				ChunkUtility.SaveMeshAsObjFile(outpath, meshFilter, new Vector3(-1f, 1f, 1f));
+
+				AssetDatabase.Refresh();
+
+				meshFilter.mesh = AssetDatabase.LoadAssetAtPath<Mesh>(outpath);
+
+				UnityEngine.Object prefab = PrefabUtility.CreatePrefab("Assets/" + Selection.activeObject.name + ".prefab", gameObject);
+				if (prefab == null)
+					UnityEngine.Debug.Log(Selection.activeObject.name + ": failed to save prefab");
+
+				DestroyImmediate(gameObject);
 			}
 		}
 	}
