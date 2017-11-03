@@ -9,8 +9,9 @@ Install:
 ========
 * Download a zip archive from the github page
 * Un-zip the archive
-* Copy the folder to Resource's Asserts folder
-* 
+* Copy the Cubizer&Resources folder to Assets folder
+* Double-click a Cubizer/Demo/level1.unity file
+
 Features :
 ------------
 * Cube-based infinite terrain generation
