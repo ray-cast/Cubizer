@@ -214,7 +214,7 @@ Prefab:
     - target: {fileID: 114413684352998398, guid: d6b39b9b9c02f7a4a8b0e708272b011e,
         type: 2}
       propertyPath: _floorHeightLismit
-      value: 20
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 114413684352998398, guid: d6b39b9b9c02f7a4a8b0e708272b011e,
         type: 2}
@@ -339,6 +339,10 @@ Prefab:
       propertyPath: m_AllowMSAA
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 2}
   m_IsPrefabParent: 0
@@ -460,20 +464,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _chunkSize: 24
   _chunkNumLimits: 512
-  _chunkRadiusDestroy: 6
-  _terrainSeed: 255
-  _terrainHeightLimitLow: -10
-  _terrainHeightLimitHigh: 20
-  _hitTestDistance: 8
-  _isHitTestEnable: 1
-  _isHitTestWireframe: 1
-  _isHitTesting: 0
-  _repeatRateUpdate: 0.1
+  _chunkRadiusGC: 6
   _chunkRadiusGenX: {x: -3, y: 3}
   _chunkRadiusGenY: {x: -1, y: 3}
   _chunkRadiusGenZ: {x: -3, y: 3}
+  _terrainSeed: 255
+  _terrainHeightLimitLow: -10
+  _terrainHeightLimitHigh: 20
+  _isHitTestEnable: 1
+  _isHitTestWireframe: 1
+  _isHitTesting: 1
+  _hitTestDistance: 8
+  _repeatRateUpdate: 0.1
   _drawPickMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  _drawPiclMaterial: {fileID: 2100000, guid: ca8651ba28620ec49a6efa144f310bf1, type: 2}
+  _drawPickMaterial: {fileID: 2100000, guid: ca8651ba28620ec49a6efa144f310bf1, type: 2}
 --- !u!1 &1922618361
 GameObject:
   m_ObjectHideFlags: 0

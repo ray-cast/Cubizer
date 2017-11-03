@@ -25,15 +25,17 @@ namespace Chunk
 
 		private ChunkVector3 _position;
 		private ChunkNode<ChunkPosition, ChunkEntity>[] _data;
-		private ChunkTreeManager _manager;
 
-		public ChunkVector3 position { set { _position = value; } get { return _position; } }
+		[NonSerialized]
+		private ChunkTreeManager _manager;
 
 		[NonSerialized]
 		public OnChunkChangeDelegate _onChunkChange;
 
 		[NonSerialized]
 		public OnDestroyDelegate _onChunkDestroy;
+
+		public ChunkVector3 position { set { _position = value; } get { return _position; } }
 
 		public ChunkTreeManager manager
 		{
@@ -58,6 +60,7 @@ namespace Chunk
 
 		public int Count { get { return _count; } }
 
+		[Serializable]
 		public class ChunkNode<_Tx, _Ty>
 			where _Tx : struct
 			where _Ty : class
@@ -340,23 +343,35 @@ namespace Chunk
 			return new ChunkNodeEnumerable<ChunkPosition, ChunkEntity>(_data);
 		}
 
-		public FileStream Save(string path)
+		public static bool Save(string path, ChunkTree map)
 		{
+			UnityEngine.Debug.Assert(map != null);
+
 			var stream = new FileStream(path, FileMode.Create, FileAccess.Write);
 			var serializer = new BinaryFormatter();
 
-			serializer.Serialize(stream, this);
+			serializer.Serialize(stream, map);
 			stream.Close();
 
-			return stream;
+			return true;
 		}
 
-		public ChunkTree Load(string path)
+		public static ChunkTree Load(string path)
 		{
 			var serializer = new BinaryFormatter();
 			var loadFile = new FileStream(path, FileMode.Open, FileAccess.Read);
-
 			return serializer.Deserialize(loadFile) as ChunkTree;
+		}
+
+		public static ChunkTree Load(string path, ChunkTreeManager manager)
+		{
+			UnityEngine.Debug.Assert(manager != null);
+
+			var serializer = new BinaryFormatter();
+			var loadFile = new FileStream(path, FileMode.Open, FileAccess.Read);
+			var map = serializer.Deserialize(loadFile) as ChunkTree;
+			map.manager = manager;
+			return map;
 		}
 
 		private bool Grow(ChunkNode<ChunkPosition, ChunkEntity> data)

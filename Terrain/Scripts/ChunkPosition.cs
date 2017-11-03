@@ -1,5 +1,8 @@
-﻿namespace Chunk
+﻿using System;
+
+namespace Chunk
 {
+	[Serializable]
 	public struct ChunkPosition<_Tx> where _Tx : struct
 	{
 		public _Tx x;

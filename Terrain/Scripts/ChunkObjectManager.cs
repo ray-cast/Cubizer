@@ -269,6 +269,9 @@ namespace Chunk
 
 		private void OnDrawGizmos()
 		{
+			if (map == null)
+				return;
+
 			if (map.position.y == 0)
 			{
 				Gizmos.color = Color.black;

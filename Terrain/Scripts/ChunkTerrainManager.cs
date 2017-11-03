@@ -5,33 +5,30 @@ using UnityEngine;
 
 namespace Chunk
 {
-	using ChunkPos = System.Int16;
-	using ChunkPosition = ChunkPosition<System.Int16>;
-
 	public class ChunkTerrainManager : MonoBehaviour
 	{
 		public int _chunkSize = ChunkSetting.CHUNK_SIZE;
 		public int _chunkNumLimits = 512;
-		public int _chunkRadiusDestroy = 6;
-
-		public int _terrainSeed = 255;
-		public int _terrainHeightLimitLow = -10;
-		public int _terrainHeightLimitHigh = 20;
-
-		public int _hitTestDistance = 8;
-
-		public bool _isHitTestEnable = true;
-		public bool _isHitTestWireframe = true;
-		public bool _isHitTesting = false;
-
-		public float _repeatRateUpdate = 0.1f;
+		public int _chunkRadiusGC = 6;
 
 		public Vector2Int _chunkRadiusGenX = new Vector2Int(-3, 3);
 		public Vector2Int _chunkRadiusGenY = new Vector2Int(-1, 3);
 		public Vector2Int _chunkRadiusGenZ = new Vector2Int(-3, 3);
 
+		public int _terrainSeed = 255;
+		public int _terrainHeightLimitLow = -10;
+		public int _terrainHeightLimitHigh = 20;
+
+		public bool _isHitTestEnable = true;
+		public bool _isHitTestWireframe = true;
+		public bool _isHitTesting = false;
+
+		public int _hitTestDistance = 8;
+
+		public float _repeatRateUpdate = 0.1f;
+
 		public Mesh _drawPickMesh;
-		public Material _drawPiclMaterial;
+		public Material _drawPickMaterial;
 
 		private ChunkTreeManager _chunkFactory;
 		private GameObject _terrainGenerator;
@@ -221,7 +218,7 @@ namespace Chunk
 			{
 				var transformChild = transform.GetChild(i);
 				var distance = Vector3.Distance(transformChild.position, Camera.main.transform.position) / _chunkSize;
-				if (distance > _chunkRadiusDestroy)
+				if (distance > _chunkRadiusGC)
 				{
 					transformChild.parent = null;
 					Destroy(transformChild.gameObject);
@@ -323,7 +320,7 @@ namespace Chunk
 				if (HitTestByScreenPos(Input.mousePosition, ref chunk, out x, out y, out z))
 				{
 					var position = new Vector3(chunk.position.x, chunk.position.y, chunk.position.z) * _chunkSize + new Vector3(x, y, z);
-					Graphics.DrawMesh(_drawPickMesh, position, Quaternion.identity, _drawPiclMaterial, gameObject.layer, Camera.main);
+					Graphics.DrawMesh(_drawPickMesh, position, Quaternion.identity, _drawPickMaterial, gameObject.layer, Camera.main);
 				}
 			}
 		}
@@ -348,7 +345,7 @@ namespace Chunk
 			if (_drawPickMesh == null)
 				Debug.LogError("Please assign a material on the inspector");
 
-			if (_drawPiclMaterial == null)
+			if (_drawPickMaterial == null)
 				Debug.LogError("Please assign a mesh on the inspector");
 
 			_chunkFactory = new ChunkTreeManager((byte)_chunkSize);
