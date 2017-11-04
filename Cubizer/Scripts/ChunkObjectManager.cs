@@ -6,7 +6,6 @@ using UnityEngine;
 namespace Cubizer
 {
 	using ChunkVector3 = Vector3Int;
-	using ChunkMap = ChunkTree;
 	using ChunkPos = System.Byte;
 	using ChunkPosition = Cubizer.Math.Vector3<System.Byte>;
 
@@ -41,12 +40,12 @@ namespace Cubizer
 
 	public class ChunkObjectManager : MonoBehaviour
 	{
-		private ChunkMap _chunkMap;
+		private ChunkTree _chunkMap;
 
 		private float _repeatRateUpdate = 2.0f;
 		private List<KeyValuePair<ChunkPosition, ChunkEntity>> _chunkEntitiesDynamic;
 
-		public ChunkMap map
+		public ChunkTree map
 		{
 			set
 			{
@@ -70,7 +69,7 @@ namespace Cubizer
 			}
 		}
 
-		public bool GetVisiableFaces(ChunkMap.ChunkNode<ChunkPosition, ChunkEntity> it, int chunkSize, ref VisiableFaces faces)
+		public bool GetVisiableFaces(ChunkNode<ChunkPosition, ChunkEntity> it, Vector3Int size, ref VisiableFaces faces)
 		{
 			ChunkEntity[] instanceID = new ChunkEntity[6] { null, null, null, null, null, null };
 
@@ -81,9 +80,9 @@ namespace Cubizer
 			if (x >= 1) _chunkMap.Get((byte)(x - 1), y, z, ref instanceID[0]);
 			if (y >= 1) _chunkMap.Get(x, (byte)(y - 1), z, ref instanceID[2]);
 			if (z >= 1) _chunkMap.Get(x, y, (byte)(z - 1), ref instanceID[4]);
-			if (x <= chunkSize) _chunkMap.Get((byte)(x + 1), y, z, ref instanceID[1]);
-			if (y <= chunkSize) _chunkMap.Get(x, (byte)(y + 1), z, ref instanceID[3]);
-			if (z <= chunkSize) _chunkMap.Get(x, y, (byte)(z + 1), ref instanceID[5]);
+			if (x <= size.x) _chunkMap.Get((byte)(x + 1), y, z, ref instanceID[1]);
+			if (y <= size.y) _chunkMap.Get(x, (byte)(y + 1), z, ref instanceID[3]);
+			if (z <= size.z) _chunkMap.Get(x, y, (byte)(z + 1), ref instanceID[5]);
 
 			if (it.element.is_transparent)
 			{
@@ -100,8 +99,8 @@ namespace Cubizer
 				{
 					if (x == 0) f1 = false;
 					if (z == 0) f5 = false;
-					if (x + 1 == chunkSize) f2 = false;
-					if (z + 1 == chunkSize) f6 = false;
+					if (x + 1 == size.x) f2 = false;
+					if (z + 1 == size.z) f6 = false;
 				}
 
 				faces.left = f1;
@@ -143,7 +142,7 @@ namespace Cubizer
 			return faces.left | faces.right | faces.bottom | faces.top | faces.front | faces.back;
 		}
 
-		public int CalcFaceCountAsAllocate(int chunkSize, ref Dictionary<string, int> entities)
+		public int CalcFaceCountAsAllocate(Vector3Int chunkSize, ref Dictionary<string, int> entities)
 		{
 			var enumerator = _chunkMap.GetEnumerator();
 			if (enumerator == null)
@@ -196,7 +195,7 @@ namespace Cubizer
 			}
 
 			var entities = new Dictionary<string, int>();
-			if (this.CalcFaceCountAsAllocate(map.manager.Size, ref entities) == 0)
+			if (this.CalcFaceCountAsAllocate(map.manager.bound, ref entities) == 0)
 				return;
 
 			foreach (var entity in entities)
@@ -220,7 +219,7 @@ namespace Cubizer
 					if (it.element.name != entity.Key)
 						continue;
 
-					if (this.GetVisiableFaces(it, map.manager.Size, ref faces))
+					if (this.GetVisiableFaces(it, map.manager.bound, ref faces))
 						it.element.OnCreateBlock(ref data, ref index, faces, it.position);
 
 					if (it.element.is_dynamic)
@@ -293,7 +292,7 @@ namespace Cubizer
 			if (map.position.y == 0)
 			{
 				Gizmos.color = Color.black;
-				Gizmos.DrawWireCube(transform.position + (Vector3.one * map.manager.Size - Vector3.one) * 0.5f, Vector3.one * map.manager.Size);
+				Gizmos.DrawWireCube(transform.position + (map.manager.bound - Vector3.one) * 0.5f, map.manager.bound);
 			}
 		}
 	}

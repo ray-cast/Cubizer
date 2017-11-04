@@ -10,21 +10,15 @@ using UnityEngine;
 namespace Cubizer
 {
 	using ChunkPos = System.Byte;
-	using Vector3 = Cubizer.Math.Vector3<System.Byte>;
+	using ChunkByte3 = Cubizer.Math.Vector3<System.Byte>;
 	using ChunkVector3 = Cubizer.Math.Vector3<System.Int16>;
 
 	[Serializable]
-	public class ChunkTree
+	public class ChunkTree : ChunkMapByte3<ChunkEntity>
 	{
 		public delegate void OnChunkChangeDelegate();
 
 		public delegate void OnDestroyDelegate();
-
-		private int _count;
-		private int _allocSize;
-
-		private ChunkVector3 _position;
-		private ChunkNode<Vector3, ChunkEntity>[] _data;
 
 		[NonSerialized]
 		private ChunkTreeManager _manager;
@@ -34,6 +28,8 @@ namespace Cubizer
 
 		[NonSerialized]
 		public OnDestroyDelegate _onChunkDestroy;
+
+		private ChunkVector3 _position;
 
 		public ChunkVector3 position { set { _position = value; } get { return _position; } }
 
@@ -58,228 +54,42 @@ namespace Cubizer
 			}
 		}
 
-		public int Count { get { return _count; } }
-
-		[Serializable]
-		public class ChunkNode<_Tx, _Ty>
-			where _Tx : struct
-			where _Ty : class
+		public ChunkTree(Vector3Int bound)
+			: base(bound)
 		{
-			public _Tx position;
-			public _Ty element;
-
-			public ChunkNode()
-			{
-				element = null;
-			}
-
-			public ChunkNode(_Tx x, _Ty value)
-			{
-				position = x;
-				element = value;
-			}
-
-			public bool is_empty()
-			{
-				return element == null;
-			}
 		}
 
-		public class ChunkNodeEnumerable<_Tx, _Ty> : IEnumerable
-			where _Tx : struct
-			where _Ty : class
+		public ChunkTree(Vector3Int bound, int allocSize)
+			: base(bound, allocSize)
 		{
-			private ChunkNode<_Tx, _Ty>[] _array;
-
-			public ChunkNodeEnumerable(ChunkNode<_Tx, _Ty>[] array)
-			{
-				_array = array;
-			}
-
-			IEnumerator IEnumerable.GetEnumerator()
-			{
-				return (IEnumerator)GetEnumerator();
-			}
-
-			public ChunkNodeEnum<_Tx, _Ty> GetEnumerator()
-			{
-				return new ChunkNodeEnum<_Tx, _Ty>(_array);
-			}
 		}
 
-		public class ChunkNodeEnum<_Tx, _Ty> : IEnumerator
-			where _Tx : struct
-			where _Ty : class
+		public ChunkTree(Vector3Int bound, ChunkVector3 pos, int allocSize = 0xFF)
+			: base(bound, allocSize)
 		{
-			private int position = -1;
-			private ChunkNode<_Tx, _Ty>[] _array;
-
-			public ChunkNodeEnum(ChunkNode<_Tx, _Ty>[] list)
-			{
-				_array = list;
-			}
-
-			public bool MoveNext()
-			{
-				var length = _array.Length;
-				for (position++; position < length; position++)
-				{
-					if (_array[position] == null)
-						continue;
-					if (_array[position].is_empty())
-						continue;
-					break;
-				}
-
-				return position < _array.Length;
-			}
-
-			public void Reset()
-			{
-				position = -1;
-			}
-
-			object IEnumerator.Current
-			{
-				get
-				{
-					return Current;
-				}
-			}
-
-			public ChunkNode<_Tx, _Ty> Current
-			{
-				get
-				{
-					return _array[position];
-				}
-			}
-		}
-
-		public ChunkTree()
-		{
-			_count = 0;
-			_allocSize = 0;
-			_position = new ChunkVector3(0, 0, 0);
-		}
-
-		public ChunkTree(int size)
-		{
-			_count = 0;
-			_allocSize = 0;
-			_position = new ChunkVector3(0, 0, 0);
-			this.Create(size);
-		}
-
-		public ChunkTree(ChunkVector3 pos, int size = 0xFF)
-		{
-			_count = 0;
-			_allocSize = 0;
 			_position = pos;
-			if (size > 0) this.Create(size);
 		}
 
-		public ChunkTree(System.Int16 x, System.Int16 y, System.Int16 z, int allocSize = 0xFF)
+		public ChunkTree(Vector3Int bound, System.Int16 x, System.Int16 y, System.Int16 z, int allocSize = 0xFF)
+			: base(bound, allocSize)
 		{
-			_count = 0;
-			_allocSize = 0;
 			_position = new ChunkVector3(x, y, z);
-			if (allocSize > 0) this.Create(allocSize);
-		}
-
-		public void Create(int size)
-		{
-			_count = 0;
-			_allocSize = size;
-			_data = new ChunkNode<Vector3, ChunkEntity>[_allocSize + 1];
-		}
-
-		public bool Set(ChunkPos x, ChunkPos y, ChunkPos z, ChunkEntity value, bool replace = true)
-		{
-			if (_allocSize == 0)
-				this.Create(0xFF);
-
-			var index = ChunkUtility.HashInt(x, y, z) & _allocSize;
-			var entry = _data[index];
-
-			while (entry != null)
-			{
-				var pos = entry.position;
-				if (pos.x == x && pos.y == y && pos.z == z)
-				{
-					if (replace)
-					{
-						_data[index].element = value;
-						return true;
-					}
-
-					return false;
-				}
-
-				index = (index + 1) & _allocSize;
-				entry = _data[index];
-			}
-
-			if (value != null)
-			{
-				_data[index] = new ChunkNode<Vector3, ChunkEntity>(new Vector3(x, y, z), value);
-				_count++;
-
-				if (_count >= _allocSize)
-					this.Grow();
-
-				return true;
-			}
-
-			return false;
-		}
-
-		public bool Set(Vector3 pos, ChunkEntity instanceID, bool replace = true)
-		{
-			return this.Set(pos.x, pos.y, pos.z, instanceID, replace);
-		}
-
-		public bool Get(ChunkPos x, ChunkPos y, ChunkPos z, ref ChunkEntity instanceID)
-		{
-			if (_allocSize == 0)
-				return false;
-
-			var index = ChunkUtility.HashInt(x, y, z) & _allocSize;
-			var entry = _data[index];
-
-			while (entry != null)
-			{
-				var pos = entry.position;
-				if (pos.x == x && pos.y == y && pos.z == z)
-				{
-					instanceID = entry.element;
-					return true;
-				}
-
-				index = (index + 1) & _allocSize;
-				entry = _data[index];
-			}
-
-			instanceID = null;
-			return false;
 		}
 
 		public bool GetForWrap(int x, int y, int z, ref ChunkEntity instanceID)
 		{
 			var pos = _position;
-			var size = manager.Size;
-			var sizeDecOne = manager.Size - 1;
 
 			var ix = x;
 			var iy = y;
 			var iz = z;
 
-			while (ix < 0) { pos.x--; ix += size; };
-			while (iy < 0) { pos.y--; iy += size; };
-			while (iz < 0) { pos.z--; iz += size; };
-			while (ix > sizeDecOne) { pos.x++; ix -= size; }
-			while (iy > sizeDecOne) { pos.y++; iy -= size; }
-			while (iz > sizeDecOne) { pos.z++; iz -= size; }
+			while (ix < 0) { pos.x--; ix += bound.x; };
+			while (iy < 0) { pos.y--; iy += bound.y; };
+			while (iz < 0) { pos.z--; iz += bound.z; };
+			while (ix > (bound.x - 1)) { pos.x++; ix -= bound.x; }
+			while (iy > (bound.y - 1)) { pos.y++; iy -= bound.y; }
+			while (iz > (bound.z - 1)) { pos.z++; iz -= bound.z; }
 
 			var chunk = this;
 			if (pos.x != _position.x || pos.y != _position.y || pos.z != _position.z)
@@ -291,33 +101,11 @@ namespace Cubizer
 			return false;
 		}
 
-		public bool Get(Vector3 pos, ref ChunkEntity instanceID)
-		{
-			return this.Get(pos.x, pos.y, pos.z, ref instanceID);
-		}
-
-		public bool Exists(ChunkPos x, ChunkPos y, ChunkPos z)
-		{
-			ChunkEntity instanceID = null;
-			return this.Get(x, y, z, ref instanceID);
-		}
-
-		public bool Exists(Vector3 pos)
-		{
-			ChunkEntity instanceID = null;
-			return this.Get(pos, ref instanceID);
-		}
-
-		public bool Empty()
-		{
-			return _count == 0;
-		}
-
 		public float GetDistance(int x, int y, int z)
 		{
-			x = Mathf.Abs(_position.x - x);
-			y = Mathf.Abs(_position.y - y);
-			z = Mathf.Abs(_position.z - z);
+			x = Mathf.Abs(this._position.x - x);
+			y = Mathf.Abs(this._position.y - y);
+			z = Mathf.Abs(this._position.z - z);
 			return Mathf.Max(Mathf.Max(x, y), z);
 		}
 
@@ -333,14 +121,6 @@ namespace Cubizer
 				_onChunkDestroy.Invoke();
 		}
 
-		public ChunkNodeEnumerable<Vector3, ChunkEntity> GetEnumerator()
-		{
-			if (_data == null)
-				throw new System.ApplicationException("GetEnumerator: Empty data");
-
-			return new ChunkNodeEnumerable<Vector3, ChunkEntity>(_data);
-		}
-
 		public static bool Save(string path, ChunkTree map)
 		{
 			UnityEngine.Debug.Assert(map != null);
@@ -354,7 +134,7 @@ namespace Cubizer
 			return true;
 		}
 
-		public static ChunkTree Load(string path)
+		public static new ChunkTree Load(string path)
 		{
 			var serializer = new BinaryFormatter();
 			var loadFile = new FileStream(path, FileMode.Open, FileAccess.Read);
@@ -370,41 +150,6 @@ namespace Cubizer
 			var map = serializer.Deserialize(loadFile) as ChunkTree;
 			map.manager = manager;
 			return map;
-		}
-
-		private bool Grow(ChunkNode<Vector3, ChunkEntity> data)
-		{
-			var pos = data.position;
-			var index = ChunkUtility.HashInt(pos.x, pos.y, pos.z) & _allocSize;
-			var entry = _data[index];
-
-			while (entry != null)
-			{
-				index = (index + 1) & _allocSize;
-				entry = _data[index];
-			}
-
-			if (data.element != null)
-			{
-				_data[index] = data;
-				_count++;
-
-				return true;
-			}
-
-			return false;
-		}
-
-		private void Grow()
-		{
-			var map = new ChunkTree(_allocSize << 1 | 1);
-
-			foreach (var it in GetEnumerator())
-				map.Grow(it);
-
-			_count = map._count;
-			_allocSize = map._allocSize;
-			_data = map._data;
 		}
 	}
 }

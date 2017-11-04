@@ -248,7 +248,7 @@ namespace Cubizer
 
 			if (_terrainGenerator)
 			{
-				var map = new ChunkTree((short)position.x, (short)position.y, (short)position.z, 0);
+				var map = new ChunkTree(new Vector3Int(_chunkSize, _chunkSize, _chunkSize), (short)position.x, (short)position.y, (short)position.z, 0);
 				map.manager = _chunkFactory;
 
 				var _terrainTransform = _terrainGenerator.transform;
@@ -352,7 +352,7 @@ namespace Cubizer
 			if (_drawPickMaterial == null)
 				Debug.LogError("Please assign a mesh on the inspector");
 
-			_chunkFactory = new ChunkTreeManager((byte)_chunkSize);
+			_chunkFactory = new ChunkTreeManager(new Vector3Int(_chunkSize, _chunkSize, _chunkSize));
 			_terrainGenerator = GameObject.Find("TerrainGenerator");
 		}
 

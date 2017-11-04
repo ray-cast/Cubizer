@@ -10,7 +10,6 @@ using Cubizer.Math;
 namespace Cubizer
 {
 	using ChunkVector3 = Vector3Int;
-	using ChunkMap = ChunkTree;
 	using ChunkPos = System.Byte;
 	using ChunkPosition = Cubizer.Math.Vector3<System.Byte>;
 
@@ -297,7 +296,7 @@ namespace Cubizer
 			CreateCubeMesh(ref mesh, ref index, faces, position, scale);
 		}
 
-		public virtual bool OnUpdateChunk(ref ChunkMap map, ChunkPosition translate)
+		public virtual bool OnUpdateChunk(ref ChunkTree map, ChunkPosition translate)
 		{
 			return false;
 		}

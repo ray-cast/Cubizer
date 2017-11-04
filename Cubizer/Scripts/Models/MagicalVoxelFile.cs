@@ -188,7 +188,7 @@ namespace Cubizer
 				return _voxel;
 			}
 
-			public static bool GetVisiableFaces(ChunkTree map, ChunkTree.ChunkNode<Math.Vector3<System.Byte>, ChunkEntity> it, int chunkSize, ref VisiableFaces faces)
+			public static bool GetVisiableFaces(ChunkTree map, ChunkNode<Math.Vector3<System.Byte>, ChunkEntity> it, int chunkSize, ref VisiableFaces faces)
 			{
 				ChunkEntity[] instanceID = new ChunkEntity[6] { null, null, null, null, null, null };
 
@@ -304,7 +304,7 @@ namespace Cubizer
 				{
 					var chunk = voxel.chunkChild[i];
 
-					ChunkTree map = new ChunkTree();
+					ChunkTree map = new ChunkTree(new Vector3Int(chunk.size.x, chunk.size.y, chunk.size.z));
 
 					for (int j = 0; j < chunk.xyzi.VoxelNums * 4; j += 4)
 					{
