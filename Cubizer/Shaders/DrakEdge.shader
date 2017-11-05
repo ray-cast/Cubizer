@@ -1,4 +1,4 @@
-﻿Shader "Custom/Default"
+﻿Shader "Custom/DarkEdge"
 {
 	Properties
 	{
@@ -36,7 +36,7 @@
 			void surf(Input IN, inout SurfaceOutputStandard o)
 			{
 				fixed4 c = tex2D(_MainTex, IN.uv_MainTex) * _Color;
-				o.Albedo = c.rgb* lerp(0.5, 1.0, pow((1 - abs(IN.uv_MainTex.x * 2 - 1)) * (1 - abs(IN.uv_MainTex.y * 2 - 1)), 1.0 / _Edge));
+				o.Albedo = c.rgb * lerp(0.5, 1.0, pow((1 - abs(IN.uv_MainTex.x * 2 - 1)) * (1 - abs(IN.uv_MainTex.y * 2 - 1)), 1.0 / _Edge));
 				o.Metallic = _Metallic;
 				o.Smoothness = _Glossiness;
 				o.Occlusion = 1;

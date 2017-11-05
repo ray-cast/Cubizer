@@ -15,7 +15,7 @@ namespace Cubizer
 		[Serializable]
 		public class ChunkGrass : ChunkEntity
 		{
-			public ChunkGrass(Material material)
+			public ChunkGrass(int material)
 				: base("Grass", material)
 			{
 			}
@@ -24,7 +24,7 @@ namespace Cubizer
 		[Serializable]
 		public class ChunkItemTree : ChunkEntity
 		{
-			public ChunkItemTree(Material material)
+			public ChunkItemTree(int material)
 				: base("Tree", material)
 			{
 			}
@@ -33,7 +33,7 @@ namespace Cubizer
 		[Serializable]
 		public class ChunkTreeLeaf : ChunkEntity
 		{
-			public ChunkTreeLeaf(Material material)
+			public ChunkTreeLeaf(int material)
 				: base("TreeLeaf", material)
 			{
 			}
@@ -42,7 +42,7 @@ namespace Cubizer
 		[Serializable]
 		public class ChunkFlower : ChunkEntity
 		{
-			public ChunkFlower(Material material)
+			public ChunkFlower(int material)
 				: base("Flower", material, true, false, true)
 			{
 			}
@@ -56,7 +56,7 @@ namespace Cubizer
 		[Serializable]
 		public class ChunkWeed : ChunkEntity
 		{
-			public ChunkWeed(Material material)
+			public ChunkWeed(int material)
 				: base("Weed", material, true, false, true)
 			{
 			}
@@ -70,7 +70,7 @@ namespace Cubizer
 		[Serializable]
 		public class ChunkGroundFog : ChunkEntity
 		{
-			public ChunkGroundFog(Material material)
+			public ChunkGroundFog(int material)
 				: base("GroundFog", material, true)
 			{
 			}
@@ -79,7 +79,7 @@ namespace Cubizer
 		[Serializable]
 		public class ChunkObsidian : ChunkEntity
 		{
-			public ChunkObsidian(Material material)
+			public ChunkObsidian(int material)
 				: base("Obsidian", material)
 			{
 			}
@@ -88,7 +88,7 @@ namespace Cubizer
 		[Serializable]
 		public class ChunkCloud : ChunkEntity
 		{
-			public ChunkCloud(Material material)
+			public ChunkCloud(int material)
 				: base("Cloud", material, false, false)
 			{
 			}
@@ -97,7 +97,7 @@ namespace Cubizer
 		[Serializable]
 		public class ChunkWater : ChunkEntity
 		{
-			public ChunkWater(Material material)
+			public ChunkWater(int material)
 				: base("WaterHigh", material, true, true)
 			{
 			}
@@ -153,39 +153,40 @@ namespace Cubizer
 				for (int i = 0; i < transform.childCount; i++)
 				{
 					var material = transform.GetChild(i).GetComponent<MeshRenderer>().material;
+					var index = Resources.Add(material);
 
 					switch (transform.GetChild(i).name)
 					{
 						case "Grass":
-							_entityGrass = new ChunkGrass(material);
+							_entityGrass = new ChunkGrass(index);
 							break;
 
 						case "Tree":
-							_entityTree = new ChunkItemTree(material);
+							_entityTree = new ChunkItemTree(index);
 							break;
 
 						case "TreeLeaf":
-							_entityTreeLeaf = new ChunkTreeLeaf(material);
+							_entityTreeLeaf = new ChunkTreeLeaf(index);
 							break;
 
 						case "Flower":
-							_entityFlower = new ChunkFlower(material);
+							_entityFlower = new ChunkFlower(index);
 							break;
 
 						case "Weed":
-							_entityWeed = new ChunkWeed(material);
+							_entityWeed = new ChunkWeed(index);
 							break;
 
 						case "Obsidian":
-							_entityObsidian = new ChunkObsidian(material);
+							_entityObsidian = new ChunkObsidian(index);
 							break;
 
 						case "Water":
-							_entityWater = new ChunkWater(material);
+							_entityWater = new ChunkWater(index);
 							break;
 
 						case "Cloud":
-							_entityCloud = new ChunkCloud(material);
+							_entityCloud = new ChunkCloud(index);
 							break;
 					}
 				}

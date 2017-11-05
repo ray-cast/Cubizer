@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
-using UnityEngine;
-
 namespace Cubizer
 {
+	using Vector3Int = Math.Vector3<int>;
+
 	[Serializable]
 	public class ChunkTreeManager : ChunkMapShort3<ChunkTree>
 	{

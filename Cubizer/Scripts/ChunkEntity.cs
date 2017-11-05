@@ -9,10 +9,6 @@ using Cubizer.Math;
 
 namespace Cubizer
 {
-	using ChunkVector3 = Vector3Int;
-	using ChunkPos = System.Byte;
-	using ChunkPosition = Cubizer.Math.Vector3<System.Byte>;
-
 	[Serializable]
 	public class ChunkEntity : ICloneable
 	{
@@ -21,14 +17,14 @@ namespace Cubizer
 		private bool _transparent;
 
 		private string _name;
-		private Material _material;
+		private int _material;
 
 		public bool is_actor { get { return _actor; } }
 		public bool is_dynamic { get { return _dynamic; } }
 		public bool is_transparent { get { return _transparent; } }
 
 		public string name { set { _name = value; } get { return _name; } }
-		public Material material { set { _material = value; } get { return _material; } }
+		public int material { set { _material = value; } get { return _material; } }
 
 		public ChunkEntity()
 		{
@@ -37,7 +33,7 @@ namespace Cubizer
 			_transparent = false;
 		}
 
-		public ChunkEntity(string name, Material material, bool transparent = false, bool dynamic = false, bool actor = false)
+		public ChunkEntity(string name, int material, bool transparent = false, bool dynamic = false, bool actor = false)
 		{
 			_name = name;
 			_material = material;
@@ -98,7 +94,7 @@ namespace Cubizer
 				{ 0, 2, 1, 2, 3, 1 }
 			};
 
-			public static void CreateCubeMesh(ref ChunkMesh mesh, ref int index, VisiableFaces faces, ChunkPosition translate, float scale)
+			public static void CreateCubeMesh(ref ChunkMesh mesh, ref int index, VisiableFaces faces, Math.Vector3<System.Byte> translate, float scale)
 			{
 				bool[] visiable = new bool[] { faces.left, faces.right, faces.top, faces.bottom, faces.front, faces.back };
 
@@ -124,7 +120,7 @@ namespace Cubizer
 				}
 			}
 
-			public static void CreateCubeMesh(ref ChunkMesh mesh, ref int index, VisiableFaces faces, ChunkPosition translate, uint palette, float scale)
+			public static void CreateCubeMesh(ref ChunkMesh mesh, ref int index, VisiableFaces faces, Math.Vector3<System.Byte> translate, uint palette, float scale)
 			{
 				bool[] visiable = new bool[] { faces.left, faces.right, faces.top, faces.bottom, faces.front, faces.back };
 
@@ -161,7 +157,45 @@ namespace Cubizer
 				}
 			}
 
-			public static void CreateCubeMesh(ref ChunkMesh mesh, ref int index, VisiableFaces faces, ChunkPosition translate, Color32 color, float scale)
+			public static void CreateCubeMesh(ref ChunkMesh mesh, ref int index, VisiableFaces faces, Vector3 translate, uint palette, Math.Vector3<System.Byte> scale)
+			{
+				bool[] visiable = new bool[] { faces.left, faces.right, faces.top, faces.bottom, faces.front, faces.back };
+
+				float s = 1.0f / 16.0f;
+				float a = 0 + 1.0f / 32.0f;
+				float b = s - 1.0f / 32.0f;
+
+				for (int i = 0; i < 6; i++)
+				{
+					if (!visiable[i])
+						continue;
+
+					for (int j = 0; j < 6; j++, index++)
+					{
+						int k = _indices[i, j];
+
+						Vector3 v = _positions[i, k] * 0.5f;
+						v.x *= scale.x;
+						v.y *= scale.y;
+						v.z *= scale.z;
+						v += translate;
+
+						float du = (palette % 16) * s;
+						float dv = (palette / 16) * s;
+
+						Vector2 uv;
+						uv.x = du + (_uvs[i, k].x > 0 ? b : a);
+						uv.y = dv + (_uvs[i, k].y > 0 ? b : a);
+
+						mesh.vertices[index] = v;
+						mesh.normals[index] = _normals[i];
+						mesh.uv[index] = uv;
+						mesh.triangles[index] = index;
+					}
+				}
+			}
+
+			public static void CreateCubeMesh(ref ChunkMesh mesh, ref int index, VisiableFaces faces, Math.Vector3<System.Byte> translate, Color32 color, float scale)
 			{
 				bool[] visiable = new bool[] { faces.left, faces.right, faces.top, faces.bottom, faces.front, faces.back };
 
@@ -223,7 +257,7 @@ namespace Cubizer
 				{0, 3, 1, 0, 2, 3}
 			};
 
-			public static void CreatePlantMesh(ref ChunkMesh mesh, ref int index, VisiableFaces faces, ChunkPosition translate, float scale)
+			public static void CreatePlantMesh(ref ChunkMesh mesh, ref int index, VisiableFaces faces, Math.Vector3<System.Byte> translate, float scale)
 			{
 				for (int i = 0; i < 4; i++)
 				{
@@ -245,22 +279,27 @@ namespace Cubizer
 			}
 		}
 
-		public static void CreateCubeMesh(ref ChunkMesh mesh, ref int index, VisiableFaces faces, ChunkPosition translate, float scale = 1.0f)
+		public static void CreateCubeMesh(ref ChunkMesh mesh, ref int index, VisiableFaces faces, Math.Vector3<System.Byte> translate, float scale = 1.0f)
 		{
 			Cube.CreateCubeMesh(ref mesh, ref index, faces, translate, scale);
 		}
 
-		public static void CreateCubeMesh(ref ChunkMesh mesh, ref int index, VisiableFaces faces, ChunkPosition translate, uint palette, float scale = 1.0f)
+		public static void CreateCubeMesh(ref ChunkMesh mesh, ref int index, VisiableFaces faces, Math.Vector3<System.Byte> translate, uint palette, float scale = 1.0f)
 		{
 			Cube.CreateCubeMesh(ref mesh, ref index, faces, translate, palette, scale);
 		}
 
-		public static void CreateCubeMesh(ref ChunkMesh mesh, ref int index, VisiableFaces faces, ChunkPosition translate, Color32 color, float scale = 1.0f)
+		public static void CreateCubeMesh(ref ChunkMesh mesh, ref int index, VisiableFaces faces, Vector3 translate, uint palette, Math.Vector3<System.Byte> scale)
+		{
+			Cube.CreateCubeMesh(ref mesh, ref index, faces, translate, palette, scale);
+		}
+
+		public static void CreateCubeMesh(ref ChunkMesh mesh, ref int index, VisiableFaces faces, Math.Vector3<System.Byte> translate, Color32 color, float scale = 1.0f)
 		{
 			Cube.CreateCubeMesh(ref mesh, ref index, faces, translate, color, scale);
 		}
 
-		public static void CreatePlantMesh(ref ChunkMesh mesh, ref int index, VisiableFaces faces, ChunkPosition translate, float scale = 1.0f)
+		public static void CreatePlantMesh(ref ChunkMesh mesh, ref int index, VisiableFaces faces, Math.Vector3<System.Byte> translate, float scale = 1.0f)
 		{
 			Plant.CreatePlantMesh(ref mesh, ref index, faces, translate, scale);
 		}
@@ -291,12 +330,12 @@ namespace Cubizer
 			return this.MemberwiseClone();
 		}
 
-		public virtual void OnCreateBlock(ref ChunkMesh mesh, ref int index, VisiableFaces faces, ChunkPosition position, float scale = 1.0f)
+		public virtual void OnCreateBlock(ref ChunkMesh mesh, ref int index, VisiableFaces faces, Math.Vector3<System.Byte> position, float scale = 1.0f)
 		{
 			CreateCubeMesh(ref mesh, ref index, faces, position, scale);
 		}
 
-		public virtual bool OnUpdateChunk(ref ChunkTree map, ChunkPosition translate)
+		public virtual bool OnUpdateChunk(ref ChunkTree map, Math.Vector3<System.Byte> translate)
 		{
 			return false;
 		}

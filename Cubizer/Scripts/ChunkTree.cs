@@ -5,13 +5,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
-using UnityEngine;
-
 namespace Cubizer
 {
-	using ChunkPos = System.Byte;
-	using ChunkByte3 = Cubizer.Math.Vector3<System.Byte>;
-	using ChunkVector3 = Cubizer.Math.Vector3<System.Int16>;
+	using Vector3Int = Math.Vector3<int>;
 
 	[Serializable]
 	public class ChunkTree : ChunkMapByte3<ChunkEntity>
@@ -29,9 +25,9 @@ namespace Cubizer
 		[NonSerialized]
 		public OnDestroyDelegate _onChunkDestroy;
 
-		private ChunkVector3 _position;
+		private Math.Vector3<System.Int16> _position;
 
-		public ChunkVector3 position { set { _position = value; } get { return _position; } }
+		public Math.Vector3<System.Int16> position { set { _position = value; } get { return _position; } }
 
 		public ChunkTreeManager manager
 		{
@@ -64,7 +60,7 @@ namespace Cubizer
 		{
 		}
 
-		public ChunkTree(Vector3Int bound, ChunkVector3 pos, int allocSize = 0xFF)
+		public ChunkTree(Vector3Int bound, Math.Vector3<System.Int16> pos, int allocSize = 0xFF)
 			: base(bound, allocSize)
 		{
 			_position = pos;
@@ -73,7 +69,13 @@ namespace Cubizer
 		public ChunkTree(Vector3Int bound, System.Int16 x, System.Int16 y, System.Int16 z, int allocSize = 0xFF)
 			: base(bound, allocSize)
 		{
-			_position = new ChunkVector3(x, y, z);
+			_position = new Math.Vector3<System.Int16>(x, y, z);
+		}
+
+		public ChunkTree(System.Int32 bound_x, System.Int32 bound_y, System.Int32 bound_z, System.Int16 x, System.Int16 y, System.Int16 z, int allocSize = 0xFF)
+			: base(bound_x, bound_y, bound_z, allocSize)
+		{
+			_position = new Math.Vector3<System.Int16>(x, y, z);
 		}
 
 		public bool GetForWrap(int x, int y, int z, ref ChunkEntity instanceID)
@@ -103,10 +105,10 @@ namespace Cubizer
 
 		public float GetDistance(int x, int y, int z)
 		{
-			x = Mathf.Abs(this._position.x - x);
-			y = Mathf.Abs(this._position.y - y);
-			z = Mathf.Abs(this._position.z - z);
-			return Mathf.Max(Mathf.Max(x, y), z);
+			x = System.Math.Abs(this._position.x - x);
+			y = System.Math.Abs(this._position.y - y);
+			z = System.Math.Abs(this._position.z - z);
+			return System.Math.Max(System.Math.Max(x, y), z);
 		}
 
 		public void OnChunkChange()

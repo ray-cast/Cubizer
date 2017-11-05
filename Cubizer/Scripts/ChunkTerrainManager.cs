@@ -1,40 +1,34 @@
-﻿using System.Collections;
+﻿using System;
+using System.Diagnostics;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 using UnityEngine;
 
 namespace Cubizer
 {
-	public class ChunkTerrainManager : MonoBehaviour
+	[Serializable]
+	public class ChunkTerrain
 	{
-		public int _chunkSize = ChunkSetting.CHUNK_SIZE;
-		public int _chunkNumLimits = 512;
-		public int _chunkRadiusGC = 6;
-
-		public Vector2Int _chunkRadiusGenX = new Vector2Int(-3, 3);
-		public Vector2Int _chunkRadiusGenY = new Vector2Int(-1, 3);
-		public Vector2Int _chunkRadiusGenZ = new Vector2Int(-3, 3);
-
-		public int _terrainSeed = 255;
-		public int _terrainHeightLimitLow = -10;
-		public int _terrainHeightLimitHigh = 20;
-
-		public bool _isHitTestEnable = true;
-		public bool _isHitTestWireframe = true;
-		public bool _isHitTesting = false;
-
-		public int _hitTestDistance = 8;
-
-		public float _repeatRateUpdate = 0.1f;
-
-		public Mesh _drawPickMesh;
-		public Material _drawPickMaterial;
+		public int _chunkSize;
 
 		private ChunkTreeManager _chunkFactory;
-		private GameObject _terrainGenerator;
-		private Vector3 _chunkOffset = (Vector3.one * ChunkSetting.CHUNK_SIZE - Vector3.one) * 0.5f;
 
-		public bool HitTestByRay(Ray ray, ref ChunkTree chunk, out byte outX, out byte outY, out byte outZ, ref ChunkTree lastChunk, out byte lastX, out byte lastY, out byte lastZ)
+		public ChunkTerrain(int chunkSize)
+		{
+			UnityEngine.Debug.Assert(chunkSize > 0);
+
+			_chunkSize = chunkSize;
+			_chunkFactory = new ChunkTreeManager(new Math.Vector3<int>(_chunkSize, _chunkSize, _chunkSize));
+		}
+
+		~ChunkTerrain()
+		{
+		}
+
+		public bool HitTestByRay(Ray ray, int hitDistance, ref ChunkTree chunk, out byte outX, out byte outY, out byte outZ, ref ChunkTree lastChunk, out byte lastX, out byte lastY, out byte lastZ)
 		{
 			var chunkX = ChunkUtility.CalcChunkPos(ray.origin.x, _chunkSize);
 			var chunkY = ChunkUtility.CalcChunkPos(ray.origin.y, _chunkSize);
@@ -53,7 +47,7 @@ namespace Cubizer
 
 			ChunkEntity instanceID = null;
 
-			for (int i = 0; i < _hitTestDistance && instanceID == null; i++)
+			for (int i = 0; i < hitDistance && instanceID == null; i++)
 			{
 				int ix = Mathf.RoundToInt(origin.x);
 				int iy = Mathf.RoundToInt(origin.y);
@@ -93,41 +87,41 @@ namespace Cubizer
 			return instanceID != null;
 		}
 
-		public bool HitTestByRay(Ray ray, ref ChunkTree chunk, out byte outX, out byte outY, out byte outZ)
+		public bool HitTestByRay(Ray ray, int hitDistance, ref ChunkTree chunk, out byte outX, out byte outY, out byte outZ)
 		{
 			byte lx, ly, lz;
 			ChunkTree chunkLast = null;
 
-			return this.HitTestByRay(ray, ref chunk, out outX, out outY, out outZ, ref chunkLast, out lx, out ly, out lz);
+			return this.HitTestByRay(ray, hitDistance, ref chunk, out outX, out outY, out outZ, ref chunkLast, out lx, out ly, out lz);
 		}
 
-		public bool HitTestByScreenPos(Vector3 pos, ref ChunkTree chunk, out byte outX, out byte outY, out byte outZ, ref ChunkTree lastChunk, out byte lastX, out byte lastY, out byte lastZ)
+		public bool HitTestByScreenPos(Vector3 pos, int hitDistance, ref ChunkTree chunk, out byte outX, out byte outY, out byte outZ, ref ChunkTree lastChunk, out byte lastX, out byte lastY, out byte lastZ)
 		{
 			var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			ray.origin = Camera.main.transform.position;
-			return this.HitTestByRay(ray, ref chunk, out outX, out outY, out outZ, ref lastChunk, out lastX, out lastY, out lastZ);
+			return this.HitTestByRay(ray, hitDistance, ref chunk, out outX, out outY, out outZ, ref lastChunk, out lastX, out lastY, out lastZ);
 		}
 
-		public bool HitTestByScreenPos(Vector3 pos, ref ChunkTree chunk, out byte outX, out byte outY, out byte outZ)
+		public bool HitTestByScreenPos(Vector3 pos, int hitDistance, ref ChunkTree chunk, out byte outX, out byte outY, out byte outZ)
 		{
 			var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			ray.origin = Camera.main.transform.position;
-			return this.HitTestByRay(ray, ref chunk, out outX, out outY, out outZ);
+			return this.HitTestByRay(ray, hitDistance, ref chunk, out outX, out outY, out outZ);
 		}
 
-		public bool AddEnitiyByRay(Ray ray, string className)
+		public bool AddEnitiyByRay(Ray ray, int hitDistance, string className)
 		{
 			byte x, y, z, lx, ly, lz;
 			ChunkTree chunkNow = null;
 			ChunkTree chunkLast = null;
 
-			if (HitTestByRay(ray, ref chunkNow, out x, out y, out z, ref chunkLast, out lx, out ly, out lz))
+			if (HitTestByRay(ray, hitDistance, ref chunkNow, out x, out y, out z, ref chunkLast, out lx, out ly, out lz))
 			{
 				var grass = GameObject.Find("Grass");
 				if (grass != null)
 				{
 					var chunk = chunkLast != null ? chunkLast : chunkNow;
-					chunk.Set(lx, ly, lz, new Cubizer.ChunkEntity(grass.name, grass.GetComponent<MeshRenderer>().material, false, false, false));
+					chunk.Set(lx, ly, lz, new Cubizer.ChunkEntity(grass.name, grass.GetComponent<MeshRenderer>().material.GetHashCode(), false, false, false));
 					chunk.OnChunkChange();
 				}
 
@@ -137,19 +131,19 @@ namespace Cubizer
 			return false;
 		}
 
-		public bool AddEnitiyByScreenPos(Vector3 pos, string className)
+		public bool AddEnitiyByScreenPos(Vector3 pos, int hitDistance, string className)
 		{
 			var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			ray.origin = Camera.main.transform.position;
-			return this.AddEnitiyByRay(ray, className);
+			return this.AddEnitiyByRay(ray, hitDistance, className);
 		}
 
-		public bool RemoveEnitiyByRay(Ray ray)
+		public bool RemoveEnitiyByRay(Ray ray, int hitDistance)
 		{
 			byte x, y, z;
 			ChunkTree chunk = null;
 
-			if (HitTestByRay(ray, ref chunk, out x, out y, out z))
+			if (HitTestByRay(ray, hitDistance, ref chunk, out x, out y, out z))
 			{
 				chunk.Set(x, y, z, null);
 				chunk.OnChunkChange();
@@ -160,14 +154,14 @@ namespace Cubizer
 			return false;
 		}
 
-		public bool RemoveEnitiyByScreenPos(Vector3 pos)
+		public bool RemoveEnitiyByScreenPos(Vector3 pos, int hitDistance)
 		{
 			var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			ray.origin = Camera.main.transform.position;
-			return this.RemoveEnitiyByRay(ray);
+			return this.RemoveEnitiyByRay(ray, hitDistance);
 		}
 
-		public bool GetEmptryChunkPos(Vector3 translate, Plane[] planes, out Vector3Int position)
+		public bool GetEmptryChunkPos(Vector3 translate, Plane[] planes, Vector2Int[] radius, out Vector3Int position)
 		{
 			int x = ChunkUtility.CalcChunkPos(translate.x, _chunkSize);
 			int y = ChunkUtility.CalcChunkPos(translate.y, _chunkSize);
@@ -178,11 +172,13 @@ namespace Cubizer
 
 			int start = bestScore;
 
-			for (int ix = _chunkRadiusGenX.x; ix <= _chunkRadiusGenX.y; ix++)
+			Vector3 _chunkOffset = (Vector3.one * _chunkSize - Vector3.one) * 0.5f;
+
+			for (int ix = radius[0].x; ix <= radius[0].y; ix++)
 			{
-				for (int iy = _chunkRadiusGenY.x; iy <= _chunkRadiusGenY.y; iy++)
+				for (int iy = radius[1].x; iy <= radius[1].y; iy++)
 				{
-					for (int iz = _chunkRadiusGenZ.x; iz <= _chunkRadiusGenZ.y; iz++)
+					for (int iz = radius[2].x; iz <= radius[2].y; iz++)
 					{
 						int dx = x + ix;
 						int dy = y + iy;
@@ -214,7 +210,38 @@ namespace Cubizer
 			return start != bestScore;
 		}
 
-		private void UpdateChunkForDestroy()
+		public static bool Save(string path, ChunkTerrainManager _self)
+		{
+			using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write))
+			{
+				var serializer = new BinaryFormatter();
+				serializer.Serialize(stream, _self);
+
+				stream.Close();
+				return true;
+			}
+		}
+
+		public static ChunkTerrainManager Load(string path)
+		{
+			using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
+			{
+				var serializer = new BinaryFormatter();
+				return serializer.Deserialize(stream) as ChunkTerrainManager;
+			}
+		}
+
+		public void DestroyChunks(Transform transform)
+		{
+			for (int i = 0; i < transform.childCount; i++)
+			{
+				var transformChild = transform.GetChild(i);
+				transformChild.parent = null;
+				GameObject.Destroy(transformChild.gameObject);
+			}
+		}
+
+		public void UpdateChunkForDestroy(Transform transform, float maxDistance)
 		{
 			var length = transform.childCount;
 
@@ -222,36 +249,36 @@ namespace Cubizer
 			{
 				var transformChild = transform.GetChild(i);
 				var distance = Vector3.Distance(transformChild.position, Camera.main.transform.position) / _chunkSize;
-				if (distance > _chunkRadiusGC)
+				if (distance > maxDistance)
 				{
 					transformChild.parent = null;
-					Destroy(transformChild.gameObject);
+					GameObject.Destroy(transformChild.gameObject);
 					break;
 				}
 			}
 		}
 
-		private void UpdateChunkForCreate()
+		public void UpdateChunkForCreate(Transform transform, GameObject terrainGenerator, Vector2Int[] radius, float maxChunkCount, int _terrainHeightLimitLow, int _terrainHeightLimitHigh)
 		{
-			if (_chunkFactory.Count > _chunkNumLimits)
+			if (_chunkFactory.Count > maxChunkCount)
 				return;
 
 			var cameraTranslate = Camera.main.transform.position;
 			var cameraPlanes = GeometryUtility.CalculateFrustumPlanes(Camera.main);
 
 			Vector3Int position;
-			if (!GetEmptryChunkPos(cameraTranslate, cameraPlanes, out position))
+			if (!GetEmptryChunkPos(cameraTranslate, cameraPlanes, radius, out position))
 				return;
 
 			if (position.y < _terrainHeightLimitLow || position.y > _terrainHeightLimitHigh)
 				return;
 
-			if (_terrainGenerator)
+			if (terrainGenerator)
 			{
-				var map = new ChunkTree(new Vector3Int(_chunkSize, _chunkSize, _chunkSize), (short)position.x, (short)position.y, (short)position.z, 0);
+				var map = new ChunkTree(_chunkSize, _chunkSize, _chunkSize, (short)position.x, (short)position.y, (short)position.z, 0);
 				map.manager = _chunkFactory;
 
-				var _terrainTransform = _terrainGenerator.transform;
+				var _terrainTransform = terrainGenerator.transform;
 				var length = _terrainTransform.childCount;
 
 				for (int i = 0; i < length; i++)
@@ -267,67 +294,34 @@ namespace Cubizer
 				gameObject.AddComponent<ChunkObjectManager>().map = map;
 			}
 		}
+	}
 
-		private IEnumerator UpdateChunkWithCoroutine()
-		{
-			yield return new WaitForSeconds(_repeatRateUpdate);
+	public class ChunkTerrainManager : MonoBehaviour
+	{
+		public int _chunkRadiusGC = 6;
+		public int _chunkNumLimits = 512;
 
-			this.UpdateChunkForDestroy();
-			this.UpdateChunkForCreate();
+		public Vector2Int _chunkRadiusGenX = new Vector2Int(-3, 3);
+		public Vector2Int _chunkRadiusGenY = new Vector2Int(-1, 3);
+		public Vector2Int _chunkRadiusGenZ = new Vector2Int(-3, 3);
 
-			StartCoroutine("UpdateChunkWithCoroutine");
-		}
+		public bool _isHitTestEnable = true;
+		public bool _isHitTestWireframe = true;
+		public bool _isHitTesting = false;
 
-		private IEnumerator AddEnitiyByScreenPosWithCoroutine()
-		{
-			if (_isHitTesting)
-				yield break;
+		public int _terrainSeed = 255;
+		public int _terrainHeightLimitLow = -10;
+		public int _terrainHeightLimitHigh = 20;
 
-			_isHitTesting = true;
+		public int _hitTestDistance = 8;
 
-			this.AddEnitiyByScreenPos(Input.mousePosition, "ChunkGrass");
+		public float _repeatRateUpdate = 0.1f;
 
-			yield return new WaitWhile(() => Input.GetMouseButton(1));
+		public ChunkTerrain _terrain;
+		private GameObject _terrainGenerator;
 
-			_isHitTesting = false;
-		}
-
-		private IEnumerator RemoveEnitiyByScreenPosWithCoroutine()
-		{
-			if (_isHitTesting)
-				yield break;
-
-			_isHitTesting = true;
-
-			this.RemoveEnitiyByScreenPos(Input.mousePosition);
-
-			yield return new WaitWhile(() => Input.GetMouseButton(0));
-
-			_isHitTesting = false;
-		}
-
-		private void UpdateChunkForHit()
-		{
-			if (_isHitTestEnable)
-			{
-				if (Input.GetMouseButton(0))
-					StartCoroutine("RemoveEnitiyByScreenPosWithCoroutine");
-				else if (Input.GetMouseButton(1))
-					StartCoroutine("AddEnitiyByScreenPosWithCoroutine");
-			}
-
-			if (_isHitTestWireframe)
-			{
-				byte x, y, z;
-				ChunkTree chunk = null;
-
-				if (HitTestByScreenPos(Input.mousePosition, ref chunk, out x, out y, out z))
-				{
-					var position = new Vector3(chunk.position.x, chunk.position.y, chunk.position.z) * _chunkSize + new Vector3(x, y, z);
-					Graphics.DrawMesh(_drawPickMesh, position, Quaternion.identity, _drawPickMaterial, gameObject.layer, Camera.main);
-				}
-			}
-		}
+		public Mesh _drawPickMesh;
+		public Material _drawPickMaterial;
 
 		private void OnEnable()
 		{
@@ -347,17 +341,19 @@ namespace Cubizer
 		private void Start()
 		{
 			if (_drawPickMesh == null)
-				Debug.LogError("Please assign a material on the inspector");
+				UnityEngine.Debug.LogError("Please assign a material on the inspector");
 
 			if (_drawPickMaterial == null)
-				Debug.LogError("Please assign a mesh on the inspector");
+				UnityEngine.Debug.LogError("Please assign a mesh on the inspector");
 
-			_chunkFactory = new ChunkTreeManager(new Vector3Int(_chunkSize, _chunkSize, _chunkSize));
+			_terrain = new ChunkTerrain(ChunkSetting.CHUNK_SIZE);
 			_terrainGenerator = GameObject.Find("TerrainGenerator");
 		}
 
 		private void Reset()
 		{
+			_isHitTesting = false;
+
 			StopCoroutine("UpdateChunkWithCoroutine");
 			StopCoroutine("AddEnitiyByScreenPosWithCoroutine");
 			StopCoroutine("RemoveEnitiyByScreenPosWithCoroutine");
@@ -365,7 +361,70 @@ namespace Cubizer
 
 		private void Update()
 		{
-			this.UpdateChunkForHit();
+			this.UpdateChunkForHit(_drawPickMesh, _drawPickMaterial);
+		}
+
+		private void UpdateChunkForHit(Mesh mesh, Material material)
+		{
+			if (_isHitTestEnable)
+			{
+				if (Input.GetMouseButton(0))
+					StartCoroutine("RemoveEnitiyByScreenPosWithCoroutine");
+				else if (Input.GetMouseButton(1))
+					StartCoroutine("AddEnitiyByScreenPosWithCoroutine");
+			}
+
+			if (_isHitTestWireframe)
+			{
+				byte x, y, z;
+				ChunkTree chunk = null;
+
+				if (_terrain.HitTestByScreenPos(Input.mousePosition, _hitTestDistance, ref chunk, out x, out y, out z))
+				{
+					var position = new Vector3(chunk.position.x, chunk.position.y, chunk.position.z) * ChunkSetting.CHUNK_SIZE + new Vector3(x, y, z);
+					Graphics.DrawMesh(mesh, position, Quaternion.identity, material, gameObject.layer, Camera.main);
+				}
+			}
+		}
+
+		private IEnumerator UpdateChunkWithCoroutine()
+		{
+			yield return new WaitForSeconds(_repeatRateUpdate);
+
+			Vector2Int[] radius = new Vector2Int[] { _chunkRadiusGenX, _chunkRadiusGenY, _chunkRadiusGenZ };
+
+			_terrain.UpdateChunkForDestroy(transform, _chunkRadiusGC);
+			_terrain.UpdateChunkForCreate(transform, _terrainGenerator, radius, _chunkNumLimits, _terrainHeightLimitLow, _terrainHeightLimitHigh);
+
+			StartCoroutine("UpdateChunkWithCoroutine");
+		}
+
+		private IEnumerator AddEnitiyByScreenPosWithCoroutine()
+		{
+			if (_isHitTesting)
+				yield break;
+
+			_isHitTesting = true;
+
+			_terrain.AddEnitiyByScreenPos(Input.mousePosition, _hitTestDistance, "ChunkGrass");
+
+			yield return new WaitWhile(() => Input.GetMouseButton(1));
+
+			_isHitTesting = false;
+		}
+
+		private IEnumerator RemoveEnitiyByScreenPosWithCoroutine()
+		{
+			if (_isHitTesting)
+				yield break;
+
+			_isHitTesting = true;
+
+			_terrain.RemoveEnitiyByScreenPos(Input.mousePosition, _hitTestDistance);
+
+			yield return new WaitWhile(() => Input.GetMouseButton(0));
+
+			_isHitTesting = false;
 		}
 	}
 }

@@ -25,7 +25,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &4638289958504470
 Transform:
@@ -51,19 +51,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 888f835a1285d6746a8d82f23729938f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _chunkSize: 24
-  _chunkNumLimits: 512
   _chunkRadiusGC: 6
+  _chunkNumLimits: 512
   _chunkRadiusGenX: {x: -3, y: 3}
   _chunkRadiusGenY: {x: -1, y: 3}
   _chunkRadiusGenZ: {x: -3, y: 3}
-  _terrainSeed: 255
-  _terrainHeightLimitLow: -10
-  _terrainHeightLimitHigh: 100
   _isHitTestEnable: 1
   _isHitTestWireframe: 1
   _isHitTesting: 0
+  _terrainSeed: 255
+  _terrainHeightLimitLow: -10
+  _terrainHeightLimitHigh: 100
   _hitTestDistance: 6
   _repeatRateUpdate: 0.1
+  _terrain:
+    _chunkSize: 0
   _drawPickMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
   _drawPickMaterial: {fileID: 2100000, guid: ca8651ba28620ec49a6efa144f310bf1, type: 2}

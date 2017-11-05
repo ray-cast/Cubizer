@@ -5,9 +5,8 @@ using UnityEngine;
 
 namespace Cubizer
 {
-	using ChunkVector3 = Vector3Int;
 	using ChunkPos = System.Byte;
-	using ChunkPosition = Cubizer.Math.Vector3<System.Byte>;
+	using ChunkPosition = Math.Vector3<System.Byte>;
 
 	public struct ChunkMesh
 	{
@@ -69,7 +68,7 @@ namespace Cubizer
 			}
 		}
 
-		public bool GetVisiableFaces(ChunkNode<ChunkPosition, ChunkEntity> it, Vector3Int size, ref VisiableFaces faces)
+		public bool GetVisiableFaces(ChunkNode<ChunkPosition, ChunkEntity> it, Math.Vector3<int> size, ref VisiableFaces faces)
 		{
 			ChunkEntity[] instanceID = new ChunkEntity[6] { null, null, null, null, null, null };
 
@@ -142,7 +141,7 @@ namespace Cubizer
 			return faces.left | faces.right | faces.bottom | faces.top | faces.front | faces.back;
 		}
 
-		public int CalcFaceCountAsAllocate(Vector3Int chunkSize, ref Dictionary<string, int> entities)
+		public int CalcFaceCountAsAllocate(Math.Vector3<int> chunkSize, ref Dictionary<string, int> entities)
 		{
 			var enumerator = _chunkMap.GetEnumerator();
 			if (enumerator == null)
@@ -212,7 +211,7 @@ namespace Cubizer
 
 				bool isTransparent = false;
 
-				Material material = null;
+				int material = 0;
 
 				foreach (var it in _chunkMap.GetEnumerator())
 				{
@@ -223,7 +222,7 @@ namespace Cubizer
 						it.element.OnCreateBlock(ref data, ref index, faces, it.position);
 
 					if (it.element.is_dynamic)
-						_chunkEntitiesDynamic.Add(new KeyValuePair<Cubizer.Math.Vector3<ChunkPos>, ChunkEntity>(it.position, it.element));
+						_chunkEntitiesDynamic.Add(new KeyValuePair<Math.Vector3<ChunkPos>, ChunkEntity>(it.position, it.element));
 
 					material = it.element.material;
 
@@ -242,7 +241,7 @@ namespace Cubizer
 					gameObject.isStatic = true;
 					gameObject.name = entity.Key;
 					gameObject.AddComponent<MeshFilter>().mesh = mesh;
-					gameObject.AddComponent<MeshRenderer>().material = material;
+					gameObject.AddComponent<MeshRenderer>().material = (Material)Resources.Load(material);
 					gameObject.transform.parent = this.transform;
 					gameObject.transform.position = this.transform.position;
 
@@ -269,11 +268,6 @@ namespace Cubizer
 				StartCoroutine("OnUpdateEntities");
 		}
 
-		private void OnPreCull()
-		{
-			Debug.Log("1");
-		}
-
 		private void Awake()
 		{
 			_chunkEntitiesDynamic = new List<KeyValuePair<ChunkPosition, ChunkEntity>>();
@@ -291,8 +285,15 @@ namespace Cubizer
 
 			if (map.position.y == 0)
 			{
+				var bound = map.manager.bound;
+
+				Vector3 pos = transform.position;
+				pos.x += (bound.x - 1) * 0.5f;
+				pos.y += (bound.y - 1) * 0.5f;
+				pos.z += (bound.z - 1) * 0.5f;
+
 				Gizmos.color = Color.black;
-				Gizmos.DrawWireCube(transform.position + (map.manager.bound - Vector3.one) * 0.5f, map.manager.bound);
+				Gizmos.DrawWireCube(pos, new Vector3(bound.x, bound.y, bound.z));
 			}
 		}
 	}

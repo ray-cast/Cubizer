@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
-using UnityEngine;
-
 namespace Cubizer
 {
+	using Vector3Int = Math.Vector3<int>;
+
 	[Serializable]
 	public class ChunkNode<_Tx, _Ty>
 		where _Tx : struct
@@ -133,11 +133,22 @@ namespace Cubizer
 			this.Create(allocSize);
 		}
 
-		public void Create(int allocSize)
+		public ChunkMapByte3(int bound_x, int bound_y, int bound_z, int allocSize)
 		{
 			_count = 0;
-			_allocSize = allocSize;
-			_data = new ChunkNode<Math.Vector3<System.Byte>, _Element>[_allocSize + 1];
+			_bound = new Vector3Int(bound_x, bound_y, bound_z);
+			_allocSize = 0;
+			this.Create(allocSize);
+		}
+
+		public void Create(int allocSize)
+		{
+			int usage = 1;
+			while (usage < allocSize) usage = usage << 1 | 1;
+
+			_count = 0;
+			_allocSize = usage;
+			_data = new ChunkNode<Math.Vector3<System.Byte>, _Element>[usage + 1];
 		}
 
 		public bool Set(System.Byte x, System.Byte y, System.Byte z, _Element value, bool replace = true)
@@ -418,23 +429,27 @@ namespace Cubizer
 			return new ChunkNodeEnumerable<Math.Vector3<System.Int16>, _Element>(_data);
 		}
 
-		public FileStream Save(string path)
+		public static bool Save(string path, ChunkMapShort3<_Element> _self)
 		{
-			var stream = new FileStream(path, FileMode.Create, FileAccess.Write);
-			var serializer = new BinaryFormatter();
+			using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write))
+			{
+				var serializer = new BinaryFormatter();
+				serializer.Serialize(stream, _self);
 
-			serializer.Serialize(stream, this);
-			stream.Close();
+				stream.Close();
 
-			return stream;
+				return true;
+			}
 		}
 
-		public ChunkMapShort3<_Element> Load(string path)
+		public static ChunkMapShort3<_Element> Load(string path)
 		{
-			var serializer = new BinaryFormatter();
-			var loadFile = new FileStream(path, FileMode.Open, FileAccess.Read);
+			using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
+			{
+				var serializer = new BinaryFormatter();
 
-			return serializer.Deserialize(loadFile) as ChunkMapShort3<_Element>;
+				return serializer.Deserialize(stream) as ChunkMapShort3<_Element>;
+			}
 		}
 
 		protected bool Grow(ChunkNode<Math.Vector3<System.Int16>, _Element> data)
