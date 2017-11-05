@@ -8,107 +8,78 @@ namespace Cubizer
 {
 	namespace Model
 	{
-		public class VOXPolygonCruncher
+		using VOXMaterial = System.Int32;
+
+		public struct VOXVisiableFaces
 		{
-			public static Vector3[,] _positions = new Vector3[6, 4]
+			public bool left;
+			public bool right;
+			public bool bottom;
+			public bool top;
+			public bool back;
+			public bool front;
+
+			public VOXVisiableFaces(bool _left, bool _right, bool _bottom, bool _top, bool _back, bool _front)
 			{
-				{ new Vector3(-1, -1, -1), new Vector3(-1, -1, +1), new Vector3(-1, +1, -1), new Vector3(-1, +1, +1) },
-				{ new Vector3(+1, -1, -1), new Vector3(+1, -1, +1), new Vector3(+1, +1, -1), new Vector3(+1, +1, +1) },
-				{ new Vector3(-1, +1, -1), new Vector3(-1, +1, +1), new Vector3(+1, +1, -1), new Vector3(+1, +1, +1) },
-				{ new Vector3(-1, -1, -1), new Vector3(-1, -1, +1), new Vector3(+1, -1, -1), new Vector3(+1, -1, +1) },
-				{ new Vector3(-1, -1, -1), new Vector3(-1, +1, -1), new Vector3(+1, -1, -1), new Vector3(+1, +1, -1) },
-				{ new Vector3(-1, -1, +1), new Vector3(-1, +1, +1), new Vector3(+1, -1, +1), new Vector3(+1, +1, +1) }
-			};
+				left = _left;
+				right = _right;
+				bottom = _bottom;
+				top = _top;
+				back = _back;
+				front = _front;
+			}
+		}
 
-			public static Vector3[] _normals = new Vector3[6]
+		public class VoxelCruncher
+		{
+			public byte begin_x;
+			public byte begin_y;
+			public byte begin_z;
+
+			public byte end_x;
+			public byte end_y;
+			public byte end_z;
+
+			public VOXMaterial material;
+			public VOXVisiableFaces faces;
+
+			public VoxelCruncher(byte begin_x, byte end_x, byte begin_y, byte end_y, byte begin_z, byte end_z, VOXMaterial _material)
 			{
-				new Vector3(-1, 0, 0),
-				new Vector3(+1, 0, 0),
-				new Vector3(0, +1, 0),
-				new Vector3(0, -1, 0),
-				new Vector3(0, 0, -1),
-				new Vector3(0, 0, +1)
-			};
+				this.begin_x = begin_x;
+				this.begin_y = begin_y;
+				this.begin_z = begin_z;
+				this.end_x = end_x;
+				this.end_y = end_y;
+				this.end_z = end_z;
 
-			public static Vector2[,] _uvs = new Vector2[6, 4]
-			{
-				{ new Vector2(0, 0), new Vector2(1, 0), new Vector2(0, 1), new Vector2(1, 1) },
-				{ new Vector2(1, 0), new Vector2(0, 0), new Vector2(1, 1), new Vector2(0, 1) },
-				{ new Vector2(0, 1), new Vector2(0, 0), new Vector2(1, 1), new Vector2(1, 0) },
-				{ new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 0), new Vector2(1, 1) },
-				{ new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 0), new Vector2(1, 1) },
-				{ new Vector2(1, 0), new Vector2(1, 1), new Vector2(0, 0), new Vector2(0, 1) }
-			};
+				material = _material;
 
-			public static int[,] _indices = new int[6, 6]
-			{
-				{ 0, 3, 2, 0, 1, 3 },
-				{ 0, 3, 1, 0, 2, 3 },
-				{ 0, 3, 2, 0, 1, 3 },
-				{ 0, 3, 1, 0, 2, 3 },
-				{ 0, 3, 2, 0, 1, 3 },
-				{ 0, 3, 1, 0, 2, 3 }
-			};
-
-			public static float[,] _flipped = new float[6, 6]
-			{
-				{ 0, 1, 2, 1, 3, 2 },
-				{ 0, 2, 1, 2, 3, 1 },
-				{ 0, 1, 2, 1, 3, 2 },
-				{ 0, 2, 1, 2, 3, 1 },
-				{ 0, 1, 2, 1, 3, 2 },
-				{ 0, 2, 1, 2, 3, 1 }
-			};
-
-			public class VoxelCruncher
-			{
-				public byte begin_x;
-				public byte begin_y;
-				public byte begin_z;
-
-				public byte end_x;
-				public byte end_y;
-				public byte end_z;
-
-				public int material;
-
-				public VisiableFaces faces;
-
-				public VoxelCruncher(byte begin_x, byte end_x, byte begin_y, byte end_y, byte begin_z, byte end_z, int _material)
-				{
-					this.begin_x = begin_x;
-					this.begin_y = begin_y;
-					this.begin_z = begin_z;
-					this.end_x = end_x;
-					this.end_y = end_y;
-					this.end_z = end_z;
-
-					material = _material;
-
-					faces.left = true;
-					faces.right = true;
-					faces.top = true;
-					faces.bottom = true;
-					faces.front = true;
-					faces.back = true;
-				}
-
-				public VoxelCruncher(byte begin_x, byte end_x, byte begin_y, byte end_y, byte begin_z, byte end_z, VisiableFaces _faces, int _material)
-				{
-					this.begin_x = begin_x;
-					this.begin_y = begin_y;
-					this.begin_z = begin_z;
-
-					this.end_x = end_x;
-					this.end_y = end_y;
-					this.end_z = end_z;
-
-					material = _material;
-					faces = _faces;
-				}
+				faces.left = true;
+				faces.right = true;
+				faces.top = true;
+				faces.bottom = true;
+				faces.front = true;
+				faces.back = true;
 			}
 
-			public static List<VoxelCruncher> CalcVoxelCruncher(ChunkMapByte3<ChunkEntity> map)
+			public VoxelCruncher(byte begin_x, byte end_x, byte begin_y, byte end_y, byte begin_z, byte end_z, VOXVisiableFaces _faces, VOXMaterial _material)
+			{
+				this.begin_x = begin_x;
+				this.begin_y = begin_y;
+				this.begin_z = begin_z;
+
+				this.end_x = end_x;
+				this.end_y = end_y;
+				this.end_z = end_z;
+
+				material = _material;
+				faces = _faces;
+			}
+		}
+
+		public class VOXPolygonCruncher
+		{
+			public static VoxelModel CalcVoxelCruncher(VOXHashMap map)
 			{
 				var listX = new List<VoxelCruncher>[map.bound.z, map.bound.y];
 
@@ -118,13 +89,13 @@ namespace Cubizer
 					{
 						for (int x = 0; x < map.bound.x; x++)
 						{
-							ChunkEntity entity = null;
-							ChunkEntity entityLast = null;
+							VOXMaterial entity = VOXMaterial.MaxValue;
+							VOXMaterial entityLast = VOXMaterial.MaxValue;
 
 							if (!map.Get((byte)x, (byte)y, (byte)z, ref entity))
 								continue;
 
-							if (entity == null)
+							if (entity == VOXMaterial.MaxValue)
 								continue;
 
 							entityLast = entity;
@@ -136,7 +107,7 @@ namespace Cubizer
 								if (!map.Get((byte)xlast, (byte)y, (byte)z, ref entity))
 									break;
 
-								if (entity.material != entityLast.material)
+								if (entity != entityLast)
 									break;
 
 								x_end = xlast;
@@ -146,7 +117,7 @@ namespace Cubizer
 							if (listX[z, y] == null)
 								listX[z, y] = new List<VoxelCruncher>();
 
-							listX[z, y].Add(new VoxelCruncher((byte)x, (byte)(x_end), (byte)y, (byte)(y), (byte)z, (byte)(z), entityLast.material));
+							listX[z, y].Add(new VoxelCruncher((byte)x, (byte)(x_end), (byte)y, (byte)(y), (byte)z, (byte)(z), entityLast));
 
 							x = x_end;
 						}
@@ -239,7 +210,7 @@ namespace Cubizer
 					}
 				}
 
-				List<VoxelCruncher> list = new List<VoxelCruncher>();
+				int numbers = 0;
 				for (byte z = 0; z < map.bound.z; z++)
 				{
 					for (byte y = 0; y < map.bound.y; y++)
@@ -247,12 +218,27 @@ namespace Cubizer
 						if (listX[z, y] == null)
 							continue;
 
-						foreach (var cur in listX[z, y])
-							list.Add(cur);
+						foreach (var it in listX[z, y])
+							++numbers;
 					}
 				}
 
-				foreach (var it in list)
+				var array = new VoxelCruncher[numbers];
+
+				numbers = 0;
+				for (byte z = 0; z < map.bound.z; z++)
+				{
+					for (byte y = 0; y < map.bound.y; y++)
+					{
+						if (listX[z, y] == null)
+							continue;
+
+						foreach (var it in listX[z, y])
+							array[numbers++] = it;
+					}
+				}
+
+				foreach (var it in array)
 				{
 					if (it.begin_x == it.end_x &&
 						it.begin_y == it.end_y &&
@@ -262,7 +248,7 @@ namespace Cubizer
 						var y = it.begin_y;
 						var z = it.begin_z;
 
-						ChunkEntity[] instanceID = new ChunkEntity[6] { null, null, null, null, null, null };
+						VOXMaterial[] instanceID = new VOXMaterial[6] { VOXMaterial.MaxValue, VOXMaterial.MaxValue, VOXMaterial.MaxValue, VOXMaterial.MaxValue, VOXMaterial.MaxValue, VOXMaterial.MaxValue };
 
 						if (x >= 1) map.Get((byte)(x - 1), y, z, ref instanceID[0]);
 						if (y >= 1) map.Get(x, (byte)(y - 1), z, ref instanceID[2]);
@@ -271,12 +257,12 @@ namespace Cubizer
 						if (y <= (map.bound.y - 1)) map.Get(x, (byte)(y + 1), z, ref instanceID[3]);
 						if (z <= (map.bound.z - 1)) map.Get(x, y, (byte)(z + 1), ref instanceID[5]);
 
-						bool f1 = (instanceID[0] == null) ? true : false;
-						bool f2 = (instanceID[1] == null) ? true : false;
-						bool f3 = (instanceID[2] == null) ? true : false;
-						bool f4 = (instanceID[3] == null) ? true : false;
-						bool f5 = (instanceID[4] == null) ? true : false;
-						bool f6 = (instanceID[5] == null) ? true : false;
+						bool f1 = (instanceID[0] == VOXMaterial.MaxValue) ? true : false;
+						bool f2 = (instanceID[1] == VOXMaterial.MaxValue) ? true : false;
+						bool f3 = (instanceID[2] == VOXMaterial.MaxValue) ? true : false;
+						bool f4 = (instanceID[3] == VOXMaterial.MaxValue) ? true : false;
+						bool f5 = (instanceID[4] == VOXMaterial.MaxValue) ? true : false;
+						bool f6 = (instanceID[5] == VOXMaterial.MaxValue) ? true : false;
 
 						it.faces.left = f1;
 						it.faces.right = f2;
@@ -287,54 +273,42 @@ namespace Cubizer
 					}
 					else if (it.begin_y == it.end_y && it.begin_z == it.end_z)
 					{
-						var x = it.begin_x;
-						var y = it.begin_y;
-						var z = it.begin_z;
+						VOXMaterial[] instanceID = new int[2] { VOXMaterial.MaxValue, VOXMaterial.MaxValue };
 
-						ChunkEntity[] instanceID = new ChunkEntity[2] { null, null };
+						if (it.begin_x >= 1) map.Get((byte)(it.begin_x - 1), it.begin_y, it.begin_z, ref instanceID[0]);
+						if (it.end_x <= (map.bound.x - 1)) map.Get((byte)(it.end_x + 1), it.begin_y, it.begin_z, ref instanceID[1]);
 
-						if (it.begin_x >= 1) map.Get((byte)(it.begin_x - 1), y, z, ref instanceID[0]);
-						if (it.end_x <= (map.bound.x - 1)) map.Get((byte)(it.end_x + 1), y, z, ref instanceID[1]);
-
-						it.faces.left = (instanceID[0] == null) ? true : false;
-						it.faces.right = (instanceID[1] == null) ? true : false;
+						it.faces.left = (instanceID[0] == VOXMaterial.MaxValue) ? true : false;
+						it.faces.right = (instanceID[1] == VOXMaterial.MaxValue) ? true : false;
 					}
 					else if (it.begin_x == it.end_x && it.begin_z == it.end_z)
 					{
-						var x = it.begin_x;
-						var y = it.begin_y;
-						var z = it.begin_z;
+						VOXMaterial[] instanceID = new int[2] { VOXMaterial.MaxValue, VOXMaterial.MaxValue };
 
-						ChunkEntity[] instanceID = new ChunkEntity[2] { null, null };
+						if (it.begin_y >= 1) map.Get(it.begin_x, (byte)(it.begin_y - 1), it.begin_z, ref instanceID[0]);
+						if (it.end_y <= (map.bound.y - 1)) map.Get(it.begin_x, (byte)(it.end_y + 1), it.begin_z, ref instanceID[1]);
 
-						if (it.begin_y >= 1) map.Get(x, (byte)(it.begin_y - 1), z, ref instanceID[0]);
-						if (it.end_y <= (map.bound.y - 1)) map.Get(x, (byte)(it.end_y + 1), z, ref instanceID[1]);
-
-						it.faces.bottom = (instanceID[0] == null) ? true : false;
-						it.faces.top = (instanceID[1] == null) ? true : false;
+						it.faces.bottom = (instanceID[0] == VOXMaterial.MaxValue) ? true : false;
+						it.faces.top = (instanceID[1] == VOXMaterial.MaxValue) ? true : false;
 					}
 					else if (it.begin_x == it.end_x && it.begin_y == it.end_y)
 					{
-						var x = it.begin_x;
-						var y = it.begin_y;
-						var z = it.begin_z;
+						VOXMaterial[] instanceID = new int[2] { VOXMaterial.MaxValue, VOXMaterial.MaxValue };
 
-						ChunkEntity[] instanceID = new ChunkEntity[2] { null, null };
+						if (it.begin_z >= 1) map.Get(it.begin_x, it.begin_y, (byte)(it.begin_z - 1), ref instanceID[0]);
+						if (it.end_z <= (map.bound.z - 1)) map.Get(it.begin_x, it.begin_y, (byte)(it.end_z + 1), ref instanceID[1]);
 
-						if (it.begin_z >= 1) map.Get(x, y, (byte)(it.begin_z - 1), ref instanceID[0]);
-						if (it.end_z <= (map.bound.z - 1)) map.Get(x, y, (byte)(it.end_z + 1), ref instanceID[1]);
-
-						it.faces.front = (instanceID[0] == null) ? true : false;
-						it.faces.back = (instanceID[1] == null) ? true : false;
+						it.faces.front = (instanceID[0] == VOXMaterial.MaxValue) ? true : false;
+						it.faces.back = (instanceID[1] == VOXMaterial.MaxValue) ? true : false;
 					}
 				}
 
-				return list;
+				return new VoxelModel(array);
 			}
 
-			public static List<VoxelCruncher> CalcVoxelCruncher(VoxFileChunkChild chunk)
+			public static VoxelModel CalcVoxelCruncher(VoxFileChunkChild chunk)
 			{
-				var map = new ChunkMapByte3<ChunkEntity>(new Cubizer.Math.Vector3<int>(chunk.size.x, chunk.size.y, chunk.size.z), chunk.xyzi.voxelNums);
+				var map = new VOXHashMap(new Vector3Int(chunk.size.x, chunk.size.y, chunk.size.z), chunk.xyzi.voxelNums);
 
 				for (int j = 0; j < chunk.xyzi.voxelNums * 4; j += 4)
 				{
@@ -343,7 +317,7 @@ namespace Cubizer
 					var z = chunk.xyzi.voxels[j + 2];
 					var c = chunk.xyzi.voxels[j + 3];
 
-					map.Set(x, y, z, new ChunkEntity("voxel", c));
+					map.Set(x, y, z, c);
 				}
 
 				return CalcVoxelCruncher(map);

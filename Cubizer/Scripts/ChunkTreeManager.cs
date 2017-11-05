@@ -64,7 +64,7 @@ namespace Cubizer
 			return false;
 		}
 
-		public new FileStream Save(string path)
+		public FileStream Save(string path)
 		{
 			var stream = new FileStream(path, FileMode.Create, FileAccess.Write);
 			var serializer = new BinaryFormatter();
@@ -81,22 +81,6 @@ namespace Cubizer
 			var loadFile = new FileStream(path, FileMode.Open, FileAccess.Read);
 
 			return serializer.Deserialize(loadFile) as ChunkTreeManager;
-		}
-
-		private static int _hash_int(int key)
-		{
-			key = ~key + (key << 15);
-			key = key ^ (key >> 12);
-			key = key + (key << 2);
-			key = key ^ (key >> 4);
-			key = key * 2057;
-			key = key ^ (key >> 16);
-			return key;
-		}
-
-		public static int HashInt(int x, int y, int z)
-		{
-			return _hash_int(x) ^ _hash_int(y) ^ _hash_int(z);
 		}
 	}
 }
