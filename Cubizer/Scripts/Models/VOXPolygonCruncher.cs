@@ -279,6 +279,23 @@ namespace Cubizer
 
 				return list;
 			}
+
+			public static List<VoxelCruncher> CalcVoxelCruncher(VoxFileChunkChild chunk)
+			{
+				var map = new ChunkMapByte3<ChunkEntity>(new Cubizer.Math.Vector3<int>(chunk.size.x, chunk.size.y, chunk.size.z), chunk.xyzi.voxelNums);
+
+				for (int j = 0; j < chunk.xyzi.voxelNums * 4; j += 4)
+				{
+					var x = chunk.xyzi.voxels[j];
+					var y = chunk.xyzi.voxels[j + 1];
+					var z = chunk.xyzi.voxels[j + 2];
+					var c = chunk.xyzi.voxels[j + 3];
+
+					map.Set(x, y, z, new ChunkEntity("voxel", c));
+				}
+
+				return CalcVoxelCruncher(map);
+			}
 		}
 	}
 }

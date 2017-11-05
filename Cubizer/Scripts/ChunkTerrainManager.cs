@@ -21,18 +21,23 @@ namespace Cubizer
 			UnityEngine.Debug.Assert(chunkSize > 0);
 
 			_chunkSize = chunkSize;
-			_chunkFactory = new ChunkTreeManager(new Math.Vector3<int>(_chunkSize, _chunkSize, _chunkSize));
+			_chunkFactory = new ChunkTreeManager(_chunkSize, _chunkSize, _chunkSize);
 		}
 
 		~ChunkTerrain()
 		{
 		}
 
+		public static short CalcChunkPos(float x, int size)
+		{
+			return (short)Mathf.FloorToInt(x / (float)size);
+		}
+
 		public bool HitTestByRay(Ray ray, int hitDistance, ref ChunkTree chunk, out byte outX, out byte outY, out byte outZ, ref ChunkTree lastChunk, out byte lastX, out byte lastY, out byte lastZ)
 		{
-			var chunkX = ChunkUtility.CalcChunkPos(ray.origin.x, _chunkSize);
-			var chunkY = ChunkUtility.CalcChunkPos(ray.origin.y, _chunkSize);
-			var chunkZ = ChunkUtility.CalcChunkPos(ray.origin.z, _chunkSize);
+			var chunkX = CalcChunkPos(ray.origin.x, _chunkSize);
+			var chunkY = CalcChunkPos(ray.origin.y, _chunkSize);
+			var chunkZ = CalcChunkPos(ray.origin.z, _chunkSize);
 
 			lastChunk = null;
 			lastX = lastY = lastZ = outX = outY = outZ = 255;
@@ -163,9 +168,9 @@ namespace Cubizer
 
 		public bool GetEmptryChunkPos(Vector3 translate, Plane[] planes, Vector2Int[] radius, out Vector3Int position)
 		{
-			int x = ChunkUtility.CalcChunkPos(translate.x, _chunkSize);
-			int y = ChunkUtility.CalcChunkPos(translate.y, _chunkSize);
-			int z = ChunkUtility.CalcChunkPos(translate.z, _chunkSize);
+			int x = CalcChunkPos(translate.x, _chunkSize);
+			int y = CalcChunkPos(translate.y, _chunkSize);
+			int z = CalcChunkPos(translate.z, _chunkSize);
 
 			int bestX = 0, bestY = 0, bestZ = 0;
 			int bestScore = int.MaxValue;

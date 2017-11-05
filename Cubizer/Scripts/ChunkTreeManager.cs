@@ -14,8 +14,13 @@ namespace Cubizer
 		{
 		}
 
-		public ChunkTreeManager(Vector3Int size, int allocSize)
+		public ChunkTreeManager(Vector3Int size, int allocSize = 0xFF)
 			: base(size, allocSize)
+		{
+		}
+
+		public ChunkTreeManager(int bound_x, int bound_y, int bound_z, int allocSize = 0xFF)
+			: base(bound_x, bound_y, bound_z, allocSize)
 		{
 		}
 
@@ -24,7 +29,7 @@ namespace Cubizer
 			if (_allocSize == 0)
 				this.Create(0xFF);
 
-			var index = ChunkUtility.HashInt(x, y, z) & _allocSize;
+			var index = HashInt(x, y, z) & _allocSize;
 			var entry = _data[index];
 
 			while (entry != null)
@@ -76,6 +81,22 @@ namespace Cubizer
 			var loadFile = new FileStream(path, FileMode.Open, FileAccess.Read);
 
 			return serializer.Deserialize(loadFile) as ChunkTreeManager;
+		}
+
+		private static int _hash_int(int key)
+		{
+			key = ~key + (key << 15);
+			key = key ^ (key >> 12);
+			key = key + (key << 2);
+			key = key ^ (key >> 4);
+			key = key * 2057;
+			key = key ^ (key >> 16);
+			return key;
+		}
+
+		public static int HashInt(int x, int y, int z)
+		{
+			return _hash_int(x) ^ _hash_int(y) ^ _hash_int(z);
 		}
 	}
 }

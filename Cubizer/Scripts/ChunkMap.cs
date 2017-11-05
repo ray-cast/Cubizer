@@ -156,7 +156,7 @@ namespace Cubizer
 			if (_allocSize == 0)
 				this.Create(0xFF);
 
-			var index = ChunkUtility.HashInt(x, y, z) & _allocSize;
+			var index = HashInt(x, y, z) & _allocSize;
 			var entry = _data[index];
 
 			while (entry != null)
@@ -201,7 +201,7 @@ namespace Cubizer
 			if (_allocSize == 0)
 				return false;
 
-			var index = ChunkUtility.HashInt(x, y, z) & _allocSize;
+			var index = HashInt(x, y, z) & _allocSize;
 			var entry = _data[index];
 
 			while (entry != null)
@@ -274,7 +274,7 @@ namespace Cubizer
 		private bool Grow(ChunkNode<Math.Vector3<System.Byte>, _Element> data)
 		{
 			var pos = data.position;
-			var index = ChunkUtility.HashInt(pos.x, pos.y, pos.z) & _allocSize;
+			var index = HashInt(pos.x, pos.y, pos.z) & _allocSize;
 			var entry = _data[index];
 
 			while (entry != null)
@@ -304,6 +304,22 @@ namespace Cubizer
 			_count = map._count;
 			_allocSize = map._allocSize;
 			_data = map._data;
+		}
+
+		private static int _hash_int(int key)
+		{
+			key = ~key + (key << 15);
+			key = key ^ (key >> 12);
+			key = key + (key << 2);
+			key = key ^ (key >> 4);
+			key = key * 2057;
+			key = key ^ (key >> 16);
+			return key;
+		}
+
+		public static int HashInt(int x, int y, int z)
+		{
+			return _hash_int(x) ^ _hash_int(y) ^ _hash_int(z);
 		}
 	}
 
@@ -335,10 +351,21 @@ namespace Cubizer
 			if (size > 0) this.Create(size);
 		}
 
-		public void Create(int size)
+		public ChunkMapShort3(int bound_x, int bound_y, int bound_z, int allocSize)
 		{
 			_count = 0;
-			_allocSize = size;
+			_bound = new Vector3Int(bound_x, bound_y, bound_z);
+			_allocSize = 0;
+			this.Create(allocSize);
+		}
+
+		public void Create(int allocSize)
+		{
+			int usage = 1;
+			while (usage < allocSize) usage = usage << 1 | 1;
+
+			_count = 0;
+			_allocSize = usage;
 			_data = new ChunkNode<Math.Vector3<System.Int16>, _Element>[_allocSize + 1];
 		}
 
@@ -347,7 +374,7 @@ namespace Cubizer
 			if (_allocSize == 0)
 				this.Create(0xFF);
 
-			var index = ChunkUtility.HashInt(x, y, z) & _allocSize;
+			var index = HashInt(x, y, z) & _allocSize;
 			var entry = _data[index];
 
 			while (entry != null)
@@ -388,7 +415,7 @@ namespace Cubizer
 			if (_allocSize == 0)
 				return false;
 
-			var index = ChunkUtility.HashInt(x, y, z) & _allocSize;
+			var index = HashInt(x, y, z) & _allocSize;
 			var entry = _data[index];
 
 			while (entry != null)
@@ -455,7 +482,7 @@ namespace Cubizer
 		protected bool Grow(ChunkNode<Math.Vector3<System.Int16>, _Element> data)
 		{
 			var pos = data.position;
-			var index = ChunkUtility.HashInt(pos.x, pos.y, pos.z) & _allocSize;
+			var index = HashInt(pos.x, pos.y, pos.z) & _allocSize;
 			var entry = _data[index];
 
 			while (entry != null)
@@ -485,6 +512,22 @@ namespace Cubizer
 			_count = map._count;
 			_allocSize = map._allocSize;
 			_data = map._data;
+		}
+
+		private static int _hash_int(int key)
+		{
+			key = ~key + (key << 15);
+			key = key ^ (key >> 12);
+			key = key + (key << 2);
+			key = key ^ (key >> 4);
+			key = key * 2057;
+			key = key ^ (key >> 16);
+			return key;
+		}
+
+		public static int HashInt(int x, int y, int z)
+		{
+			return _hash_int(x) ^ _hash_int(y) ^ _hash_int(z);
 		}
 	}
 }
