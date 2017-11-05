@@ -2,12 +2,64 @@
 using System.Collections.Generic;
 using System.IO;
 
+using UnityEngine;
+
 namespace Cubizer
 {
 	namespace Model
 	{
 		public class VOXPolygonCruncher
 		{
+			public static Vector3[,] _positions = new Vector3[6, 4]
+			{
+				{ new Vector3(-1, -1, -1), new Vector3(-1, -1, +1), new Vector3(-1, +1, -1), new Vector3(-1, +1, +1) },
+				{ new Vector3(+1, -1, -1), new Vector3(+1, -1, +1), new Vector3(+1, +1, -1), new Vector3(+1, +1, +1) },
+				{ new Vector3(-1, +1, -1), new Vector3(-1, +1, +1), new Vector3(+1, +1, -1), new Vector3(+1, +1, +1) },
+				{ new Vector3(-1, -1, -1), new Vector3(-1, -1, +1), new Vector3(+1, -1, -1), new Vector3(+1, -1, +1) },
+				{ new Vector3(-1, -1, -1), new Vector3(-1, +1, -1), new Vector3(+1, -1, -1), new Vector3(+1, +1, -1) },
+				{ new Vector3(-1, -1, +1), new Vector3(-1, +1, +1), new Vector3(+1, -1, +1), new Vector3(+1, +1, +1) }
+			};
+
+			public static Vector3[] _normals = new Vector3[6]
+			{
+				new Vector3(-1, 0, 0),
+				new Vector3(+1, 0, 0),
+				new Vector3(0, +1, 0),
+				new Vector3(0, -1, 0),
+				new Vector3(0, 0, -1),
+				new Vector3(0, 0, +1)
+			};
+
+			public static Vector2[,] _uvs = new Vector2[6, 4]
+			{
+				{ new Vector2(0, 0), new Vector2(1, 0), new Vector2(0, 1), new Vector2(1, 1) },
+				{ new Vector2(1, 0), new Vector2(0, 0), new Vector2(1, 1), new Vector2(0, 1) },
+				{ new Vector2(0, 1), new Vector2(0, 0), new Vector2(1, 1), new Vector2(1, 0) },
+				{ new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 0), new Vector2(1, 1) },
+				{ new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 0), new Vector2(1, 1) },
+				{ new Vector2(1, 0), new Vector2(1, 1), new Vector2(0, 0), new Vector2(0, 1) }
+			};
+
+			public static int[,] _indices = new int[6, 6]
+			{
+				{ 0, 3, 2, 0, 1, 3 },
+				{ 0, 3, 1, 0, 2, 3 },
+				{ 0, 3, 2, 0, 1, 3 },
+				{ 0, 3, 1, 0, 2, 3 },
+				{ 0, 3, 2, 0, 1, 3 },
+				{ 0, 3, 1, 0, 2, 3 }
+			};
+
+			public static float[,] _flipped = new float[6, 6]
+			{
+				{ 0, 1, 2, 1, 3, 2 },
+				{ 0, 2, 1, 2, 3, 1 },
+				{ 0, 1, 2, 1, 3, 2 },
+				{ 0, 2, 1, 2, 3, 1 },
+				{ 0, 1, 2, 1, 3, 2 },
+				{ 0, 2, 1, 2, 3, 1 }
+			};
+
 			public class VoxelCruncher
 			{
 				public byte begin_x;
