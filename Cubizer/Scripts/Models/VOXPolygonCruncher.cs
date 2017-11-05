@@ -320,6 +320,8 @@ namespace Cubizer
 					map.Set(x, y, z, c);
 				}
 
+				var array = new VoxelCruncher[map.Count];
+
 				return CalcVoxelCruncher(map);
 			}
 		}
