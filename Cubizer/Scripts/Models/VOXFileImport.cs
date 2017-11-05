@@ -315,7 +315,7 @@ namespace Cubizer
 				gameObject.name = Path.GetFileNameWithoutExtension(path);
 
 				var colors = CreateColor32FromPelatte(voxel.palette.values);
-				var texture = CreateTextureFromColor256(colors);
+				var texture = CreateTextureFromColor16x16(colors);
 
 				foreach (var chunk in voxel.chunkChild)
 				{
