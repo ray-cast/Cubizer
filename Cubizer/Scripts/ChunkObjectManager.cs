@@ -202,12 +202,12 @@ namespace Cubizer
 				var index = 0;
 				var data = new ChunkMesh();
 				var faces = new VisiableFaces();
-				var allocSize = entity.Value * 6;
+				var allocSize = entity.Value;
 
-				data.vertices = new Vector3[allocSize];
-				data.normals = new Vector3[allocSize];
-				data.uv = new Vector2[allocSize];
-				data.triangles = new int[allocSize];
+				data.vertices = new Vector3[allocSize * 4];
+				data.normals = new Vector3[allocSize * 4];
+				data.uv = new Vector2[allocSize * 4];
+				data.triangles = new int[allocSize * 6];
 
 				bool isTransparent = false;
 

@@ -103,122 +103,22 @@ namespace Cubizer
 					if (!visiable[i])
 						continue;
 
-					for (int j = 0; j < 6; j++, index++)
+					for (int n = index * 4, k = 0; k < 4; k++, n++)
 					{
-						int k = _indices[i, j];
-
 						Vector3 v = _positions[i, k] * scale * 0.5f;
 						v.x += translate.x;
 						v.y += translate.y;
 						v.z += translate.z;
 
-						mesh.vertices[index] = v;
-						mesh.normals[index] = _normals[i];
-						mesh.uv[index] = _uvs[i, k];
-						mesh.triangles[index] = index;
+						mesh.vertices[n] = v;
+						mesh.normals[n] = _normals[i];
+						mesh.uv[n] = _uvs[i, k];
 					}
-				}
-			}
 
-			public static void CreateCubeMesh(ref ChunkMesh mesh, ref int index, VisiableFaces faces, Math.Vector3<System.Byte> translate, uint palette, float scale)
-			{
-				bool[] visiable = new bool[] { faces.left, faces.right, faces.top, faces.bottom, faces.front, faces.back };
+					for (int j = index * 6, k = 0; k < 6; k++, j++)
+						mesh.triangles[j] = index * 4 + _indices[i, k];
 
-				float s = 1.0f / 16.0f;
-				float a = 0 + 1.0f / 32.0f;
-				float b = s - 1.0f / 32.0f;
-
-				for (int i = 0; i < 6; i++)
-				{
-					if (!visiable[i])
-						continue;
-
-					for (int j = 0; j < 6; j++, index++)
-					{
-						int k = _indices[i, j];
-
-						Vector3 v = _positions[i, k] * scale * 0.5f;
-						v.x += translate.x;
-						v.y += translate.y;
-						v.z += translate.z;
-
-						float du = (palette % 16) * s;
-						float dv = (palette / 16) * s;
-
-						Vector2 uv;
-						uv.x = du + (_uvs[i, k].x > 0 ? b : a);
-						uv.y = dv + (_uvs[i, k].y > 0 ? b : a);
-
-						mesh.vertices[index] = v;
-						mesh.normals[index] = _normals[i];
-						mesh.uv[index] = uv;
-						mesh.triangles[index] = index;
-					}
-				}
-			}
-
-			public static void CreateCubeMesh(ref ChunkMesh mesh, ref int index, VisiableFaces faces, Vector3 translate, uint palette, Math.Vector3<System.Byte> scale)
-			{
-				bool[] visiable = new bool[] { faces.left, faces.right, faces.top, faces.bottom, faces.front, faces.back };
-
-				float s = 1.0f / 16.0f;
-				float a = 0 + 1.0f / 32.0f;
-				float b = s - 1.0f / 32.0f;
-
-				for (int i = 0; i < 6; i++)
-				{
-					if (!visiable[i])
-						continue;
-
-					for (int j = 0; j < 6; j++, index++)
-					{
-						int k = _indices[i, j];
-
-						Vector3 v = _positions[i, k] * 0.5f;
-						v.x *= scale.x;
-						v.y *= scale.y;
-						v.z *= scale.z;
-						v += translate;
-
-						float du = (palette % 16) * s;
-						float dv = (palette / 16) * s;
-
-						Vector2 uv;
-						uv.x = du + (_uvs[i, k].x > 0 ? b : a);
-						uv.y = dv + (_uvs[i, k].y > 0 ? b : a);
-
-						mesh.vertices[index] = v;
-						mesh.normals[index] = _normals[i];
-						mesh.uv[index] = uv;
-						mesh.triangles[index] = index;
-					}
-				}
-			}
-
-			public static void CreateCubeMesh(ref ChunkMesh mesh, ref int index, VisiableFaces faces, Math.Vector3<System.Byte> translate, Color32 color, float scale)
-			{
-				bool[] visiable = new bool[] { faces.left, faces.right, faces.top, faces.bottom, faces.front, faces.back };
-
-				for (int i = 0; i < 6; i++)
-				{
-					if (!visiable[i])
-						continue;
-
-					for (int j = 0; j < 6; j++, index++)
-					{
-						int k = _indices[i, j];
-
-						Vector3 v = _positions[i, k] * scale * 0.5f;
-						v.x += translate.x;
-						v.y += translate.y;
-						v.z += translate.z;
-
-						mesh.colors[index] = color;
-						mesh.vertices[index] = v;
-						mesh.normals[index] = _normals[i];
-						mesh.uv[index] = _uvs[i, k];
-						mesh.triangles[index] = index;
-					}
+					index++;
 				}
 			}
 		}
@@ -261,20 +161,22 @@ namespace Cubizer
 			{
 				for (int i = 0; i < 4; i++)
 				{
-					for (int k = 0; k < 6; k++, index++)
+					for (int n = index * 4, k = 0; k < 4; k++, n++)
 					{
-						int j = _indices[i, k];
-
-						Vector3 v = _positions[i, j] * 0.5f * scale;
+						Vector3 v = _positions[i, k] * 0.5f * scale;
 						v.x += translate.x;
 						v.y += translate.y;
 						v.z += translate.z;
 
-						mesh.vertices[index] = v;
-						mesh.normals[index] = _normals[i];
-						mesh.uv[index] = _uvs[i, j];
-						mesh.triangles[index] = index;
+						mesh.vertices[n] = v;
+						mesh.normals[n] = _normals[i];
+						mesh.uv[n] = _uvs[i, k];
 					}
+
+					for (int j = index * 6, k = 0; k < 6; k++, j++)
+						mesh.triangles[j] = index * 4 + _indices[i, k];
+
+					index++;
 				}
 			}
 		}
@@ -282,21 +184,6 @@ namespace Cubizer
 		public static void CreateCubeMesh(ref ChunkMesh mesh, ref int index, VisiableFaces faces, Math.Vector3<System.Byte> translate, float scale = 1.0f)
 		{
 			Cube.CreateCubeMesh(ref mesh, ref index, faces, translate, scale);
-		}
-
-		public static void CreateCubeMesh(ref ChunkMesh mesh, ref int index, VisiableFaces faces, Math.Vector3<System.Byte> translate, uint palette, float scale = 1.0f)
-		{
-			Cube.CreateCubeMesh(ref mesh, ref index, faces, translate, palette, scale);
-		}
-
-		public static void CreateCubeMesh(ref ChunkMesh mesh, ref int index, VisiableFaces faces, Vector3 translate, uint palette, Math.Vector3<System.Byte> scale)
-		{
-			Cube.CreateCubeMesh(ref mesh, ref index, faces, translate, palette, scale);
-		}
-
-		public static void CreateCubeMesh(ref ChunkMesh mesh, ref int index, VisiableFaces faces, Math.Vector3<System.Byte> translate, Color32 color, float scale = 1.0f)
-		{
-			Cube.CreateCubeMesh(ref mesh, ref index, faces, translate, color, scale);
 		}
 
 		public static void CreatePlantMesh(ref ChunkMesh mesh, ref int index, VisiableFaces faces, Math.Vector3<System.Byte> translate, float scale = 1.0f)
