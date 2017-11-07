@@ -10,7 +10,8 @@ Install:
 * Download a zip archive from the github page
 * Un-zip the archive
 * Copy the Cubizer folder to Assets folder
-* Double-click a Cubizer/Demo/level1.unity file
+* Copy the Demo folder to Assets folder
+* Double-click a Demo/level1.unity file
 * Import standard assets with character package
 
 Features :
