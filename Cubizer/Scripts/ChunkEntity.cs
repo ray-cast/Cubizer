@@ -6,6 +6,15 @@ using UnityEngine;
 
 namespace Cubizer
 {
+	public struct ChunkMesh
+	{
+		public Color32[] colors;
+		public Vector3[] vertices;
+		public Vector3[] normals;
+		public Vector2[] uv;
+		public int[] triangles;
+	}
+
 	[Serializable]
 	public class ChunkEntity : ICloneable
 	{
@@ -15,7 +24,7 @@ namespace Cubizer
 		private bool _merge;
 
 		private string _name;
-		private int _material;
+		private string _material;
 
 		public bool is_actor { get { return _actor; } }
 		public bool is_dynamic { get { return _dynamic; } }
@@ -23,7 +32,7 @@ namespace Cubizer
 		public bool is_merge { get { return _merge; } }
 
 		public string name { set { _name = value; } get { return _name; } }
-		public int material { set { _material = value; } get { return _material; } }
+		public string material { set { _material = value; } get { return _material; } }
 
 		public ChunkEntity()
 		{
@@ -32,7 +41,7 @@ namespace Cubizer
 			_transparent = false;
 		}
 
-		public ChunkEntity(string name, int material, bool transparent = false, bool dynamic = false, bool actor = false, bool merge = true)
+		public ChunkEntity(string name, string material, bool transparent = false, bool dynamic = false, bool actor = false, bool merge = true)
 		{
 			_name = name;
 			_material = material;

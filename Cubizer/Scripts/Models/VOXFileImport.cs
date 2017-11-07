@@ -355,14 +355,6 @@ namespace Cubizer
 								meshRenderer.material = new Material(Shader.Find("Mobile/Diffuse"));
 								meshRenderer.material.mainTexture = texture;
 #endif
-
-								Bounds bound = new Bounds();
-								foreach (var it in mesh.vertices)
-									bound.Encapsulate(it);
-
-								BoxCollider collider = gameObject.AddComponent<BoxCollider>();
-								collider.center = bound.center;
-								collider.size = bound.size;
 							}
 						}
 					}
