@@ -149,7 +149,7 @@ namespace Cubizer
 			return entities.Count;
 		}
 
-		public void UpdateChunk()
+		public virtual void UpdateChunk()
 		{
 			for (int i = 0; i < transform.childCount; i++)
 				Destroy(transform.GetChild(i).gameObject);
@@ -229,7 +229,7 @@ namespace Cubizer
 			}
 		}
 
-		private IEnumerator OnUpdateEntities()
+		public IEnumerator OnUpdateEntities()
 		{
 			yield return new WaitForSeconds(_repeatRateUpdate);
 
@@ -243,12 +243,12 @@ namespace Cubizer
 				StartCoroutine("OnUpdateEntities");
 		}
 
-		private void Awake()
+		public void Awake()
 		{
 			_chunkEntitiesDynamic = new List<KeyValuePair<ChunkPosition, ChunkEntity>>();
 		}
 
-		private void Start()
+		public void Start()
 		{
 			if (_chunkMap != null)
 			{
@@ -257,12 +257,12 @@ namespace Cubizer
 			}
 		}
 
-		private void OnDestroy()
+		public void OnDestroy()
 		{
 			_chunkMap.manager.Set(_chunkMap.position, null);
 		}
 
-		private void OnDrawGizmos()
+		public void OnDrawGizmos()
 		{
 			if (map == null)
 				return;

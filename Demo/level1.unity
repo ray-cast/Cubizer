@@ -282,12 +282,12 @@ Prefab:
     - target: {fileID: 224328295561139070, guid: 52eb078de896190488e6c13e15635297,
         type: 2}
       propertyPath: m_LocalPosition.x
-      value: 728.5
+      value: 632.5
       objectReference: {fileID: 0}
     - target: {fileID: 224328295561139070, guid: 52eb078de896190488e6c13e15635297,
         type: 2}
       propertyPath: m_LocalPosition.y
-      value: 495.5
+      value: 394.5
       objectReference: {fileID: 0}
     - target: {fileID: 224328295561139070, guid: 52eb078de896190488e6c13e15635297,
         type: 2}
@@ -421,6 +421,27 @@ Prefab:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 4511630593413024, guid: 47d74db80b6e4e0438fa67945675ab34, type: 2}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4511630593413024, guid: 47d74db80b6e4e0438fa67945675ab34, type: 2}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4511630593413024, guid: 47d74db80b6e4e0438fa67945675ab34, type: 2}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4469562922832932, guid: 47d74db80b6e4e0438fa67945675ab34, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 1.124
+      objectReference: {fileID: 0}
+    - target: {fileID: 114238463698326158, guid: 47d74db80b6e4e0438fa67945675ab34,
+        type: 2}
+      propertyPath: m_GroundCheckDistance
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 47d74db80b6e4e0438fa67945675ab34, type: 2}
   m_IsPrefabParent: 0
@@ -463,6 +484,11 @@ Prefab:
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114683976487356952, guid: 50af201a1a4ea1f4b924a0603a6091a8,
+        type: 2}
+      propertyPath: _isGenPlaneOnly
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 50af201a1a4ea1f4b924a0603a6091a8, type: 2}
   m_IsPrefabParent: 0
@@ -478,8 +504,6 @@ GameObject:
   - component: {fileID: 1843283063}
   - component: {fileID: 1843283062}
   - component: {fileID: 1843283061}
-  - component: {fileID: 1843283066}
-  - component: {fileID: 1843283067}
   m_Layer: 0
   m_Name: Camera
   m_TagString: MainCamera
@@ -502,7 +526,7 @@ MonoBehaviour:
   _velocityVertical: 2
   _velocityHorizontal: 2
   _velocityWheel: 1
-  _distance: 5
+  _distance: 10
   _distanceLimitMin: 2
   _distanceLimitMax: 10
   _foward: {x: 0, y: -0.3, z: 1}
@@ -570,47 +594,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 10, y: 0, z: 0}
---- !u!114 &1843283066
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1843283060}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b200ceda39a40af43bbb16a879f0791f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _noiseFilterTolerance: 0
-  _blurTolerance: -4.6
-  _upsampleTolerance: -12
-  _thicknessModifier: 1
-  _intensity: 0.3
-  _debug: 0
-  _ambientOnly: 1
-  _downsample1Compute: {fileID: 7200000, guid: 659dc93a3764e164e8dafb2061ff317b, type: 3}
-  _downsample2Compute: {fileID: 7200000, guid: dc4dd2f3a1157884e95a081b25b5731d, type: 3}
-  _renderCompute: {fileID: 7200000, guid: e49d5d8e57b0515469bb1ef4bf07b8dd, type: 3}
-  _upsampleCompute: {fileID: 7200000, guid: 2c3e5f47f9b262047ae010f239705186, type: 3}
-  _blitShader: {fileID: 4800000, guid: 532f9473ecfa16148a1ecdb3b72a44e8, type: 3}
---- !u!114 &1843283067
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1843283060}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6363bba448bf64e60a763433f9ddf81b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _threshold: 0.8
-  _softKnee: 0.5
-  _radius: 3
-  _intensity: 0.8
-  _highQuality: 0
-  _antiFlicker: 1
-  _shader: {fileID: 4800000, guid: 5a711a01011934ebcb58ef5ad52159d6, type: 3}
 --- !u!1 &1922618361
 GameObject:
   m_ObjectHideFlags: 0
