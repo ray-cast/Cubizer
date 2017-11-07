@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
@@ -10,19 +8,19 @@ namespace Cubizer
 	using Vector3Int = Math.Vector3<int>;
 
 	[Serializable]
-	public class ChunkNode<_Tx, _Ty>
+	public class VoxelNode<_Tx, _Ty>
 		where _Tx : struct
 		where _Ty : class
 	{
 		public _Tx position;
 		public _Ty element;
 
-		public ChunkNode()
+		public VoxelNode()
 		{
 			element = null;
 		}
 
-		public ChunkNode(_Tx x, _Ty value)
+		public VoxelNode(_Tx x, _Ty value)
 		{
 			position = x;
 			element = value;
@@ -34,13 +32,13 @@ namespace Cubizer
 		}
 	}
 
-	public class ChunkNodeEnumerable<_Tx, _Ty> : IEnumerable
+	public class VoxelNodeEnumerable<_Tx, _Ty> : IEnumerable
 		where _Tx : struct
 		where _Ty : class
 	{
-		private ChunkNode<_Tx, _Ty>[] _array;
+		private VoxelNode<_Tx, _Ty>[] _array;
 
-		public ChunkNodeEnumerable(ChunkNode<_Tx, _Ty>[] array)
+		public VoxelNodeEnumerable(VoxelNode<_Tx, _Ty>[] array)
 		{
 			_array = array;
 		}
@@ -50,20 +48,20 @@ namespace Cubizer
 			return (IEnumerator)GetEnumerator();
 		}
 
-		public ChunkNodeEnum<_Tx, _Ty> GetEnumerator()
+		public VoxelNodeEnum<_Tx, _Ty> GetEnumerator()
 		{
-			return new ChunkNodeEnum<_Tx, _Ty>(_array);
+			return new VoxelNodeEnum<_Tx, _Ty>(_array);
 		}
 	}
 
-	public class ChunkNodeEnum<_Tx, _Ty> : IEnumerator
+	public class VoxelNodeEnum<_Tx, _Ty> : IEnumerator
 		where _Tx : struct
 		where _Ty : class
 	{
 		private int position = -1;
-		private ChunkNode<_Tx, _Ty>[] _array;
+		private VoxelNode<_Tx, _Ty>[] _array;
 
-		public ChunkNodeEnum(ChunkNode<_Tx, _Ty>[] list)
+		public VoxelNodeEnum(VoxelNode<_Tx, _Ty>[] list)
 		{
 			_array = list;
 		}
@@ -96,7 +94,7 @@ namespace Cubizer
 			}
 		}
 
-		public ChunkNode<_Tx, _Ty> Current
+		public VoxelNode<_Tx, _Ty> Current
 		{
 			get
 			{
@@ -106,26 +104,26 @@ namespace Cubizer
 	}
 
 	[Serializable]
-	public class ChunkMapByte3<_Element>
+	public class VoxelHashMapByte3<_Element>
 		where _Element : class
 	{
 		protected int _count;
 		protected int _allocSize;
 		protected Vector3Int _bound;
 
-		protected ChunkNode<Math.Vector3<System.Byte>, _Element>[] _data;
+		protected VoxelNode<Math.Vector3<System.Byte>, _Element>[] _data;
 
 		public int Count { get { return _count; } }
 		public Vector3Int bound { get { return _bound; } }
 
-		public ChunkMapByte3(Vector3Int bound)
+		public VoxelHashMapByte3(Vector3Int bound)
 		{
 			_count = 0;
 			_bound = bound;
 			_allocSize = 0;
 		}
 
-		public ChunkMapByte3(Vector3Int bound, int allocSize)
+		public VoxelHashMapByte3(Vector3Int bound, int allocSize)
 		{
 			_count = 0;
 			_bound = bound;
@@ -133,7 +131,7 @@ namespace Cubizer
 			this.Create(allocSize);
 		}
 
-		public ChunkMapByte3(int bound_x, int bound_y, int bound_z, int allocSize)
+		public VoxelHashMapByte3(int bound_x, int bound_y, int bound_z, int allocSize)
 		{
 			_count = 0;
 			_bound = new Vector3Int(bound_x, bound_y, bound_z);
@@ -148,7 +146,7 @@ namespace Cubizer
 
 			_count = 0;
 			_allocSize = usage;
-			_data = new ChunkNode<Math.Vector3<System.Byte>, _Element>[usage + 1];
+			_data = new VoxelNode<Math.Vector3<System.Byte>, _Element>[usage + 1];
 		}
 
 		public bool Set(System.Byte x, System.Byte y, System.Byte z, _Element value, bool replace = true)
@@ -179,7 +177,7 @@ namespace Cubizer
 
 			if (value != null)
 			{
-				_data[index] = new ChunkNode<Math.Vector3<System.Byte>, _Element>(new Math.Vector3<System.Byte>(x, y, z), value);
+				_data[index] = new VoxelNode<Math.Vector3<System.Byte>, _Element>(new Math.Vector3<System.Byte>(x, y, z), value);
 				_count++;
 
 				if (_count >= _allocSize)
@@ -210,7 +208,7 @@ namespace Cubizer
 				if (pos.x == x && pos.y == y && pos.z == z)
 				{
 					instanceID = entry.element;
-					return true;
+					return instanceID != null;
 				}
 
 				index = (index + 1) & _allocSize;
@@ -243,15 +241,15 @@ namespace Cubizer
 			return _count == 0;
 		}
 
-		public ChunkNodeEnumerable<Math.Vector3<System.Byte>, _Element> GetEnumerator()
+		public VoxelNodeEnumerable<Math.Vector3<System.Byte>, _Element> GetEnumerator()
 		{
 			if (_data == null)
 				throw new System.ApplicationException("GetEnumerator: Empty data");
 
-			return new ChunkNodeEnumerable<Math.Vector3<System.Byte>, _Element>(_data);
+			return new VoxelNodeEnumerable<Math.Vector3<System.Byte>, _Element>(_data);
 		}
 
-		public static bool Save(string path, ChunkMapByte3<_Element> map)
+		public static bool Save(string path, VoxelHashMapByte3<_Element> map)
 		{
 			UnityEngine.Debug.Assert(map != null);
 
@@ -264,14 +262,14 @@ namespace Cubizer
 			return true;
 		}
 
-		public static ChunkMapByte3<_Element> Load(string path)
+		public static VoxelHashMapByte3<_Element> Load(string path)
 		{
 			var serializer = new BinaryFormatter();
 			var loadFile = new FileStream(path, FileMode.Open, FileAccess.Read);
-			return serializer.Deserialize(loadFile) as ChunkMapByte3<_Element>;
+			return serializer.Deserialize(loadFile) as VoxelHashMapByte3<_Element>;
 		}
 
-		private bool Grow(ChunkNode<Math.Vector3<System.Byte>, _Element> data)
+		private bool Grow(VoxelNode<Math.Vector3<System.Byte>, _Element> data)
 		{
 			var pos = data.position;
 			var index = HashInt(pos.x, pos.y, pos.z) & _allocSize;
@@ -296,7 +294,7 @@ namespace Cubizer
 
 		private void Grow()
 		{
-			var map = new ChunkMapByte3<_Element>(_bound, _allocSize << 1 | 1);
+			var map = new VoxelHashMapByte3<_Element>(_bound, _allocSize << 1 | 1);
 
 			foreach (var it in GetEnumerator())
 				map.Grow(it);
@@ -324,26 +322,26 @@ namespace Cubizer
 	}
 
 	[Serializable]
-	public class ChunkMapShort3<_Element>
+	public class VoxelHashMapShort3<_Element>
 		where _Element : class
 	{
 		protected int _count;
 		protected int _allocSize;
 		protected Vector3Int _bound;
 
-		protected ChunkNode<Math.Vector3<System.Int16>, _Element>[] _data;
+		protected VoxelNode<Math.Vector3<System.Int16>, _Element>[] _data;
 
 		public int Count { get { return _count; } }
 		public Vector3Int bound { get { return _bound; } }
 
-		public ChunkMapShort3(Vector3Int bound)
+		public VoxelHashMapShort3(Vector3Int bound)
 		{
 			_count = 0;
 			_bound = bound;
 			_allocSize = 0;
 		}
 
-		public ChunkMapShort3(Vector3Int bound, int size)
+		public VoxelHashMapShort3(Vector3Int bound, int size)
 		{
 			_count = 0;
 			_bound = bound;
@@ -351,7 +349,7 @@ namespace Cubizer
 			if (size > 0) this.Create(size);
 		}
 
-		public ChunkMapShort3(int bound_x, int bound_y, int bound_z, int allocSize)
+		public VoxelHashMapShort3(int bound_x, int bound_y, int bound_z, int allocSize)
 		{
 			_count = 0;
 			_bound = new Vector3Int(bound_x, bound_y, bound_z);
@@ -366,7 +364,7 @@ namespace Cubizer
 
 			_count = 0;
 			_allocSize = usage;
-			_data = new ChunkNode<Math.Vector3<System.Int16>, _Element>[_allocSize + 1];
+			_data = new VoxelNode<Math.Vector3<System.Int16>, _Element>[_allocSize + 1];
 		}
 
 		public bool Set(System.Int16 x, System.Int16 y, System.Int16 z, _Element value)
@@ -393,7 +391,7 @@ namespace Cubizer
 
 			if (value != null)
 			{
-				_data[index] = new ChunkNode<Math.Vector3<System.Int16>, _Element>(new Math.Vector3<System.Int16>(x, y, z), value);
+				_data[index] = new VoxelNode<Math.Vector3<System.Int16>, _Element>(new Math.Vector3<System.Int16>(x, y, z), value);
 				_count++;
 
 				if (_count >= _allocSize)
@@ -424,7 +422,7 @@ namespace Cubizer
 				if (pos.x == x && pos.y == y && pos.z == z)
 				{
 					instanceID = entry.element;
-					return true;
+					return instanceID != null;
 				}
 
 				index = (index + 1) & _allocSize;
@@ -451,12 +449,12 @@ namespace Cubizer
 			return _count == 0;
 		}
 
-		public ChunkNodeEnumerable<Math.Vector3<System.Int16>, _Element> GetEnumerator()
+		public VoxelNodeEnumerable<Math.Vector3<System.Int16>, _Element> GetEnumerator()
 		{
-			return new ChunkNodeEnumerable<Math.Vector3<System.Int16>, _Element>(_data);
+			return new VoxelNodeEnumerable<Math.Vector3<System.Int16>, _Element>(_data);
 		}
 
-		public static bool Save(string path, ChunkMapShort3<_Element> _self)
+		public static bool Save(string path, VoxelHashMapShort3<_Element> _self)
 		{
 			using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write))
 			{
@@ -469,17 +467,17 @@ namespace Cubizer
 			}
 		}
 
-		public static ChunkMapShort3<_Element> Load(string path)
+		public static VoxelHashMapShort3<_Element> Load(string path)
 		{
 			using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
 			{
 				var serializer = new BinaryFormatter();
 
-				return serializer.Deserialize(stream) as ChunkMapShort3<_Element>;
+				return serializer.Deserialize(stream) as VoxelHashMapShort3<_Element>;
 			}
 		}
 
-		protected bool Grow(ChunkNode<Math.Vector3<System.Int16>, _Element> data)
+		protected bool Grow(VoxelNode<Math.Vector3<System.Int16>, _Element> data)
 		{
 			var pos = data.position;
 			var index = HashInt(pos.x, pos.y, pos.z) & _allocSize;
@@ -504,7 +502,7 @@ namespace Cubizer
 
 		protected void Grow()
 		{
-			var map = new ChunkMapShort3<_Element>(_bound, _allocSize << 1 | 1);
+			var map = new VoxelHashMapShort3<_Element>(_bound, _allocSize << 1 | 1);
 
 			foreach (var it in GetEnumerator())
 				map.Grow(it);

@@ -7,7 +7,7 @@ namespace Cubizer
 	using Vector3Int = Math.Vector3<int>;
 
 	[Serializable]
-	public class ChunkTreeManager : ChunkMapShort3<ChunkTree>
+	public class ChunkTreeManager : VoxelHashMapShort3<ChunkTree>
 	{
 		public ChunkTreeManager(Vector3Int size)
 			: base(size)
@@ -19,8 +19,8 @@ namespace Cubizer
 		{
 		}
 
-		public ChunkTreeManager(int bound_x, int bound_y, int bound_z, int allocSize = 0xFF)
-			: base(bound_x, bound_y, bound_z, allocSize)
+		public ChunkTreeManager(int bound_x, int bound_y, int bound_z, int count = 0xFF)
+			: base(bound_x, bound_y, bound_z, count)
 		{
 		}
 
@@ -52,7 +52,7 @@ namespace Cubizer
 
 			if (value != null)
 			{
-				_data[index] = new ChunkNode<Math.Vector3<System.Int16>, ChunkTree>(new Math.Vector3<System.Int16>(x, y, z), value);
+				_data[index] = new VoxelNode<Math.Vector3<System.Int16>, ChunkTree>(new Math.Vector3<System.Int16>(x, y, z), value);
 				_count++;
 
 				if (_count >= _allocSize)

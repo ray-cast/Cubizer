@@ -68,7 +68,7 @@ namespace Cubizer
 			}
 		}
 
-		public bool GetVisiableFaces(ChunkNode<ChunkPosition, ChunkEntity> it, Math.Vector3<int> size, ref VisiableFaces faces)
+		public bool GetVisiableFaces(VoxelNode<ChunkPosition, ChunkEntity> it, Math.Vector3<int> size, ref VoxelVisiableFaces faces)
 		{
 			ChunkEntity[] instanceID = new ChunkEntity[6] { null, null, null, null, null, null };
 
@@ -147,7 +147,7 @@ namespace Cubizer
 			if (enumerator == null)
 				return 0;
 
-			var faces = new VisiableFaces();
+			var faces = new VoxelVisiableFaces();
 
 			foreach (var it in enumerator)
 			{
@@ -200,10 +200,10 @@ namespace Cubizer
 			foreach (var entity in entities)
 			{
 				var index = 0;
-				var data = new ChunkMesh();
-				var faces = new VisiableFaces();
+				var faces = new VoxelVisiableFaces();
 				var allocSize = entity.Value;
 
+				var data = new ChunkMesh();
 				data.vertices = new Vector3[allocSize * 4];
 				data.normals = new Vector3[allocSize * 4];
 				data.uv = new Vector2[allocSize * 4];
@@ -219,10 +219,10 @@ namespace Cubizer
 						continue;
 
 					if (this.GetVisiableFaces(it, map.manager.bound, ref faces))
-						it.element.OnCreateBlock(ref data, ref index, faces, it.position);
+						it.element.OnCreateBlock(ref data, ref index, new Vector3(it.position.x, it.position.y, it.position.z), Vector3.one, faces);
 
 					if (it.element.is_dynamic)
-						_chunkEntitiesDynamic.Add(new KeyValuePair<Math.Vector3<ChunkPos>, ChunkEntity>(it.position, it.element));
+						_chunkEntitiesDynamic.Add(new KeyValuePair<ChunkPosition, ChunkEntity>(it.position, it.element));
 
 					material = it.element.material;
 
@@ -285,7 +285,7 @@ namespace Cubizer
 
 			if (map.position.y == 0)
 			{
-				var bound = map.manager.bound;
+				var bound = map.bound;
 
 				Vector3 pos = transform.position;
 				pos.x += (bound.x - 1) * 0.5f;

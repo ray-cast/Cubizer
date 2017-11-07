@@ -43,13 +43,18 @@ namespace Cubizer
 		public class ChunkFlower : ChunkEntity
 		{
 			public ChunkFlower(int material)
-				: base("Flower", material, true, false, true)
+				: base("Flower", material, true, false, true, false)
 			{
 			}
 
-			public override void OnCreateBlock(ref ChunkMesh mesh, ref int index, VisiableFaces faces, ChunkTranslate position, float scale)
+			public override int GetVerticesCount(VoxelCruncher<ChunkEntity> it)
 			{
-				CreatePlantMesh(ref mesh, ref index, faces, position, scale);
+				return 24;
+			}
+
+			public override void OnCreateBlock(ref ChunkMesh mesh, ref int index, Vector3 pos, Vector3 scale, VoxelVisiableFaces faces)
+			{
+				VoxelModel<ChunkEntity>.Plant.CreatePlantMesh(ref mesh.vertices, ref mesh.normals, ref mesh.uv, ref mesh.triangles, ref index, pos, scale);
 			}
 		}
 
@@ -57,13 +62,18 @@ namespace Cubizer
 		public class ChunkWeed : ChunkEntity
 		{
 			public ChunkWeed(int material)
-				: base("Weed", material, true, false, true)
+				: base("Weed", material, true, false, true, false)
 			{
 			}
 
-			public override void OnCreateBlock(ref ChunkMesh mesh, ref int index, VisiableFaces faces, ChunkTranslate position, float scale)
+			public override int GetVerticesCount(VoxelCruncher<ChunkEntity> it)
 			{
-				CreatePlantMesh(ref mesh, ref index, faces, position, scale);
+				return 24;
+			}
+
+			public override void OnCreateBlock(ref ChunkMesh mesh, ref int index, Vector3 pos, Vector3 scale, VoxelVisiableFaces faces)
+			{
+				VoxelModel<ChunkEntity>.Plant.CreatePlantMesh(ref mesh.vertices, ref mesh.normals, ref mesh.uv, ref mesh.triangles, ref index, pos, scale);
 			}
 		}
 
@@ -106,7 +116,7 @@ namespace Cubizer
 			{
 				if (translate.y > 1)
 				{
-					var translateNow = new Math.Vector3<System.Byte>(translate.x, (byte)(translate.y - 1), translate.z);
+					var translateNow = new ChunkTranslate(translate.x, (byte)(translate.y - 1), translate.z);
 					if (map.Set(translateNow, this, false))
 					{
 						map.Set(translate, null);
