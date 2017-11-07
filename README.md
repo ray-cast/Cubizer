@@ -3,7 +3,7 @@ Cubizer
 ### Voxel-style for Unity 2017 ###
 Sandbox design tool built on Unity 2017 to work with voxel generation and meshing and chunk
 
-![Alt](./Resources/Textures/screenshots.jpg)
+![Alt](./Demo/Level1/Textures/screenshots.jpg)
 
 Install:
 ========
