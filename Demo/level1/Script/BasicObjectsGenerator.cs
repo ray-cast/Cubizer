@@ -6,124 +6,6 @@ namespace Cubizer
 {
 	namespace Generator
 	{
-		using ChunkTranslate = Math.Vector3<System.Byte>;
-
-		[Serializable]
-		public class ChunkGrass : ChunkEntity
-		{
-			public ChunkGrass(string material)
-				: base("Grass", material)
-			{
-			}
-		}
-
-		[Serializable]
-		public class ChunkItemTree : ChunkEntity
-		{
-			public ChunkItemTree(string material)
-				: base("Tree", material)
-			{
-			}
-		}
-
-		[Serializable]
-		public class ChunkTreeLeaf : ChunkEntity
-		{
-			public ChunkTreeLeaf(string material)
-				: base("TreeLeaf", material)
-			{
-			}
-		}
-
-		[Serializable]
-		public class ChunkFlower : ChunkEntity
-		{
-			public ChunkFlower(string material)
-				: base("Flower", material, true, false, true, false)
-			{
-			}
-
-			public override int GetVerticesCount(VoxelCruncher it)
-			{
-				return 24;
-			}
-
-			public override void OnCreateBlock(ref ChunkMesh mesh, ref int index, Vector3 pos, Vector3 scale, VoxelVisiableFaces faces)
-			{
-				VoxelModel.Plant.CreatePlantMesh(ref mesh.vertices, ref mesh.normals, ref mesh.uv, ref mesh.triangles, ref index, pos, scale);
-			}
-		}
-
-		[Serializable]
-		public class ChunkWeed : ChunkEntity
-		{
-			public ChunkWeed(string material)
-				: base("Weed", material, true, false, true, false)
-			{
-			}
-
-			public override int GetVerticesCount(VoxelCruncher it)
-			{
-				return 24;
-			}
-
-			public override void OnCreateBlock(ref ChunkMesh mesh, ref int index, Vector3 pos, Vector3 scale, VoxelVisiableFaces faces)
-			{
-				VoxelModel.Plant.CreatePlantMesh(ref mesh.vertices, ref mesh.normals, ref mesh.uv, ref mesh.triangles, ref index, pos, scale);
-			}
-		}
-
-		[Serializable]
-		public class ChunkGroundFog : ChunkEntity
-		{
-			public ChunkGroundFog(string material)
-				: base("GroundFog", material, true)
-			{
-			}
-		}
-
-		[Serializable]
-		public class ChunkObsidian : ChunkEntity
-		{
-			public ChunkObsidian(string material)
-				: base("Obsidian", material)
-			{
-			}
-		}
-
-		[Serializable]
-		public class ChunkCloud : ChunkEntity
-		{
-			public ChunkCloud(string material)
-				: base("Cloud", material, false, false)
-			{
-			}
-		}
-
-		[Serializable]
-		public class ChunkWater : ChunkEntity
-		{
-			public ChunkWater(string material)
-				: base("WaterHigh", material, true, true)
-			{
-			}
-
-			public override bool OnUpdateChunk(ref ChunkTree map, ChunkTranslate translate)
-			{
-				if (translate.y > 1)
-				{
-					var translateNow = new ChunkTranslate(translate.x, (byte)(translate.y - 1), translate.z);
-					if (map.Set(translateNow, this, false))
-					{
-						map.Set(translate, null);
-						return true;
-					}
-				}
-
-				return false;
-			}
-		}
-
 		[Serializable]
 		public class BasicObjectsGenerator : TerrainGenerator
 		{
@@ -143,58 +25,62 @@ namespace Cubizer
 			public int _layerCloud = 3;
 			public int _layerObsidian = -10;
 
-			private ChunkEntity _entityGrass;
-			private ChunkEntity _entityTree;
-			private ChunkEntity _entityTreeLeaf;
-			private ChunkEntity _entityFlower;
-			private ChunkEntity _entityWeed;
-			private ChunkEntity _entityObsidian;
-			private ChunkEntity _entityWater;
-			private ChunkEntity _entityCloud;
+			private VoxelMaterial _entityGrass;
+			private VoxelMaterial _entityTree;
+			private VoxelMaterial _entityTreeLeaf;
+			private VoxelMaterial _entityFlower;
+			private VoxelMaterial _entityWeed;
+			private VoxelMaterial _entityObsidian;
+			private VoxelMaterial _entityWater;
+			private VoxelMaterial _entityCloud;
 
 			public void Start()
 			{
 				for (int i = 0; i < transform.childCount; i++)
 				{
+					var entity = transform.GetChild(i);
 					var renderer = transform.GetChild(i).GetComponent<MeshRenderer>();
+					var descripter = transform.GetChild(i).GetComponent<TerrainEntityBehaviour>();
 					var material = renderer.material;
 					var name = transform.GetChild(i).name;
 
-					if (!GameResources.RegisterMaterial(name, material))
+					if (!GameResources.RegisterMaterial(name, entity.gameObject))
 						continue;
+
+					var voxelMaterial = new VoxelMaterial(name, material.name, descripter.is_transparent, descripter.is_dynamic, descripter.is_merge);
 
 					switch (name)
 					{
 						case "Grass":
-							_entityGrass = new ChunkGrass(name);
+							_entityGrass = voxelMaterial;
 							break;
 
 						case "Tree":
-							_entityTree = new ChunkItemTree(name);
+							_entityTree = voxelMaterial;
 							break;
 
 						case "TreeLeaf":
-							_entityTreeLeaf = new ChunkTreeLeaf(name);
+							_entityTreeLeaf = voxelMaterial;
 							break;
 
 						case "Flower":
-							_entityFlower = new ChunkFlower(name);
+							_entityFlower = voxelMaterial;
 							break;
 
 						case "Weed":
-							_entityWeed = new ChunkWeed(name);
+							_entityWeed = voxelMaterial;
 							break;
 
 						case "Obsidian":
-							_entityObsidian = new ChunkObsidian(name);
+							_entityObsidian = voxelMaterial;
 							break;
 
 						case "Water":
-							_entityWater = new ChunkWater(name);
+							_entityWater = voxelMaterial;
 							break;
 
 						case "Cloud":
-							_entityCloud = new ChunkCloud(name);
+							_entityCloud = voxelMaterial;
 							break;
 					}
 				}

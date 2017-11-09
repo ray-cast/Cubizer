@@ -37,11 +37,11 @@ namespace Cubizer
 				var pos = entry.position;
 				if (pos.x == x && pos.y == y && pos.z == z)
 				{
-					var element = _data[index].element;
+					var element = _data[index].value;
 					if (element != value && element != null)
 						element.OnChunkDestroy();
 
-					_data[index].element = value;
+					_data[index].value = value;
 
 					return true;
 				}

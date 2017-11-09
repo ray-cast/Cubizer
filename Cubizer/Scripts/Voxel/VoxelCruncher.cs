@@ -102,15 +102,15 @@ namespace Cubizer
 		{
 			var crunchers = new VoxelCruncher[map.Count];
 
-			var faces = new VoxelVisiableFaces(true, true, true, true, true, true);
 			var n = 0;
+			var faces = new VoxelVisiableFaces(true, true, true, true, true, true);
 
 			foreach (var it in map.GetEnumerator())
 			{
 				var x = it.position.x;
 				var y = it.position.y;
 				var z = it.position.z;
-				var c = it.element;
+				var c = it.value;
 
 				crunchers[n++] = new VoxelCruncher(x, x, z, z, y, y, faces, c);
 			}
@@ -119,36 +119,36 @@ namespace Cubizer
 		}
 	}
 
-	/*public class VoxelCruncherCulled<Material> : IVoxelCruncherStrategy<Material> where Material : class
+	public class VoxelCruncherCulled : IVoxelCruncherStrategy
 	{
-		public static bool GetVisiableFaces(Material[,,] map, Vector3Int bound, int x, int y, int z, Material material, out VoxelVisiableFaces faces)
+		public static bool GetVisiableFaces(VoxelMaterial[,,] map, Vector3Int bound, int x, int y, int z, VoxelMaterial material, out VoxelVisiableFaces faces)
 		{
-			Material[] instanceID = new Material[6] { null, null, null, null, null, null };
+			VoxelMaterial[] instanceID = new VoxelMaterial[6] { null, null, null, null, null, null };
 
 			if (x >= 1) instanceID[0] = map[(byte)(x - 1), y, z];
 			if (y >= 1) instanceID[2] = map[x, (byte)(y - 1), z];
 			if (z >= 1) instanceID[4] = map[x, y, (byte)(z - 1)];
-			if (x <= bound.x) instanceID[1] = map[(byte)(x + 1), y, z];
-			if (y <= bound.y) instanceID[3] = map[x, (byte)(y + 1), z];
-			if (z <= bound.z) instanceID[5] = map[x, y, (byte)(z + 1)];
+			if (x < bound.x - 1) instanceID[1] = map[(byte)(x + 1), y, z];
+			if (y < bound.y - 1) instanceID[3] = map[x, (byte)(y + 1), z];
+			if (z < bound.z - 1) instanceID[5] = map[x, y, (byte)(z + 1)];
 
-			if (it.element.is_transparent)
+			if (material.is_transparent)
 			{
-				var name = it.element.name;
+				var name = material.material;
 
-				bool f1 = (instanceID[0] == null) ? true : instanceID[0].name != name ? true : false;
-				bool f2 = (instanceID[1] == null) ? true : instanceID[1].name != name ? true : false;
-				bool f3 = (instanceID[2] == null) ? true : instanceID[2].name != name ? true : false;
-				bool f4 = (instanceID[3] == null) ? true : instanceID[3].name != name ? true : false;
-				bool f5 = (instanceID[4] == null) ? true : instanceID[4].name != name ? true : false;
-				bool f6 = (instanceID[5] == null) ? true : instanceID[5].name != name ? true : false;
+				bool f1 = (instanceID[0] == null) ? true : instanceID[0].material != name ? true : false;
+				bool f2 = (instanceID[1] == null) ? true : instanceID[1].material != name ? true : false;
+				bool f3 = (instanceID[2] == null) ? true : instanceID[2].material != name ? true : false;
+				bool f4 = (instanceID[3] == null) ? true : instanceID[3].material != name ? true : false;
+				bool f5 = (instanceID[4] == null) ? true : instanceID[4].material != name ? true : false;
+				bool f6 = (instanceID[5] == null) ? true : instanceID[5].material != name ? true : false;
 
-				if (!it.element.is_actor)
+				if (material.is_merge)
 				{
 					if (x == 0) f1 = false;
 					if (z == 0) f5 = false;
-					if (x + 1 == size.x) f2 = false;
-					if (z + 1 == size.z) f6 = false;
+					if (x + 1 == bound.x) f2 = false;
+					if (z + 1 == bound.z) f6 = false;
 				}
 
 				faces.left = f1;
@@ -175,7 +175,7 @@ namespace Cubizer
 				faces.back = f6;
 			}
 
-			if (it.element.is_actor)
+			if (!material.is_merge)
 			{
 				bool all = faces.left | faces.right | faces.bottom | faces.top | faces.front | faces.back;
 
@@ -190,42 +190,35 @@ namespace Cubizer
 			return faces.left | faces.right | faces.bottom | faces.top | faces.front | faces.back;
 		}
 
-		public VoxelModel<Material> CalcVoxelCruncher(VoxelData<Material> map)
+		public VoxelModel CalcVoxelCruncher(VoxelData<VoxelMaterial> voxels)
 		{
-			var map = new Material[chunk.size.x, chunk.size.z, chunk.size.y];
+			var map = new VoxelMaterial[voxels.bound.x, voxels.bound.y, voxels.bound.z];
 
-			for (int i = 0; i < chunk.size.x; ++i)
+			for (int i = 0; i < voxels.bound.x; ++i)
 			{
-				for (int j = 0; j < chunk.size.y; ++j)
-					for (int k = 0; k < chunk.size.z; ++k)
-						map[i, k, j] = null;
+				for (int j = 0; j < voxels.bound.y; ++j)
+					for (int k = 0; k < voxels.bound.z; ++k)
+						map[i, j, k] = null;
 			}
 
-			for (int j = 0; j < chunk.xyzi.voxels.Length; j += 4)
-			{
-				var x = chunk.xyzi.voxels[j];
-				var y = chunk.xyzi.voxels[j + 1];
-				var z = chunk.xyzi.voxels[j + 2];
-				var c = chunk.xyzi.voxels[j + 3];
-
-				map[x, z, y] = c;
-			}
+			foreach (var it in voxels.GetEnumerator())
+				map[it.position.x, it.position.y, it.position.z] = it.value;
 
 			var crunchers = new List<VoxelCruncher>();
-			var bound = new Vector3Int(chunk.size.x, chunk.size.z, chunk.size.y);
+			var bound = new Vector3Int(voxels.bound.x, voxels.bound.y, voxels.bound.z);
 
-			for (int j = 0; j < chunk.xyzi.voxels.Length; j += 4)
+			foreach (var it in voxels.GetEnumerator())
 			{
-				var x = chunk.xyzi.voxels[j];
-				var y = chunk.xyzi.voxels[j + 1];
-				var z = chunk.xyzi.voxels[j + 2];
-				var c = chunk.xyzi.voxels[j + 3];
+				var x = it.position.x;
+				var y = it.position.y;
+				var z = it.position.z;
+				var c = it.value;
 
 				VoxelVisiableFaces faces;
-				if (!GetVisiableFaces(map, bound, x, z, y, c, palette, out faces))
+				if (!GetVisiableFaces(map, bound, x, y, z, c, out faces))
 					continue;
 
-				crunchers.Add(new VoxelCruncher(x, x, z, z, y, y, faces, c));
+				crunchers.Add(new VoxelCruncher(x, x, y, y, z, z, faces, c));
 			}
 
 			var array = new VoxelCruncher[crunchers.Count];
@@ -234,38 +227,20 @@ namespace Cubizer
 			foreach (var it in crunchers)
 				array[numbers++] = it;
 
-			return new VoxelModel<Material>(array);
+			return new VoxelModel(array);
 		}
 	}
 
-	public class VoxelCruncherGreedy<Material> : IVoxelCruncherStrategy<Material> where Material : class
+	public class VoxelCruncherGreedy : IVoxelCruncherStrategy
 	{
-		public VoxelModel<Material> CalcVoxelCruncher(VoxelData<Material> map)
+		public void CalcVoxelCruncher(VoxelMaterial[,,] voxels, Vector3Int bound, ref List<VoxelCruncher> crunchers)
 		{
-			var map = new Material[chunk.size.x, chunk.size.z, chunk.size.y];
-
-			for (int i = 0; i < chunk.size.x; ++i)
-			{
-				for (int j = 0; j < chunk.size.y; ++j)
-					for (int k = 0; k < chunk.size.z; ++k)
-						map[i, k, j] = null;
-			}
-
-			for (int j = 0; j < chunk.xyzi.voxels.Length; j += 4)
-			{
-				var x = chunk.xyzi.voxels[j];
-				var y = chunk.xyzi.voxels[j + 1];
-				var z = chunk.xyzi.voxels[j + 2];
-				var c = chunk.xyzi.voxels[j + 3];
-
-				map[x, z, y] = c;
-			}
-
-			var crunchers = new List<VoxelCruncher>();
-			var dims = new int[] { chunk.size.x, chunk.size.z, chunk.size.y };
+			var dims = new int[] { bound.x, bound.y, bound.z };
 
 			var alloc = System.Math.Max(dims[0], System.Math.Max(dims[1], dims[2]));
-			var mask = new Material[alloc * alloc];
+
+			var mask = new VoxelMaterial[alloc * alloc];
+			var mask2 = new bool[alloc * alloc];
 
 			for (var d = 0; d < 3; ++d)
 			{
@@ -287,16 +262,40 @@ namespace Cubizer
 					{
 						for (x[u] = 0; x[u] < dims[u]; ++x[u])
 						{
-							var a = x[d] >= 0 ? map[x[0], x[1], x[2]] : null;
-							var b = x[d] < dims[d] - 1 ? map[x[0] + q[0], x[1] + q[1], x[2] + q[2]] : null;
+							bool edge = x[d] < 0 || x[d] + q[d] >= dims[d];
+							var a = x[d] >= 0 ? voxels[x[0], x[1], x[2]] : null;
+							var b = x[d] < dims[d] - 1 ? voxels[x[0] + q[0], x[1] + q[1], x[2] + q[2]] : null;
 							if (a != b)
 							{
 								if (a == null)
-									mask[n++] = b;
+								{
+									if (!b.is_transparent)
+									{
+										mask2[n] = true;
+										mask[n++] = b;
+									}
+									else
+									{
+										mask[n++] = null;
+									}
+								}
 								else if (b == null)
-									mask[n++] = -a;
+								{
+									if (!edge || !a.is_transparent)
+									{
+										mask2[n] = false;
+										mask[n++] = a;
+									}
+									else
+									{
+										mask[n++] = null;
+									}
+								}
 								else
-									mask[n++] = -b;
+								{
+									mask2[n] = b.is_transparent ? false : true;
+									mask[n++] = b.is_transparent ? a : b;
+								}
 							}
 							else
 							{
@@ -357,7 +356,7 @@ namespace Cubizer
 							v2.y = System.Math.Max(v2.y - 1, 0);
 							v2.z = System.Math.Max(v2.z - 1, 0);
 
-							if (c > 0)
+							if (mask2[n])
 							{
 								faces.front = d == 2;
 								faces.back = false;
@@ -368,7 +367,6 @@ namespace Cubizer
 							}
 							else
 							{
-								c = -c;
 								faces.front = false;
 								faces.back = d == 2;
 								faces.left = false;
@@ -390,6 +388,31 @@ namespace Cubizer
 					}
 				}
 			}
+		}
+
+		public VoxelModel CalcVoxelCruncher(VoxelData<VoxelMaterial> voxels)
+		{
+			var map = new VoxelMaterial[voxels.bound.x, voxels.bound.y, voxels.bound.z];
+
+			for (int i = 0; i < voxels.bound.x; ++i)
+			{
+				for (int j = 0; j < voxels.bound.y; ++j)
+					for (int k = 0; k < voxels.bound.z; ++k)
+						map[i, j, k] = null;
+			}
+
+			var crunchers = new List<VoxelCruncher>();
+			var faces = new VoxelVisiableFaces(true, true, true, true, true, true);
+
+			foreach (var it in voxels.GetEnumerator())
+			{
+				if (it.value.is_merge)
+					map[it.position.x, it.position.y, it.position.z] = it.value;
+				else
+					crunchers.Add(new VoxelCruncher(it.position.x, it.position.x, it.position.y, it.position.y, it.position.z, it.position.z, faces, it.value));
+			}
+
+			CalcVoxelCruncher(map, new Vector3Int(voxels.bound.x, voxels.bound.y, voxels.bound.z), ref crunchers);
 
 			var array = new VoxelCruncher[crunchers.Count];
 
@@ -397,28 +420,28 @@ namespace Cubizer
 			foreach (var it in crunchers)
 				array[numbers++] = it;
 
-			return new VoxelModel<Material>(array);
+			return new VoxelModel(array);
 		}
 	}
 
-	public class VOXPolygonCruncher
+	public class VoxelPolygonCruncher
 	{
-		public static VoxelModel<Material> CalcVoxelCruncher(VoxelData<Material> map, VoxelCruncherMode mode) where Material : class
+		public static VoxelModel CalcVoxelCruncher(VoxelData<VoxelMaterial> map, VoxelCruncherMode mode)
 		{
 			switch (mode)
 			{
 				case VoxelCruncherMode.Stupid:
-					return new VoxelCruncherStupid<Material>().CalcVoxelCruncher(map);
+					return new VoxelCruncherStupid().CalcVoxelCruncher(map);
 
 				case VoxelCruncherMode.Culled:
-					return new VoxelCruncherCulled<Material>().CalcVoxelCruncher(map);
+					return new VoxelCruncherCulled().CalcVoxelCruncher(map);
 
 				case VoxelCruncherMode.Greedy:
-					return new VoxelCruncherGreedy<Material>().CalcVoxelCruncher(map);
+					return new VoxelCruncherGreedy().CalcVoxelCruncher(map);
 
 				default:
 					return null;
 			}
 		}
-	}*/
+	}
 }

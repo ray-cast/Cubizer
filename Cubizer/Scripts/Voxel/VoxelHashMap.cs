@@ -5,30 +5,28 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Cubizer
 {
-	using Vector3Int = Math.Vector3<int>;
-
 	[Serializable]
 	public class VoxelNode<_Tx, _Ty>
 		where _Tx : struct
 		where _Ty : class
 	{
 		public _Tx position;
-		public _Ty element;
+		public _Ty value;
 
 		public VoxelNode()
 		{
-			element = null;
+			value = null;
 		}
 
 		public VoxelNode(_Tx x, _Ty value)
 		{
 			position = x;
-			element = value;
+			this.value = value;
 		}
 
 		public bool is_empty()
 		{
-			return element == null;
+			return value == null;
 		}
 	}
 
@@ -109,21 +107,21 @@ namespace Cubizer
 	{
 		protected int _count;
 		protected int _allocSize;
-		protected Vector3Int _bound;
+		protected Math.Vector3<int> _bound;
 
 		protected VoxelNode<Math.Vector3<System.Byte>, _Element>[] _data;
 
 		public int Count { get { return _count; } }
-		public Vector3Int bound { get { return _bound; } }
+		public Math.Vector3<int> bound { get { return _bound; } }
 
-		public VoxelData(Vector3Int bound)
+		public VoxelData(Math.Vector3<int> bound)
 		{
 			_count = 0;
 			_bound = bound;
 			_allocSize = 0;
 		}
 
-		public VoxelData(Vector3Int bound, int allocSize)
+		public VoxelData(Math.Vector3<int> bound, int allocSize)
 		{
 			_count = 0;
 			_bound = bound;
@@ -134,7 +132,7 @@ namespace Cubizer
 		public VoxelData(int bound_x, int bound_y, int bound_z, int allocSize)
 		{
 			_count = 0;
-			_bound = new Vector3Int(bound_x, bound_y, bound_z);
+			_bound = new Math.Vector3<int>(bound_x, bound_y, bound_z);
 			_allocSize = 0;
 			this.Create(allocSize);
 		}
@@ -164,7 +162,7 @@ namespace Cubizer
 				{
 					if (replace)
 					{
-						_data[index].element = value;
+						_data[index].value = value;
 						return true;
 					}
 
@@ -207,7 +205,7 @@ namespace Cubizer
 				var pos = entry.position;
 				if (pos.x == x && pos.y == y && pos.z == z)
 				{
-					instanceID = entry.element;
+					instanceID = entry.value;
 					return instanceID != null;
 				}
 
@@ -281,7 +279,7 @@ namespace Cubizer
 				entry = _data[index];
 			}
 
-			if (data.element != null)
+			if (data.value != null)
 			{
 				_data[index] = data;
 				_count++;
@@ -327,21 +325,21 @@ namespace Cubizer
 	{
 		protected int _count;
 		protected int _allocSize;
-		protected Vector3Int _bound;
+		protected Math.Vector3<int> _bound;
 
 		protected VoxelNode<Math.Vector3<System.Int16>, _Element>[] _data;
 
 		public int Count { get { return _count; } }
-		public Vector3Int bound { get { return _bound; } }
+		public Math.Vector3<int> bound { get { return _bound; } }
 
-		public VoxelHashMapShort3(Vector3Int bound)
+		public VoxelHashMapShort3(Math.Vector3<int> bound)
 		{
 			_count = 0;
 			_bound = bound;
 			_allocSize = 0;
 		}
 
-		public VoxelHashMapShort3(Vector3Int bound, int size)
+		public VoxelHashMapShort3(Math.Vector3<int> bound, int size)
 		{
 			_count = 0;
 			_bound = bound;
@@ -352,7 +350,7 @@ namespace Cubizer
 		public VoxelHashMapShort3(int bound_x, int bound_y, int bound_z, int allocSize)
 		{
 			_count = 0;
-			_bound = new Vector3Int(bound_x, bound_y, bound_z);
+			_bound = new Math.Vector3<int>(bound_x, bound_y, bound_z);
 			_allocSize = 0;
 			this.Create(allocSize);
 		}
@@ -380,7 +378,7 @@ namespace Cubizer
 				var pos = entry.position;
 				if (pos.x == x && pos.y == y && pos.z == z)
 				{
-					_data[index].element = value;
+					_data[index].value = value;
 
 					return true;
 				}
@@ -421,7 +419,7 @@ namespace Cubizer
 				var pos = entry.position;
 				if (pos.x == x && pos.y == y && pos.z == z)
 				{
-					instanceID = entry.element;
+					instanceID = entry.value;
 					return instanceID != null;
 				}
 
@@ -489,7 +487,7 @@ namespace Cubizer
 				entry = _data[index];
 			}
 
-			if (data.element != null)
+			if (data.value != null)
 			{
 				_data[index] = data;
 				_count++;

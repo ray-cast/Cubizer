@@ -27,6 +27,8 @@ namespace Cubizer
 				{
 					map.position = chunk.map.position;
 					chunk.map = map;
+					chunk.UpdateChunk();
+
 					Debug.Log("Your data of chunk was loaded successfully");
 				}
 				else

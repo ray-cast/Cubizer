@@ -45,6 +45,16 @@ namespace Cubizer
 			this.UpdateChunkForHit(_drawPickMesh, _drawPickMaterial);
 		}
 
+		private void OnApplicationFocus(bool focus)
+		{
+			_isHitTesting = false;
+		}
+
+		private void OnApplicationPause(bool pause)
+		{
+			_isHitTesting = false;
+		}
+
 		private void UpdateChunkForHit(Mesh mesh, Material material)
 		{
 			if (_isHitTestEnable)
@@ -77,7 +87,7 @@ namespace Cubizer
 
 			if (_block != null)
 			{
-				var entity = new ChunkEntity(_block.name, _block.name, false, false, false);
+				var entity = new VoxelMaterial(_block.name, _block.name, false, false, false);
 				_terrain.AddEnitiyByScreenPos(Input.mousePosition, _hitTestDistance, entity);
 			}
 

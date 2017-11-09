@@ -44,7 +44,7 @@ namespace Cubizer
 			origin.y -= chunk.position.y * _chunkSize;
 			origin.z -= chunk.position.z * _chunkSize;
 
-			ChunkEntity instanceID = null;
+			VoxelMaterial instanceID = null;
 
 			for (int i = 0; i < hitDistance && instanceID == null; i++)
 			{
@@ -108,7 +108,7 @@ namespace Cubizer
 			return this.HitTestByRay(ray, hitDistance, ref chunk, out outX, out outY, out outZ);
 		}
 
-		public bool AddEnitiyByRay(Ray ray, int hitDistance, ChunkEntity entity)
+		public bool AddEnitiyByRay(Ray ray, int hitDistance, VoxelMaterial entity)
 		{
 			Debug.Assert(entity != null);
 
@@ -128,7 +128,7 @@ namespace Cubizer
 			return false;
 		}
 
-		public bool AddEnitiyByScreenPos(Vector3 pos, int hitDistance, ChunkEntity entity)
+		public bool AddEnitiyByScreenPos(Vector3 pos, int hitDistance, VoxelMaterial entity)
 		{
 			var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			ray.origin = Camera.main.transform.position;
@@ -304,7 +304,7 @@ namespace Cubizer
 
 				foreach (var chunk in _chunks.GetEnumerator())
 				{
-					var map = chunk.element;
+					var map = chunk.value;
 					map.manager = _chunks;
 
 					var gameObject = new GameObject("Chunk");

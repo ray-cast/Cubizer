@@ -9,30 +9,31 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1044834020399798}
+  m_RootGameObject: {fileID: 1468873907929336}
   m_IsPrefabParent: 1
---- !u!1 &1044834020399798
+--- !u!1 &1468873907929336
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
   m_Component:
-  - component: {fileID: 4483378297386596}
-  - component: {fileID: 23579896118564636}
+  - component: {fileID: 4658144395849718}
+  - component: {fileID: 23153747110153832}
+  - component: {fileID: 114361142720450938}
   m_Layer: 0
   m_Name: Flower
-  m_TagString: Untagged
+  m_TagString: GameController
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
   m_IsActive: 1
---- !u!4 &4483378297386596
+--- !u!4 &4658144395849718
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1044834020399798}
+  m_GameObject: {fileID: 1468873907929336}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 10.666372, y: 130.19884, z: -40.663864}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -40,12 +41,12 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!23 &23579896118564636
+--- !u!23 &23153747110153832
 MeshRenderer:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1044834020399798}
+  m_GameObject: {fileID: 1468873907929336}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -74,3 +75,18 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &114361142720450938
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1468873907929336}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f224a8269389c9488379d4e19299abb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _actor: 1
+  _dynamic: 0
+  _transparent: 1
+  _merge: 0

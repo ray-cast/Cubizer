@@ -7,7 +7,7 @@ namespace Cubizer
 	using Vector3Int = Math.Vector3<int>;
 
 	[Serializable]
-	public class ChunkTree : VoxelData<ChunkEntity>
+	public class ChunkTree : VoxelData<VoxelMaterial>
 	{
 		public delegate void OnChunkChangeDelegate();
 
@@ -75,7 +75,7 @@ namespace Cubizer
 			_position = new Math.Vector3<System.Int16>(x, y, z);
 		}
 
-		public bool GetForWrap(int x, int y, int z, ref ChunkEntity instanceID)
+		public bool GetForWrap(int x, int y, int z, ref VoxelMaterial instanceID)
 		{
 			var pos = _position;
 

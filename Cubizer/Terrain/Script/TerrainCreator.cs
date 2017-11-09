@@ -14,7 +14,7 @@ namespace Cubizer
 	public class TerrainCreator : MonoBehaviour
 	{
 		public int _chunkRadiusGC = 6;
-		public int _chunkNumLimits = 512;
+		public int _chunkNumLimits = 1024;
 
 		public Vector2Int _chunkRadiusGenX = new Vector2Int(-3, 3);
 		public Vector2Int _chunkRadiusGenY = new Vector2Int(-1, 3);
