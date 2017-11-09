@@ -22,7 +22,7 @@ public class VOXFileLoader : EditorWindow
 	public static void LoadVoxelFileAsPrefab()
 	{
 		var filepath = EditorUtility.OpenFilePanel("Load .vox file", "", "vox");
-		if (filepath != null && filepath != "")
+		if (!String.IsNullOrEmpty(filepath))
 		{
 			if (!filepath.Contains(".vox"))
 			{
@@ -38,7 +38,7 @@ public class VOXFileLoader : EditorWindow
 	public static void LoadVoxelFileAsGameObject()
 	{
 		var filepath = EditorUtility.OpenFilePanel("Load .vox file", "", "vox");
-		if (filepath != null && filepath != "")
+		if (!String.IsNullOrEmpty(filepath))
 		{
 			if (!filepath.Contains(".vox"))
 			{

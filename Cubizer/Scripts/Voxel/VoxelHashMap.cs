@@ -104,7 +104,7 @@ namespace Cubizer
 	}
 
 	[Serializable]
-	public class VoxelHashMapByte3<_Element>
+	public class VoxelData<_Element>
 		where _Element : class
 	{
 		protected int _count;
@@ -116,14 +116,14 @@ namespace Cubizer
 		public int Count { get { return _count; } }
 		public Vector3Int bound { get { return _bound; } }
 
-		public VoxelHashMapByte3(Vector3Int bound)
+		public VoxelData(Vector3Int bound)
 		{
 			_count = 0;
 			_bound = bound;
 			_allocSize = 0;
 		}
 
-		public VoxelHashMapByte3(Vector3Int bound, int allocSize)
+		public VoxelData(Vector3Int bound, int allocSize)
 		{
 			_count = 0;
 			_bound = bound;
@@ -131,7 +131,7 @@ namespace Cubizer
 			this.Create(allocSize);
 		}
 
-		public VoxelHashMapByte3(int bound_x, int bound_y, int bound_z, int allocSize)
+		public VoxelData(int bound_x, int bound_y, int bound_z, int allocSize)
 		{
 			_count = 0;
 			_bound = new Vector3Int(bound_x, bound_y, bound_z);
@@ -249,7 +249,7 @@ namespace Cubizer
 			return new VoxelNodeEnumerable<Math.Vector3<System.Byte>, _Element>(_data);
 		}
 
-		public static bool Save(string path, VoxelHashMapByte3<_Element> map)
+		public static bool Save(string path, VoxelData<_Element> map)
 		{
 			UnityEngine.Debug.Assert(map != null);
 
@@ -262,11 +262,11 @@ namespace Cubizer
 			return true;
 		}
 
-		public static VoxelHashMapByte3<_Element> Load(string path)
+		public static VoxelData<_Element> Load(string path)
 		{
 			var serializer = new BinaryFormatter();
 			var loadFile = new FileStream(path, FileMode.Open, FileAccess.Read);
-			return serializer.Deserialize(loadFile) as VoxelHashMapByte3<_Element>;
+			return serializer.Deserialize(loadFile) as VoxelData<_Element>;
 		}
 
 		private bool Grow(VoxelNode<Math.Vector3<System.Byte>, _Element> data)
@@ -294,7 +294,7 @@ namespace Cubizer
 
 		private void Grow()
 		{
-			var map = new VoxelHashMapByte3<_Element>(_bound, _allocSize << 1 | 1);
+			var map = new VoxelData<_Element>(_bound, _allocSize << 1 | 1);
 
 			foreach (var it in GetEnumerator())
 				map.Grow(it);

@@ -7,7 +7,7 @@ namespace Cubizer
 	using Vector3Int = Math.Vector3<int>;
 
 	[Serializable]
-	public class ChunkTree : VoxelHashMapByte3<ChunkEntity>
+	public class ChunkTree : VoxelData<ChunkEntity>
 	{
 		public delegate void OnChunkChangeDelegate();
 

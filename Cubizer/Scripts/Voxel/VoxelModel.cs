@@ -2,7 +2,7 @@
 
 namespace Cubizer
 {
-	public class VoxelModel<VoxelMaterial> where VoxelMaterial : class
+	public class VoxelModel
 	{
 		private static Vector3[,] _positions = new Vector3[6, 4]
 		{
@@ -44,9 +44,9 @@ namespace Cubizer
 				{ 0, 3, 1, 0, 2, 3 }
 		};
 
-		public VoxelCruncher<VoxelMaterial>[] voxels;
+		public VoxelCruncher[] voxels;
 
-		public VoxelModel(VoxelCruncher<VoxelMaterial>[] array)
+		public VoxelModel(VoxelCruncher[] array)
 		{
 			voxels = array;
 		}

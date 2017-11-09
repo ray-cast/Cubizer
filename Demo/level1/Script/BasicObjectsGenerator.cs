@@ -43,14 +43,14 @@ namespace Cubizer
 			{
 			}
 
-			public override int GetVerticesCount(VoxelCruncher<ChunkEntity> it)
+			public override int GetVerticesCount(VoxelCruncher it)
 			{
 				return 24;
 			}
 
 			public override void OnCreateBlock(ref ChunkMesh mesh, ref int index, Vector3 pos, Vector3 scale, VoxelVisiableFaces faces)
 			{
-				VoxelModel<ChunkEntity>.Plant.CreatePlantMesh(ref mesh.vertices, ref mesh.normals, ref mesh.uv, ref mesh.triangles, ref index, pos, scale);
+				VoxelModel.Plant.CreatePlantMesh(ref mesh.vertices, ref mesh.normals, ref mesh.uv, ref mesh.triangles, ref index, pos, scale);
 			}
 		}
 
@@ -62,14 +62,14 @@ namespace Cubizer
 			{
 			}
 
-			public override int GetVerticesCount(VoxelCruncher<ChunkEntity> it)
+			public override int GetVerticesCount(VoxelCruncher it)
 			{
 				return 24;
 			}
 
 			public override void OnCreateBlock(ref ChunkMesh mesh, ref int index, Vector3 pos, Vector3 scale, VoxelVisiableFaces faces)
 			{
-				VoxelModel<ChunkEntity>.Plant.CreatePlantMesh(ref mesh.vertices, ref mesh.normals, ref mesh.uv, ref mesh.triangles, ref index, pos, scale);
+				VoxelModel.Plant.CreatePlantMesh(ref mesh.vertices, ref mesh.normals, ref mesh.uv, ref mesh.triangles, ref index, pos, scale);
 			}
 		}
 

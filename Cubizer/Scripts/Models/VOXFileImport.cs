@@ -230,7 +230,7 @@ namespace Cubizer
 
 				Color32[] colors = new Color32[256];
 
-				for (int j = 0; j < 256; j++)
+				for (uint j = 0; j < 256; j++)
 				{
 					uint rgba = palette[j];
 
@@ -298,6 +298,8 @@ namespace Cubizer
 
 			public static GameObject LoadVoxelFileAsGameObject(VoxFileData voxel, string name)
 			{
+				Debug.Assert(!String.IsNullOrEmpty(name));
+
 				GameObject gameObject = new GameObject();
 				gameObject.name = name;
 				gameObject.isStatic = true;
@@ -336,7 +338,7 @@ namespace Cubizer
 								isTransparent |= (colors[it.material].a < 255) ? true : false;
 							}
 
-							if (triangles.GetLength(0) > 0)
+							if (triangles.Length > 0)
 							{
 								Mesh mesh = new Mesh();
 								mesh.vertices = vertices;
@@ -378,6 +380,8 @@ namespace Cubizer
 
 			public static GameObject LoadVoxelFileAsPrefab(VoxFileData voxel, string name, string path = "Assets/")
 			{
+				Debug.Assert(!String.IsNullOrEmpty(name));
+
 				GameObject gameObject = null;
 
 				try

@@ -84,12 +84,12 @@ namespace Cubizer
 			}
 		}
 
-		public interface VOXCruncherStrategy
+		public interface IVOXCruncherStrategy
 		{
 			VOXModel CalcVoxelCruncher(VoxFileChunkChild chunk, Color32[] palette);
 		}
 
-		public class VOXCruncherStupid : VOXCruncherStrategy
+		public class VOXCruncherStupid : IVOXCruncherStrategy
 		{
 			public VOXModel CalcVoxelCruncher(VoxFileChunkChild chunk, Color32[] palette)
 			{
@@ -110,7 +110,7 @@ namespace Cubizer
 			}
 		}
 
-		public class VOXCruncherCulled : VOXCruncherStrategy
+		public class VOXCruncherCulled : IVOXCruncherStrategy
 		{
 			public static bool GetVisiableFaces(VOXMaterial[,,] map, Vector3Int bound, int x, int y, int z, VOXMaterial material, Color32[] palette, out VOXVisiableFaces faces)
 			{
@@ -208,7 +208,7 @@ namespace Cubizer
 			}
 		}
 
-		public class VOXCruncherGreedy : VOXCruncherStrategy
+		public class VOXCruncherGreedy : IVOXCruncherStrategy
 		{
 			public VOXModel CalcVoxelCruncher(VoxFileChunkChild chunk, Color32[] palette)
 			{

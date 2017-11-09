@@ -77,7 +77,7 @@ namespace Cubizer
 			return this.MemberwiseClone();
 		}
 
-		public virtual int GetVerticesCount(VoxelCruncher<ChunkEntity> it)
+		public virtual int GetVerticesCount(VoxelCruncher it)
 		{
 			bool[] visiable = new bool[] { it.faces.left, it.faces.right, it.faces.top, it.faces.bottom, it.faces.front, it.faces.back };
 
@@ -94,7 +94,7 @@ namespace Cubizer
 
 		public virtual void OnCreateBlock(ref ChunkMesh mesh, ref int index, Vector3 pos, Vector3 scale, VoxelVisiableFaces faces)
 		{
-			VoxelModel<ChunkEntity>.CreateCubeMesh(ref mesh.vertices, ref mesh.normals, ref mesh.uv, ref mesh.triangles, ref index, faces, pos, scale);
+			VoxelModel.CreateCubeMesh(ref mesh.vertices, ref mesh.normals, ref mesh.uv, ref mesh.triangles, ref index, faces, pos, scale);
 		}
 
 		public virtual bool OnUpdateChunk(ref ChunkTree map, Math.Vector3<System.Byte> translate)
