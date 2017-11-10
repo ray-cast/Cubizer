@@ -24,10 +24,11 @@ namespace Cubizer
 		public int _terrainHeightLimitLow = -10;
 		public int _terrainHeightLimitHigh = 20;
 
+		public GameObject _terrainGenerator;
+
 		public float _repeatRateUpdate = 0.1f;
 
 		private Terrain _terrain;
-		private GameObject _terrainGenerator;
 
 		private void OnEnable()
 		{
@@ -46,11 +47,10 @@ namespace Cubizer
 
 		private void Start()
 		{
-			_terrain = GetComponent<Terrain>();
-			_terrainGenerator = GameObject.Find("TerrainGenerator");
-
 			if (_terrainGenerator == null)
 				UnityEngine.Debug.LogError("Please drag a TerrainGenerator into Hierarchy View.");
+
+			_terrain = GetComponent<Terrain>();
 		}
 
 		private void Reset()

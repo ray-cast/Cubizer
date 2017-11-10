@@ -23,7 +23,7 @@ namespace Cubizer
 		public bool _isEnableCursorLock = true;
 		public bool _isCursorLocked = false;
 
-		private void UpdateMouseLock()
+		public void UpdateMouseLock()
 		{
 			if (Input.GetKeyUp(KeyCode.Escape))
 				_isCursorLocked = false;
@@ -42,25 +42,28 @@ namespace Cubizer
 			}
 		}
 
-		private void LateUpdate()
+		public void LateUpdate()
 		{
-			if (Input.GetAxis("Mouse ScrollWheel") < 0)
-				_distance = Mathf.Min(_distanceLimitMax, _distance + _velocityWheel);
-			if (Input.GetAxis("Mouse ScrollWheel") > 0)
-				_distance = Mathf.Max(_distanceLimitMin, _distance - _velocityWheel);
-
-			float angle_x = Input.GetAxis("Mouse X") * _velocityHorizontal;
-			float angle_y = Input.GetAxis("Mouse Y") * _velocityVertical;
-
-			var euler = transform.localEulerAngles;
-			euler.y += angle_x;
-			euler.x -= angle_y;
-
-			transform.eulerAngles = euler;
-			transform.position = target.transform.position - (transform.localRotation * _foward * _distance);
-
 			if (_isEnableCursorLock)
 				UpdateMouseLock();
+
+			if (Cursor.lockState == CursorLockMode.Locked)
+			{
+				if (Input.GetAxis("Mouse ScrollWheel") < 0)
+					_distance = Mathf.Min(_distanceLimitMax, _distance + _velocityWheel);
+				if (Input.GetAxis("Mouse ScrollWheel") > 0)
+					_distance = Mathf.Max(_distanceLimitMin, _distance - _velocityWheel);
+
+				float angle_x = Input.GetAxis("Mouse X") * _velocityHorizontal;
+				float angle_y = Input.GetAxis("Mouse Y") * _velocityVertical;
+
+				var euler = transform.localEulerAngles;
+				euler.y += angle_x;
+				euler.x -= angle_y;
+
+				transform.eulerAngles = euler;
+				transform.position = target.transform.position - (transform.localRotation * _foward * _distance);
+			}
 		}
 	}
 }

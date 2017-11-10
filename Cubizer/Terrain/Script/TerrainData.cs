@@ -105,6 +105,12 @@ namespace Cubizer
 					controller.OnCreateBlock(ref data, ref writeCount, pos, scale, it.faces);
 				}
 
+				if (data.vertices.Length >= 65000)
+				{
+					Debug.LogError("Mesh vertices is too large");
+					continue;
+				}
+
 				if (data.triangles.Length > 0)
 				{
 					Mesh mesh = new Mesh();
