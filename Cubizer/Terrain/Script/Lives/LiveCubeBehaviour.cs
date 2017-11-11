@@ -5,17 +5,8 @@ using UnityEngine;
 
 namespace Cubizer
 {
-	[DisallowMultipleComponent]
-	public class TerrainEntityBehaviour : MonoBehaviour
+	public class LiveCubeBehaviour : LiveBehaviour
 	{
-		public bool _dynamic = false;
-		public bool _transparent = false;
-		public bool _merge = true;
-
-		public bool is_dynamic { get { return _dynamic; } }
-		public bool is_transparent { get { return _transparent; } }
-		public bool is_merge { get { return _merge; } }
-
 		private static Vector3[,] _positions = new Vector3[6, 4]
 		{
 			{ new Vector3(-1, -1, -1), new Vector3(-1, -1, +1), new Vector3(-1, +1, -1), new Vector3(-1, +1, +1) },
@@ -56,22 +47,22 @@ namespace Cubizer
 			{ 0, 3, 1, 0, 2, 3 }
 		};
 
-		public virtual uint GetVerticesCount(uint faceCount)
+		public override uint GetVerticesCount(uint faceCount)
 		{
 			return faceCount * 4;
 		}
 
-		public virtual uint GetIndicesCount(uint faceCount)
+		public override uint GetIndicesCount(uint faceCount)
 		{
 			return faceCount * 6;
 		}
 
-		public virtual bool OnUpdateChunk(ref ChunkTree map, List<Math.Vector3<System.Byte>> translate)
+		public override bool OnUpdateChunk(ref ChunkData map, List<Math.Vector3<System.Byte>> translate)
 		{
 			return false;
 		}
 
-		public virtual void OnCreateBlock(ref TerrainMesh mesh, ref int index, Vector3 translate, Vector3 scale, VoxelVisiableFaces faces)
+		public override void OnCreateBlock(ref TerrainMesh mesh, ref int index, Vector3 translate, Vector3 scale, VoxelVisiableFaces faces)
 		{
 			bool[] visiable = new bool[] { faces.left, faces.right, faces.top, faces.bottom, faces.front, faces.back };
 

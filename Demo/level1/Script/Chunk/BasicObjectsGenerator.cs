@@ -1,10 +1,9 @@
-﻿using System;
+﻿using UnityEngine;
 
-using UnityEngine;
 using Cubizer;
 using Cubizer.Math;
 
-public class BasicObjectsGenerator : TerrainGenerator
+public class BasicObjectsGenerator : ChunkGenerator
 {
 	public bool _isGenTree = true;
 	public bool _isGenWater = true;
@@ -33,18 +32,16 @@ public class BasicObjectsGenerator : TerrainGenerator
 
 	public void Start()
 	{
-		for (int i = 0; i < transform.childCount; i++)
+		var materials = GameObject.Find("TerrainLives");
+
+		for (int i = 0; i < materials.transform.childCount; i++)
 		{
-			var entity = transform.GetChild(i);
-			var renderer = transform.GetChild(i).GetComponent<MeshRenderer>();
-			var descripter = transform.GetChild(i).GetComponent<TerrainEntityBehaviour>();
-			var material = renderer.material;
-			var name = transform.GetChild(i).name;
+			var entity = materials.transform.GetChild(i);
+			var renderer = materials.transform.GetChild(i).GetComponent<MeshRenderer>();
+			var descripter = materials.transform.GetChild(i).GetComponent<LiveBehaviour>();
+			var name = entity.name;
 
-			if (!GameResources.RegisterMaterial(name, entity.gameObject))
-				continue;
-
-			var voxelMaterial = new VoxelMaterial(name, material.name, descripter.is_transparent, descripter.is_dynamic, descripter.is_merge);
+			var voxelMaterial = new VoxelMaterial(name, renderer.material.name, descripter.is_transparent, descripter.is_dynamic, descripter.is_merge);
 
 			switch (name)
 			{
@@ -83,13 +80,13 @@ public class BasicObjectsGenerator : TerrainGenerator
 		}
 	}
 
-	public override void OnCreateChunk(ChunkTree map)
+	public override void OnCreateChunk(ChunkData map)
 	{
 		var pos = map.position;
 
-		int offsetX = pos.x * map.bound.x;
-		int offsetY = pos.y * map.bound.y;
-		int offsetZ = pos.z * map.bound.z;
+		int offsetX = pos.x * map.voxels.bound.x;
+		int offsetY = pos.y * map.voxels.bound.y;
+		int offsetZ = pos.z * map.voxels.bound.z;
 
 		float layer = pos.y;
 
@@ -98,12 +95,12 @@ public class BasicObjectsGenerator : TerrainGenerator
 			if (layer == _layerGrass)
 			{
 				byte h = (byte)_floorBase;
-				for (byte x = 0; x < map.bound.x; x++)
+				for (byte x = 0; x < map.voxels.bound.x; x++)
 				{
-					for (byte z = 0; z < map.bound.z; z++)
+					for (byte z = 0; z < map.voxels.bound.z; z++)
 					{
 						for (byte y = 0; y < h; y++)
-							map.Set(x, y, z, _entityGrass);
+							map.voxels.Set(x, y, z, _entityGrass);
 					}
 				}
 			}
@@ -113,9 +110,9 @@ public class BasicObjectsGenerator : TerrainGenerator
 
 		if (layer == _layerGrass)
 		{
-			for (byte x = 0; x < map.bound.x; x++)
+			for (byte x = 0; x < map.voxels.bound.x; x++)
 			{
-				for (byte z = 0; z < map.bound.z; z++)
+				for (byte z = 0; z < map.voxels.bound.z; z++)
 				{
 					int dx = offsetX + x;
 					int dz = offsetZ + z;
@@ -127,23 +124,23 @@ public class BasicObjectsGenerator : TerrainGenerator
 					if (_isGenGrass)
 					{
 						for (byte y = 0; y < h; y++)
-							map.Set(x, y, z, _entityGrass);
+							map.voxels.Set(x, y, z, _entityGrass);
 					}
 
 					if (_isGenWater && h <= _floorBase - _floorHeightLismit * 0.2f)
 					{
 						for (byte y = h; y <= _floorBase - _floorHeightLismit * 0.2f; y++)
-							map.Set(x, y, z, _entityWater);
+							map.voxels.Set(x, y, z, _entityWater);
 					}
 					else
 					{
 						if (_isGenWeed && Noise.simplex2(-dx * 0.1f, dz * 0.1f, 4, 0.8f, 2) > 0.7)
-							map.Set(x, h, z, _entityWeed);
+							map.voxels.Set(x, h, z, _entityWeed);
 						else if (_isGenFlower && Noise.simplex2(dx * 0.05f, -dz * 0.05f, 4, 0.8f, 2) > 0.75)
-							map.Set(x, h, z, _entityFlower);
-						else if (_isGenTree && h < map.bound.y - 8)
+							map.voxels.Set(x, h, z, _entityFlower);
+						else if (_isGenTree && h < map.voxels.bound.y - 8)
 						{
-							if (x > 3 && x < map.bound.y - 3 && z > 3 && z < map.bound.y - 3)
+							if (x > 3 && x < map.voxels.bound.y - 3 && z > 3 && z < map.voxels.bound.y - 3)
 							{
 								if (Noise.simplex2(dx, dz, 6, 0.5f, 2) > 0.84)
 								{
@@ -155,13 +152,13 @@ public class BasicObjectsGenerator : TerrainGenerator
 											{
 												int d = (ox * ox) + (oz * oz) + (y - (h + 4)) * (y - (h + 4));
 												if (d < 11)
-													map.Set((byte)(x + ox), (byte)y, (byte)(z + oz), _entityTreeLeaf);
+													map.voxels.Set((byte)(x + ox), (byte)y, (byte)(z + oz), _entityTreeLeaf);
 											}
 										}
 									}
 
 									for (byte y = h; y < h + 7; y++)
-										map.Set(x, y, z, _entityTree);
+										map.voxels.Set(x, y, z, _entityTree);
 								}
 							}
 						}
@@ -172,9 +169,9 @@ public class BasicObjectsGenerator : TerrainGenerator
 
 		if (_isGenCloud && layer == _layerCloud)
 		{
-			for (int x = 0; x < map.bound.x; x++)
+			for (int x = 0; x < map.voxels.bound.x; x++)
 			{
-				for (int z = 0; z < map.bound.y; z++)
+				for (int z = 0; z < map.voxels.bound.y; z++)
 				{
 					int dx = offsetX + x;
 					int dz = offsetZ + z;
@@ -184,7 +181,7 @@ public class BasicObjectsGenerator : TerrainGenerator
 						int dy = offsetY + y;
 
 						if (Noise.simplex3(dx * 0.01f, dy * 0.1f, dz * 0.01f, 8, 0.5f, 2) > 0.75)
-							map.Set((byte)x, (byte)y, (byte)z, _entityCloud);
+							map.voxels.Set((byte)x, (byte)y, (byte)z, _entityCloud);
 					}
 				}
 			}
@@ -192,12 +189,12 @@ public class BasicObjectsGenerator : TerrainGenerator
 
 		if (_isGenObsidian && layer == _layerObsidian)
 		{
-			for (byte x = 0; x < map.bound.x; x++)
+			for (byte x = 0; x < map.voxels.bound.x; x++)
 			{
-				for (byte z = 0; z < map.bound.z; z++)
+				for (byte z = 0; z < map.voxels.bound.z; z++)
 				{
 					for (byte y = 0; y < 8; y++)
-						map.Set(x, y, z, _entityObsidian);
+						map.voxels.Set(x, y, z, _entityObsidian);
 				}
 			}
 		}

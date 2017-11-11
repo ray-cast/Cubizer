@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 114692390754991416}
   - component: {fileID: 114595897292794058}
   - component: {fileID: 114300181725903372}
+  - component: {fileID: 114127125477320470}
   m_Layer: 0
   m_Name: Terrain
   m_TagString: Untagged
@@ -42,6 +43,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114127125477320470
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1891286732846888}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0eacfbbc27ad7e4ba372b26350b94f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rootPath: C:/Users/ray/AppData/LocalLow/DefaultCompany/Minecraft
+  username: /SaveData/
 --- !u!114 &114300181725903372
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -79,7 +93,10 @@ MonoBehaviour:
   _terrainSeed: 255
   _terrainHeightLimitLow: -10
   _terrainHeightLimitHigh: 20
-  _terrainGenerator: {fileID: 1554296255959310, guid: e10cb1e1154781a4eb147f456456b03f,
+  _camera: {fileID: 0}
+  _terrainBiome: {fileID: 1161671301618372, guid: 076c491b99c8bbb4fa3ff7d93182c68a,
+    type: 2}
+  _terrainGenerator: {fileID: 1957784267766072, guid: 008ad64dc1cc56e4794549bec07f9f4f,
     type: 2}
   _repeatRateUpdate: 0.1
 --- !u!114 &114692390754991416

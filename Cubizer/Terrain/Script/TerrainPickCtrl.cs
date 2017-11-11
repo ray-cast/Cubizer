@@ -9,17 +9,53 @@ namespace Cubizer
 	[RequireComponent(typeof(Terrain))]
 	public class TerrainPickCtrl : MonoBehaviour
 	{
-		public Mesh _drawPickMesh;
-		public Material _drawPickMaterial;
-		public GameObject _block;
+		[SerializeField] private Mesh _drawPickMesh;
+		[SerializeField] private Material _drawPickMaterial;
+		[SerializeField] private GameObject _block;
 
-		public bool _isHitTestEnable = true;
-		public bool _isHitTestWireframe = true;
-		public bool _isHitTesting = false;
+		[SerializeField] private bool _isHitTestEnable = true;
+		[SerializeField] private bool _isHitTestWireframe = true;
+		[SerializeField] private bool _isHitTesting = false;
 
-		public int _hitTestDistance = 8;
+		[SerializeField] private int _hitTestDistance = 8;
 
 		private Terrain _terrain;
+
+		public Mesh drawPickMesh
+		{
+			set { _drawPickMesh = value; }
+			get { return _drawPickMesh; }
+		}
+
+		public Material drawPickMaterial
+		{
+			set { _drawPickMaterial = value; }
+			get { return _drawPickMaterial; }
+		}
+
+		public GameObject block
+		{
+			set { _block = value; }
+			get { return _block; }
+		}
+
+		public bool isHitTestEnable
+		{
+			set { _isHitTestEnable = value; }
+			get { return _isHitTestEnable; }
+		}
+
+		public bool isHitTestWireframe
+		{
+			set { _isHitTestWireframe = value; }
+			get { return _isHitTestWireframe; }
+		}
+
+		public int hitTestDistance
+		{
+			set { _hitTestDistance = value; }
+			get { return _hitTestDistance; }
+		}
 
 		private void Start()
 		{
@@ -68,11 +104,11 @@ namespace Cubizer
 			if (_isHitTestWireframe)
 			{
 				byte x, y, z;
-				ChunkTree chunk = null;
+				ChunkData chunk = null;
 
 				if (_terrain.HitTestByScreenPos(Input.mousePosition, _hitTestDistance, ref chunk, out x, out y, out z))
 				{
-					var position = new Vector3(chunk.position.x, chunk.position.y, chunk.position.z) * _terrain._chunkSize + new Vector3(x, y, z);
+					var position = new Vector3(chunk.position.x, chunk.position.y, chunk.position.z) * _terrain.chunkSize + new Vector3(x, y, z);
 					Graphics.DrawMesh(mesh, position, Quaternion.identity, material, gameObject.layer, Camera.main);
 				}
 			}

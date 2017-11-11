@@ -1,20 +1,46 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
 using UnityEngine;
 
 namespace Cubizer
 {
+	public class TerrainDelegates
+	{
+		public delegate void OnSaveData(GameObject chunk);
+
+		public delegate bool OnLoadData(Vector3Int position, out ChunkData chunk);
+	}
+
 	[DisallowMultipleComponent]
 	public class Terrain : MonoBehaviour
 	{
-		public int _chunkSize = 24;
-		public ChunkTreeManager chunks { set { _chunks = value; } get { return _chunks; } }
+		[SerializeField]
+		private int _chunkSize = 24;
 
-		private ChunkTreeManager _chunks;
+		private ChunkDataManager _chunks;
 
-		public Terrain(int chunkSize, ChunkTreeManager chunks)
+		public TerrainDelegates.OnSaveData onSaveData;
+		public TerrainDelegates.OnLoadData onLoadData;
+
+		public ChunkDataManager chunks { get { return _chunks; } }
+
+		public int chunkSize
+		{
+			set
+			{
+				if (_chunks != null)
+					_chunks.chunkSize = value;
+
+				_chunkSize = value;
+			}
+			get
+			{
+				return _chunkSize;
+			}
+		}
+
+		public Terrain(int chunkSize, ChunkDataManager chunks)
 		{
 			_chunks = chunks;
 			_chunkSize = chunkSize;
@@ -24,10 +50,10 @@ namespace Cubizer
 		{
 			UnityEngine.Debug.Assert(_chunkSize > 0);
 
-			_chunks = new ChunkTreeManager(_chunkSize, _chunkSize, _chunkSize);
+			_chunks = new ChunkDataManager(_chunkSize);
 		}
 
-		public bool HitTestByRay(Ray ray, int hitDistance, ref ChunkTree chunk, out byte outX, out byte outY, out byte outZ, ref ChunkTree lastChunk, out byte lastX, out byte lastY, out byte lastZ)
+		public bool HitTestByRay(Ray ray, int hitDistance, ref ChunkData chunk, out byte outX, out byte outY, out byte outZ, ref ChunkData lastChunk, out byte lastX, out byte lastY, out byte lastZ)
 		{
 			var chunkX = CalcChunkPos(ray.origin.x, _chunkSize);
 			var chunkY = CalcChunkPos(ray.origin.y, _chunkSize);
@@ -74,7 +100,7 @@ namespace Cubizer
 						return false;
 				}
 
-				chunk.Get((byte)ix, (byte)iy, (byte)iz, ref instanceID);
+				chunk.voxels.Get((byte)ix, (byte)iy, (byte)iz, ref instanceID);
 
 				origin += ray.direction;
 
@@ -86,22 +112,22 @@ namespace Cubizer
 			return instanceID != null;
 		}
 
-		public bool HitTestByRay(Ray ray, int hitDistance, ref ChunkTree chunk, out byte outX, out byte outY, out byte outZ)
+		public bool HitTestByRay(Ray ray, int hitDistance, ref ChunkData chunk, out byte outX, out byte outY, out byte outZ)
 		{
 			byte lx, ly, lz;
-			ChunkTree chunkLast = null;
+			ChunkData chunkLast = null;
 
 			return this.HitTestByRay(ray, hitDistance, ref chunk, out outX, out outY, out outZ, ref chunkLast, out lx, out ly, out lz);
 		}
 
-		public bool HitTestByScreenPos(Vector3 pos, int hitDistance, ref ChunkTree chunk, out byte outX, out byte outY, out byte outZ, ref ChunkTree lastChunk, out byte lastX, out byte lastY, out byte lastZ)
+		public bool HitTestByScreenPos(Vector3 pos, int hitDistance, ref ChunkData chunk, out byte outX, out byte outY, out byte outZ, ref ChunkData lastChunk, out byte lastX, out byte lastY, out byte lastZ)
 		{
 			var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			ray.origin = Camera.main.transform.position;
 			return this.HitTestByRay(ray, hitDistance, ref chunk, out outX, out outY, out outZ, ref lastChunk, out lastX, out lastY, out lastZ);
 		}
 
-		public bool HitTestByScreenPos(Vector3 pos, int hitDistance, ref ChunkTree chunk, out byte outX, out byte outY, out byte outZ)
+		public bool HitTestByScreenPos(Vector3 pos, int hitDistance, ref ChunkData chunk, out byte outX, out byte outY, out byte outZ)
 		{
 			var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			ray.origin = Camera.main.transform.position;
@@ -113,13 +139,13 @@ namespace Cubizer
 			Debug.Assert(entity != null);
 
 			byte x, y, z, lx, ly, lz;
-			ChunkTree chunkNow = null;
-			ChunkTree chunkLast = null;
+			ChunkData chunkNow = null;
+			ChunkData chunkLast = null;
 
 			if (HitTestByRay(ray, hitDistance, ref chunkNow, out x, out y, out z, ref chunkLast, out lx, out ly, out lz))
 			{
 				var chunk = chunkLast != null ? chunkLast : chunkNow;
-				chunk.Set(lx, ly, lz, entity);
+				chunk.voxels.Set(lx, ly, lz, entity);
 				chunk.OnChunkChange();
 
 				return true;
@@ -138,11 +164,11 @@ namespace Cubizer
 		public bool RemoveEnitiyByRay(Ray ray, int hitDistance)
 		{
 			byte x, y, z;
-			ChunkTree chunk = null;
+			ChunkData chunk = null;
 
 			if (HitTestByRay(ray, hitDistance, ref chunk, out x, out y, out z))
 			{
-				chunk.Set(x, y, z, null);
+				chunk.voxels.Set(x, y, z, null);
 				chunk.OnChunkChange();
 
 				return true;
@@ -227,6 +253,9 @@ namespace Cubizer
 				var distance = Vector3.Distance(transformChild.position, Camera.main.transform.position) / _chunkSize;
 				if (distance > maxDistance)
 				{
+					if (onSaveData != null)
+						onSaveData(transformChild.gameObject);
+
 					transformChild.parent = null;
 					GameObject.Destroy(transformChild.gameObject);
 					break;
@@ -234,40 +263,36 @@ namespace Cubizer
 			}
 		}
 
-		public void UpdateChunkForCreate(Transform transform, GameObject terrainGenerator, Vector2Int[] radius, float maxChunkCount, int _terrainHeightLimitLow, int _terrainHeightLimitHigh)
+		public void UpdateChunkForCreate(Camera camera, ChunkGenerator chunkGenerator, Vector2Int[] radius, float maxChunkCount, int _terrainHeightLimitLow, int _terrainHeightLimitHigh)
 		{
-			if (_chunks.Count > maxChunkCount)
+			if (_chunks.count > maxChunkCount)
 				return;
 
-			var cameraTranslate = Camera.main.transform.position;
-			var cameraPlanes = GeometryUtility.CalculateFrustumPlanes(Camera.main);
-
 			Vector3Int position;
-			if (!GetEmptryChunkPos(cameraTranslate, cameraPlanes, radius, out position))
+			if (!GetEmptryChunkPos(camera.transform.position, GeometryUtility.CalculateFrustumPlanes(Camera.main), radius, out position))
 				return;
 
 			if (position.y < _terrainHeightLimitLow || position.y > _terrainHeightLimitHigh)
 				return;
 
-			if (terrainGenerator)
+			ChunkData chunk = null;
+			if (onLoadData != null)
+				onLoadData(position, out chunk);
+
+			if (chunk == null && chunkGenerator)
 			{
-				var map = new ChunkTree(_chunkSize, _chunkSize, _chunkSize, (short)position.x, (short)position.y, (short)position.z, 0);
-				map.manager = _chunks;
+				chunk = new ChunkData(_chunkSize, _chunkSize, _chunkSize, (short)position.x, (short)position.y, (short)position.z, 0);
+				chunkGenerator.OnCreateChunk(chunk);
+			}
 
-				var _terrainTransform = terrainGenerator.transform;
-				var length = _terrainTransform.childCount;
-
-				for (int i = 0; i < length; i++)
-				{
-					var script = _terrainTransform.GetChild(i).gameObject.GetComponent<TerrainGenerator>();
-					if (script)
-						script.OnCreateChunk(map);
-				}
+			if (chunk != null)
+			{
+				chunk.manager = _chunks;
 
 				var gameObject = new GameObject("Chunk");
 				gameObject.transform.parent = transform;
 				gameObject.transform.position = position * _chunkSize;
-				gameObject.AddComponent<TerrainData>().map = map;
+				gameObject.AddComponent<TerrainData>().voxels = chunk;
 			}
 		}
 
@@ -278,7 +303,6 @@ namespace Cubizer
 				var serializer = new BinaryFormatter();
 				serializer.Serialize(stream, _chunks);
 
-				stream.Close();
 				return true;
 			}
 		}
@@ -292,6 +316,9 @@ namespace Cubizer
 
 				var serializer = new BinaryFormatter();
 
+				_chunks = serializer.Deserialize(stream) as ChunkDataManager;
+				_chunkSize = _chunks.chunkSize;
+
 				while (transform.childCount > 0)
 				{
 					var transformChild = transform.GetChild(0);
@@ -299,18 +326,14 @@ namespace Cubizer
 					DestroyImmediate(transformChild.gameObject);
 				}
 
-				_chunks = serializer.Deserialize(stream) as ChunkTreeManager;
-				_chunkSize = _chunks.bound.x;
-
 				foreach (var chunk in _chunks.GetEnumerator())
 				{
-					var map = chunk.value;
-					map.manager = _chunks;
+					chunk.value.manager = _chunks;
 
 					var gameObject = new GameObject("Chunk");
 					gameObject.transform.parent = transform;
 					gameObject.transform.position = new Vector3(chunk.position.x, chunk.position.y, chunk.position.z) * _chunkSize;
-					gameObject.AddComponent<TerrainData>().map = map;
+					gameObject.AddComponent<TerrainData>().voxels = chunk.value;
 				}
 
 				return true;
@@ -319,7 +342,7 @@ namespace Cubizer
 
 		public static short CalcChunkPos(float x, int size)
 		{
-			return (short)Mathf.FloorToInt(x / (float)size);
+			return (short)Mathf.FloorToInt(x / size);
 		}
 	}
 }

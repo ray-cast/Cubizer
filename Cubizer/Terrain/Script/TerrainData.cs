@@ -18,12 +18,12 @@ namespace Cubizer
 	[SelectionBase]
 	public class TerrainData : MonoBehaviour
 	{
-		private ChunkTree _chunkMap;
+		private ChunkData _chunk;
 
 		private float _repeatRateUpdate = 2.0f;
-		private Dictionary<TerrainEntityBehaviour, List<ChunkPosition>> _chunkEntitiesDynamic;
+		private Dictionary<LiveBehaviour, List<ChunkPosition>> _chunkEntitiesDynamic;
 
-		public ChunkTree map
+		public ChunkData voxels
 		{
 			set
 			{
@@ -32,20 +32,20 @@ namespace Cubizer
 					Debug.Assert(value.manager != null);
 				}
 
-				if (_chunkMap != value)
+				if (_chunk != value)
 				{
-					if (_chunkMap != null)
-						_chunkMap._onChunkChange -= UpdateChunk;
+					if (_chunk != null)
+						_chunk.onChunkChange -= UpdateChunk;
 
-					_chunkMap = value;
+					_chunk = value;
 
-					if (_chunkMap != null)
-						_chunkMap._onChunkChange += UpdateChunk;
+					if (_chunk != null)
+						_chunk.onChunkChange += UpdateChunk;
 				}
 			}
 			get
 			{
-				return _chunkMap;
+				return _chunk;
 			}
 		}
 
@@ -54,7 +54,7 @@ namespace Cubizer
 			for (int i = 0; i < transform.childCount; i++)
 				Destroy(transform.GetChild(i).gameObject);
 
-			if (_chunkMap == null || _chunkMap.Count == 0)
+			if (_chunk == null || _chunk.voxels.count == 0)
 				return;
 
 			if (_chunkEntitiesDynamic != null)
@@ -66,7 +66,7 @@ namespace Cubizer
 				}
 			}
 
-			var cruncher = VoxelPolygonCruncher.CalcVoxelCruncher(map, VoxelCruncherMode.Greedy);
+			var cruncher = VoxelCruncher.CalcVoxelCruncher(_chunk.voxels, VoxelCruncherMode.Greedy);
 			if (cruncher == null)
 				return;
 
@@ -80,7 +80,7 @@ namespace Cubizer
 				if (actor == null)
 					continue;
 
-				var controller = actor.GetComponent<TerrainEntityBehaviour>();
+				var controller = actor.GetComponent<LiveBehaviour>();
 				if (controller == null)
 					continue;
 
@@ -157,7 +157,7 @@ namespace Cubizer
 			{
 				bool needUpdate = false;
 				foreach (var it in _chunkEntitiesDynamic)
-					needUpdate |= it.Key.OnUpdateChunk(ref _chunkMap, it.Value);
+					needUpdate |= it.Key.OnUpdateChunk(ref _chunk, it.Value);
 
 				if (needUpdate)
 					this.UpdateChunk();
@@ -168,31 +168,31 @@ namespace Cubizer
 
 		public void Awake()
 		{
-			_chunkEntitiesDynamic = new Dictionary<TerrainEntityBehaviour, List<ChunkPosition>>();
+			_chunkEntitiesDynamic = new Dictionary<LiveBehaviour, List<ChunkPosition>>();
 		}
 
 		public void Start()
 		{
-			if (_chunkMap != null)
+			if (_chunk != null)
 			{
-				if (_chunkMap.Count > 0)
+				if (_chunk.voxels.count > 0)
 					this.UpdateChunk();
 			}
 		}
 
 		public void OnDestroy()
 		{
-			_chunkMap.manager.Set(_chunkMap.position, null);
+			_chunk.manager.Set(_chunk.position, null);
 		}
 
 		public void OnDrawGizmos()
 		{
-			if (map == null)
+			if (voxels == null)
 				return;
 
-			if (map.position.y == 0)
+			if (voxels.position.y == 0)
 			{
-				var bound = map.bound;
+				var bound = voxels.voxels.bound;
 
 				Vector3 pos = transform.position;
 				pos.x += (bound.x - 1) * 0.5f;

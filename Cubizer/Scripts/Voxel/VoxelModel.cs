@@ -1,15 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-using UnityEngine;
-
 namespace Cubizer
 {
 	public class VoxelModel
 	{
-		public VoxelCruncher[] voxels;
+		public VoxelPrimitive[] voxels;
 
-		public VoxelModel(VoxelCruncher[] array)
+		public VoxelModel(VoxelPrimitive[] array)
 		{
 			voxels = array;
 		}

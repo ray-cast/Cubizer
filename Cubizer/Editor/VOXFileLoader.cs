@@ -133,41 +133,37 @@ public class VOXFileLoader : EditorWindow
 		return true;
 	}
 
-	private static void CreateAssetBundlesFromSelectionToStreamingAssets()
+	private static void CreateAssetBundlesFromSelection(string targetPath, string bundleName = "Resource", string ext = "")
 	{
 		var SelectedAsset = Selection.GetFiltered(typeof(UnityEngine.Object), SelectionMode.DeepAssets);
 
-		foreach (var obj in SelectedAsset)
+		if (SelectedAsset.Length > 0)
 		{
-			string targetPath = Application.dataPath + "/StreamingAssets/" + obj.name + ".assetbundle";
+			AssetBundleBuild[] buildMap = new AssetBundleBuild[2];
+			buildMap[0].assetBundleName = bundleName + ext;
+			buildMap[0].assetNames = new string[SelectedAsset.Length];
 
-			if (BuildPipeline.BuildAssetBundle(obj, null, targetPath, BuildAssetBundleOptions.CollectDependencies | BuildAssetBundleOptions.CompleteAssets, BuildTarget.StandaloneWindows))
-				UnityEngine.Debug.Log(obj.name + ": loaded successfully");
-			else
-				UnityEngine.Debug.Log(obj.name + ": failed to load");
+			for (int i = 0; i < SelectedAsset.Length; i++)
+				buildMap[0].assetNames[i] = AssetDatabase.GetAssetPath(SelectedAsset[i]);
+
+			if (!BuildPipeline.BuildAssetBundles(targetPath, buildMap, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows))
+				UnityEngine.Debug.Log(targetPath + ": failed to load");
+
+			AssetDatabase.Refresh();
 		}
-
-		AssetDatabase.Refresh();
 	}
 
-	private static void CreateAssetBundlesWithFolderPanel()
+	private static void CreateAssetBundlesWithFolderPanel(string bundleName = "Resource", string ext = "")
 	{
 		var SelectedPath = EditorUtility.SaveFolderPanel("Save Resource", "", "New Resource");
 		if (SelectedPath.Length == 0)
 			return;
 
-		var SelectedAsset = Selection.GetFiltered(typeof(UnityEngine.Object), SelectionMode.DeepAssets);
+		CreateAssetBundlesFromSelection(SelectedPath + "/", bundleName, ext);
+	}
 
-		foreach (var obj in SelectedAsset)
-		{
-			string targetPath = SelectedPath + obj.name + ".assetbundle";
-
-			if (BuildPipeline.BuildAssetBundle(obj, null, targetPath, BuildAssetBundleOptions.CollectDependencies | BuildAssetBundleOptions.CompleteAssets, BuildTarget.StandaloneWindows))
-				UnityEngine.Debug.Log(obj.name + ": loaded successfully");
-			else
-				UnityEngine.Debug.Log(obj.name + ": failed to load");
-		}
-
-		AssetDatabase.Refresh();
+	private static void CreateAssetBundlesFromSelectionToStreamingAssets(string bundleName = "Resource", string ext = "")
+	{
+		CreateAssetBundlesFromSelection(Application.dataPath + "/StreamingAssets/", bundleName, ext);
 	}
 }

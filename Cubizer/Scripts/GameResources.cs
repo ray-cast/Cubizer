@@ -11,6 +11,8 @@ namespace Cubizer
 	{
 		private static Dictionary<string, GameObject> _objects = new Dictionary<string, GameObject>();
 
+		public static Dictionary<string, GameObject> materials { get { return _objects; } }
+
 		public static bool RegisterMaterial(string name, GameObject entity)
 		{
 			if (_objects.ContainsKey(name))

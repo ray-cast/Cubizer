@@ -24,6 +24,8 @@ namespace Cubizer
 		public int _terrainHeightLimitLow = -10;
 		public int _terrainHeightLimitHigh = 20;
 
+		public Camera _camera;
+		public GameObject _terrainBiome;
 		public GameObject _terrainGenerator;
 
 		public float _repeatRateUpdate = 0.1f;
@@ -47,10 +49,20 @@ namespace Cubizer
 
 		private void Start()
 		{
+			_terrain = GetComponent<Terrain>();
+
+			if (_camera == null)
+				UnityEngine.Debug.LogError("Please drag a Camera into Hierarchy View.");
+
+			if (_terrainBiome == null)
+				UnityEngine.Debug.LogError("Please drag a TerrainGenerator into Hierarchy View.");
+
 			if (_terrainGenerator == null)
 				UnityEngine.Debug.LogError("Please drag a TerrainGenerator into Hierarchy View.");
 
-			_terrain = GetComponent<Terrain>();
+			var _terrainChunkTransform = _terrainGenerator.transform;
+			for (int i = 0; i < _terrainChunkTransform.childCount; i++)
+				_terrainChunkTransform.GetChild(i).GetComponent<ChunkGenerator>().terrain = _terrain;
 		}
 
 		private void Reset()
@@ -65,7 +77,12 @@ namespace Cubizer
 			Vector2Int[] radius = new Vector2Int[] { _chunkRadiusGenX, _chunkRadiusGenY, _chunkRadiusGenZ };
 
 			_terrain.UpdateChunkForDestroy(transform, _chunkRadiusGC);
-			_terrain.UpdateChunkForCreate(transform, _terrainGenerator, radius, _chunkNumLimits, _terrainHeightLimitLow, _terrainHeightLimitHigh);
+
+			var script = _terrainGenerator.transform.GetChild(0).gameObject.GetComponent<ChunkGenerator>();
+			if (script)
+			{
+				_terrain.UpdateChunkForCreate(_camera, script, radius, _chunkNumLimits, _terrainHeightLimitLow, _terrainHeightLimitHigh);
+			}
 
 			StartCoroutine("UpdateChunkWithCoroutine");
 		}

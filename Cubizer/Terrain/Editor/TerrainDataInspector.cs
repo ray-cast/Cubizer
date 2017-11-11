@@ -22,11 +22,11 @@ namespace Cubizer
 				if (SelectedPath.Length == 0)
 					return;
 
-				var map = ChunkTree.Load(SelectedPath, chunk.map.manager);
+				var map = ChunkData.Load(SelectedPath, chunk.voxels.manager);
 				if (map != null)
 				{
-					map.position = chunk.map.position;
-					chunk.map = map;
+					map.position = chunk.voxels.position;
+					chunk.voxels = map;
 					chunk.UpdateChunk();
 
 					Debug.Log("Your data of chunk was loaded successfully");
@@ -43,10 +43,10 @@ namespace Cubizer
 				if (SelectedPath.Length == 0)
 					return;
 
-				var map = chunk.map;
+				var map = chunk.voxels;
 				if (map != null)
 				{
-					if (ChunkTree.Save(SelectedPath, map))
+					if (ChunkData.Save(SelectedPath, map))
 						Debug.Log("Your data of chunk was saved successfully");
 					else
 						Debug.Log("Save Failed");
