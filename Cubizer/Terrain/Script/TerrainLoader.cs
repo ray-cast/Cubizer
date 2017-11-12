@@ -19,8 +19,8 @@ namespace Cubizer
 		private void Start()
 		{
 			_terrain = GetComponent<Terrain>();
-			_terrain.onSaveData += this.OnSaveData;
-			_terrain.onLoadData += this.OnLoadData;
+			_terrain.onSaveChunkData += this.OnSaveData;
+			_terrain.onLoadChunkData += this.OnLoadData;
 
 			rootPath = Application.persistentDataPath;
 
@@ -42,7 +42,7 @@ namespace Cubizer
 			}
 		}
 
-		private bool OnLoadData(Vector3Int position, out ChunkData chunk)
+		private bool OnLoadData(Vector3Int position, out ChunkPrimer chunk)
 		{
 			var archive = "chunk" + "_" + position.x + "_" + position.y + "_" + position.z;
 			if (IsFileExists(archive))
@@ -70,7 +70,7 @@ namespace Cubizer
 			Directory.CreateDirectory(archive);
 		}
 
-		private void CreateFile(string archive, ChunkData data)
+		private void CreateFile(string archive, ChunkPrimer data)
 		{
 			UnityEngine.Debug.Assert(data != null);
 
@@ -81,11 +81,11 @@ namespace Cubizer
 			}
 		}
 
-		private ChunkData Load(string archive)
+		private ChunkPrimer Load(string archive)
 		{
 			using (var stream = new FileStream(rootPath + username + archive, FileMode.Open, FileAccess.Read))
 			{
-				return new BinaryFormatter().Deserialize(stream) as ChunkData;
+				return new BinaryFormatter().Deserialize(stream) as ChunkPrimer;
 			}
 		}
 	}

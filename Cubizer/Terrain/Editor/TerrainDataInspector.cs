@@ -22,7 +22,7 @@ namespace Cubizer
 				if (SelectedPath.Length == 0)
 					return;
 
-				var map = ChunkData.Load(SelectedPath);
+				var map = ChunkPrimer.Load(SelectedPath);
 				if (map != null)
 				{
 					if (data.chunk != null)
@@ -48,7 +48,7 @@ namespace Cubizer
 				var map = data.chunk;
 				if (map != null)
 				{
-					if (ChunkData.Save(SelectedPath, map))
+					if (ChunkPrimer.Save(SelectedPath, map))
 						Debug.Log("Your data of chunk was saved successfully");
 					else
 						Debug.Log("Save Failed");

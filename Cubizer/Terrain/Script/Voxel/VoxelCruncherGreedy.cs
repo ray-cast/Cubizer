@@ -6,6 +6,14 @@ namespace Cubizer
 {
 	public class VoxelCruncherGreedy : IVoxelCruncherStrategy
 	{
+		private int[] x = new int[3] { 0, 0, 0 };
+		private int[] q = new int[3] { 0, 0, 0 };
+
+		private int[] du = new int[3] { 0, 0, 0 };
+		private int[] dv = new int[3] { 0, 0, 0 };
+
+		private VoxelVisiableFaces faces = new VoxelVisiableFaces(false, false, false, false, false, false);
+
 		public void CalcVoxelCruncher(VoxelMaterial[,,] voxels, Bounds bound, ref List<VoxelPrimitive> crunchers)
 		{
 			var min = new int[] { (int)bound.min.x, (int)bound.min.y, (int)bound.min.z };
@@ -15,14 +23,6 @@ namespace Cubizer
 
 			var mask = new VoxelMaterial[alloc * alloc];
 			var mask2 = new bool[alloc * alloc];
-
-			var x = new int[3] { 0, 0, 0 };
-			var q = new int[3] { 0, 0, 0 };
-
-			var du = new int[3] { 0, 0, 0 };
-			var dv = new int[3] { 0, 0, 0 };
-
-			var faces = new VoxelVisiableFaces(false, false, false, false, false, false);
 
 			for (var d = 0; d < 3; ++d)
 			{

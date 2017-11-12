@@ -2,7 +2,7 @@
 {
 	public class ChunkDataDelegates
 	{
-		public delegate void OnChunkChangeDelegate();
+		public delegate void OnChangeDelegate();
 
 		public delegate void OnDestroyDelegate();
 	}

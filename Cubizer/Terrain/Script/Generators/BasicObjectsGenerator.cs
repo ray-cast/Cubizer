@@ -93,7 +93,7 @@ namespace Cubizer
 				UnityEngine.Debug.LogError("Please drag a Soil into Hierarchy View.");
 		}
 
-		public override void OnCreateChunk(ChunkData map)
+		public override void OnCreateChunk(ChunkPrimer map)
 		{
 			var pos = map.position;
 

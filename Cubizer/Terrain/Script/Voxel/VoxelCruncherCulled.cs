@@ -7,9 +7,12 @@ namespace Cubizer
 {
 	public class VoxelCruncherCulled : IVoxelCruncherStrategy
 	{
-		public static bool GetVisiableFaces(VoxelMaterial[,,] map, Vector3Int bound, int x, int y, int z, VoxelMaterial material, out VoxelVisiableFaces faces)
+		private VoxelMaterial[] instanceID = new VoxelMaterial[6] { null, null, null, null, null, null };
+
+		public bool GetVisiableFaces(VoxelMaterial[,,] map, Vector3Int bound, int x, int y, int z, VoxelMaterial material, out VoxelVisiableFaces faces)
 		{
-			VoxelMaterial[] instanceID = new VoxelMaterial[6] { null, null, null, null, null, null };
+			for (int i = 0; i < 6; i++)
+				instanceID[i] = null;
 
 			if (x >= 1) instanceID[0] = map[(byte)(x - 1), y, z];
 			if (y >= 1) instanceID[2] = map[x, (byte)(y - 1), z];

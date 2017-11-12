@@ -5,10 +5,15 @@ using UnityEngine;
 namespace Cubizer
 {
 	[DisallowMultipleComponent]
-	[RequireComponent(typeof(Terrain))]
 	[AddComponentMenu("Cubizer/TerrainCreator")]
 	public class TerrainCreator : MonoBehaviour
 	{
+		[SerializeField]
+		private Camera _player;
+
+		[SerializeField]
+		private Terrain _terrain;
+
 		public int _chunkRadiusGC = 6;
 		public int _chunkNumLimits = 1024;
 
@@ -16,17 +21,39 @@ namespace Cubizer
 		public Vector2Int _chunkRadiusGenY = new Vector2Int(-1, 3);
 		public Vector2Int _chunkRadiusGenZ = new Vector2Int(-3, 3);
 
-		public int _terrainSeed = 255;
 		public int _terrainHeightLimitLow = -10;
 		public int _terrainHeightLimitHigh = 20;
 
-		public Camera _camera;
-		public GameObject _terrainBiome;
-		public GameObject _terrainGenerator;
-
 		public float _repeatRateUpdate = 0.1f;
 
-		private Terrain _terrain;
+		public Camera player
+		{
+			set { _player = value; }
+			get { return _player; }
+		}
+
+		public Terrain terrain
+		{
+			set { _terrain = value; }
+			get { return _terrain; }
+		}
+
+		private void Start()
+		{
+			if (_player == null)
+				Debug.LogError("Please assign a camera on the inspector.");
+
+			if (_terrain == null)
+				_terrain = GetComponent<Terrain>();
+
+			if (_terrain == null)
+				Debug.LogError("Please assign a terrain on the inspector.");
+		}
+
+		private void Reset()
+		{
+			StopCoroutine("UpdateChunkWithCoroutine");
+		}
 
 		private void OnEnable()
 		{
@@ -34,32 +61,6 @@ namespace Cubizer
 		}
 
 		private void OnDisable()
-		{
-			StopCoroutine("UpdateChunkWithCoroutine");
-		}
-
-		private void Awake()
-		{
-			Math.Noise.simplex_seed(_terrainSeed);
-		}
-
-		private void Start()
-		{
-			if (_camera == null)
-				UnityEngine.Debug.LogError("Please drag a Camera into Hierarchy View.");
-
-			if (_terrainBiome == null)
-				UnityEngine.Debug.LogError("Please drag a TerrainBiome into Hierarchy View.");
-
-			if (_terrainGenerator == null)
-				UnityEngine.Debug.LogError("Please drag a TerrainGenerator into Hierarchy View.");
-
-			_terrain = GetComponent<Terrain>();
-			_terrainBiome.GetComponent<TerrainBiome>().terrain = _terrain;
-			_terrainGenerator.GetComponent<ChunkGeneratorManager>().terrain = _terrain;
-		}
-
-		private void Reset()
 		{
 			StopCoroutine("UpdateChunkWithCoroutine");
 		}
@@ -72,12 +73,10 @@ namespace Cubizer
 			{
 				_terrain.UpdateChunkForDestroy(transform, _chunkRadiusGC);
 
-				var generator = _terrainGenerator.transform.GetChild(0).gameObject.GetComponent<ChunkGenerator>();
-				if (generator)
+				if (_player)
 				{
 					_terrain.UpdateChunkForCreate(
-						_camera,
-						generator,
+						_player,
 						new Vector2Int[] { _chunkRadiusGenX, _chunkRadiusGenY, _chunkRadiusGenZ },
 						_chunkNumLimits,
 						_terrainHeightLimitLow,

@@ -12,18 +12,17 @@ namespace Cubizer
 			voxels = array;
 		}
 
-		public int CalcFaceCountAsAllocate(ref Dictionary<string, uint> entities)
+		public int CalcFaceCountAsAllocate(ref Dictionary<string, int> entities)
 		{
 			foreach (var it in voxels)
 			{
-				bool[] visiable = new bool[] { it.faces.left, it.faces.right, it.faces.top, it.faces.bottom, it.faces.front, it.faces.back };
-
-				uint facesCount = 0;
-				for (int j = 0; j < 6; j++)
-				{
-					if (visiable[j])
-						facesCount++;
-				}
+				int facesCount = 0;
+				if (it.faces.left) facesCount++;
+				if (it.faces.right) facesCount++;
+				if (it.faces.top) facesCount++;
+				if (it.faces.bottom) facesCount++;
+				if (it.faces.front) facesCount++;
+				if (it.faces.back) facesCount++;
 
 				if (facesCount > 0)
 				{

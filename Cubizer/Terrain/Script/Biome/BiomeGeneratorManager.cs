@@ -1,35 +1,31 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
 using Cubizer.Math;
-using UnityEngine;
 
 namespace Cubizer
 {
-	public class TerrainBiome : MonoBehaviour
+	[Serializable]
+	public class BiomeGeneratorManager
 	{
 		private int _count;
 		private int _allocSize;
 
-		private Terrain _terrain;
+		private VoxelDataNode<Vector3<System.Int16>, BiomeGenerator>[] _data;
 
-		private VoxelDataNode<Vector3<System.Int16>, ChunkData>[] _data;
-
-		public int count { get { return _count; } }
-
-		public Terrain terrain
+		public int count
 		{
-			set { _terrain = value; }
-			get { return _terrain; }
+			get { return _count; }
 		}
 
-		public TerrainBiome()
+		public BiomeGeneratorManager()
 		{
 			_count = 0;
 			_allocSize = 0;
 		}
 
-		public TerrainBiome(int count = 0xFF)
+		public BiomeGeneratorManager(int count)
 		{
 			_count = 0;
 			_allocSize = 0;
@@ -43,10 +39,10 @@ namespace Cubizer
 
 			_count = 0;
 			_allocSize = usage;
-			_data = new VoxelDataNode<Vector3<System.Int16>, ChunkData>[_allocSize + 1];
+			_data = new VoxelDataNode<Vector3<System.Int16>, BiomeGenerator>[_allocSize + 1];
 		}
 
-		public bool Set(System.Int16 x, System.Int16 y, System.Int16 z, ChunkData value)
+		public bool Set(System.Int16 x, System.Int16 y, System.Int16 z, BiomeGenerator value)
 		{
 			if (_allocSize == 0)
 				this.Create(0xFF);
@@ -59,12 +55,7 @@ namespace Cubizer
 				var pos = entry.position;
 				if (pos.x == x && pos.y == y && pos.z == z)
 				{
-					var element = _data[index].value;
-					if (element != value && element != null)
-						element.OnChunkDestroy();
-
 					_data[index].value = value;
-
 					return true;
 				}
 
@@ -74,7 +65,7 @@ namespace Cubizer
 
 			if (value != null)
 			{
-				_data[index] = new VoxelDataNode<Vector3<System.Int16>, ChunkData>(new Vector3<System.Int16>(x, y, z), value);
+				_data[index] = new VoxelDataNode<Vector3<System.Int16>, BiomeGenerator>(new Vector3<System.Int16>(x, y, z), value);
 				_count++;
 
 				if (_count >= _allocSize)
@@ -86,12 +77,12 @@ namespace Cubizer
 			return false;
 		}
 
-		public bool Set(Vector3<System.Int16> pos, ChunkData value)
+		public bool Set(Vector3<System.Int16> pos, BiomeGenerator value)
 		{
 			return Set(pos.x, pos.y, pos.z, value);
 		}
 
-		public bool Get(System.Int16 x, System.Int16 y, System.Int16 z, ref ChunkData chunk)
+		public bool Get(System.Int16 x, System.Int16 y, System.Int16 z, ref BiomeGenerator chunk)
 		{
 			if (_allocSize == 0)
 				return false;
@@ -116,14 +107,14 @@ namespace Cubizer
 			return false;
 		}
 
-		public bool Get(Vector3<System.Int16> pos, ref ChunkData instanceID)
+		public bool Get(Vector3<System.Int16> pos, ref BiomeGenerator instanceID)
 		{
 			return this.Get(pos.x, pos.y, pos.z, ref instanceID);
 		}
 
 		public bool Exists(System.Int16 x, System.Int16 y, System.Int16 z)
 		{
-			ChunkData instanceID = null;
+			BiomeGenerator instanceID = null;
 			return this.Get(x, y, z, ref instanceID);
 		}
 
@@ -132,9 +123,9 @@ namespace Cubizer
 			return _count == 0;
 		}
 
-		public VoxelDataNodeEnumerable<Vector3<System.Int16>, ChunkData> GetEnumerator()
+		public VoxelDataNodeEnumerable<Vector3<System.Int16>, BiomeGenerator> GetEnumerator()
 		{
-			return new VoxelDataNodeEnumerable<Vector3<System.Int16>, ChunkData>(_data);
+			return new VoxelDataNodeEnumerable<Vector3<System.Int16>, BiomeGenerator>(_data);
 		}
 
 		public static bool Save(string path, ChunkDataManager _self)
@@ -160,7 +151,7 @@ namespace Cubizer
 			}
 		}
 
-		private bool Grow(VoxelDataNode<Vector3<System.Int16>, ChunkData> data)
+		private bool Grow(VoxelDataNode<Vector3<System.Int16>, BiomeGenerator> data)
 		{
 			var pos = data.position;
 			var index = HashInt(pos.x, pos.y, pos.z) & _allocSize;
@@ -185,7 +176,7 @@ namespace Cubizer
 
 		private void Grow()
 		{
-			var map = new TerrainBiome(_allocSize << 1 | 1);
+			var map = new BiomeGeneratorManager(_allocSize << 1 | 1);
 
 			foreach (var it in GetEnumerator())
 				map.Grow(it);

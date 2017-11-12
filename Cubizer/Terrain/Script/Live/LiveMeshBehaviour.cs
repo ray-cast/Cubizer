@@ -12,17 +12,17 @@ namespace Cubizer
 	{
 		public Mesh _mesh;
 
-		public override uint GetVerticesCount(uint faceCount)
+		public override int GetVerticesCount(int faceCount)
 		{
-			return (uint)((faceCount / 6) * _mesh.vertexCount);
+			return (int)((faceCount / 6) * _mesh.vertexCount);
 		}
 
-		public override uint GetIndicesCount(uint faceCount)
+		public override int GetIndicesCount(int faceCount)
 		{
-			return (uint)((faceCount / 6) * _mesh.triangles.Length);
+			return (int)((faceCount / 6) * _mesh.triangles.Length);
 		}
 
-		public override bool OnUpdateChunk(ref ChunkData map, System.Byte x, System.Byte y, System.Byte z)
+		public override bool OnUpdateChunk(ref ChunkPrimer map, System.Byte x, System.Byte y, System.Byte z)
 		{
 			return false;
 		}

@@ -20,8 +20,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4794908973117360}
   - component: {fileID: 114692390754991416}
-  - component: {fileID: 114595897292794058}
-  - component: {fileID: 114300181725903372}
   - component: {fileID: 114127125477320470}
   m_Layer: 0
   m_Name: Terrain
@@ -56,49 +54,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rootPath: C:/Users/ray/AppData/LocalLow/DefaultCompany/Minecraft
   username: /SaveData/
---- !u!114 &114300181725903372
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1891286732846888}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bef5ba5bda7663045b06749d52826689, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _drawPickMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  _drawPickMaterial: {fileID: 2100000, guid: ca8651ba28620ec49a6efa144f310bf1, type: 2}
-  _block: {fileID: 1388747742547756, guid: 0e7142039eab067428e24ed6938e424f, type: 2}
-  _isHitTestEnable: 1
-  _isHitTestWireframe: 1
-  _isHitTesting: 0
-  _hitTestDistance: 8
---- !u!114 &114595897292794058
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1891286732846888}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 888f835a1285d6746a8d82f23729938f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _chunkRadiusGC: 6
-  _chunkNumLimits: 512
-  _chunkRadiusGenX: {x: -3, y: 3}
-  _chunkRadiusGenY: {x: -1, y: 3}
-  _chunkRadiusGenZ: {x: -3, y: 3}
-  _terrainSeed: 255
-  _terrainHeightLimitLow: -10
-  _terrainHeightLimitHigh: 20
-  _camera: {fileID: 0}
-  _terrainBiome: {fileID: 1161671301618372, guid: 076c491b99c8bbb4fa3ff7d93182c68a,
-    type: 2}
-  _terrainGenerator: {fileID: 1006929406394994, guid: 999f6aed196e8cc4b84bd23d223abcb1,
-    type: 2}
-  _repeatRateUpdate: 0.1
 --- !u!114 &114692390754991416
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -111,3 +66,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _chunkSize: 24
+  _terrainBiomeManager: {fileID: 114348699646909560, guid: 076c491b99c8bbb4fa3ff7d93182c68a,
+    type: 2}
+  _terrainChunkGenerator: {fileID: 114614251085859158, guid: 999f6aed196e8cc4b84bd23d223abcb1,
+    type: 2}

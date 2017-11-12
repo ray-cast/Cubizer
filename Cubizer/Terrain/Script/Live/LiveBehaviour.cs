@@ -31,7 +31,7 @@ namespace Cubizer
 
 		public void RegisterDefaultMaterial()
 		{
-			GameResources.RegisterMaterial(this.gameObject.name, gameObject);
+			LiveResources.RegisterMaterial(this.gameObject.name, this);
 		}
 
 		public virtual void Start()
@@ -39,11 +39,11 @@ namespace Cubizer
 			this.RegisterDefaultMaterial();
 		}
 
-		public abstract uint GetVerticesCount(uint faceCount);
+		public abstract int GetVerticesCount(int faceCount);
 
-		public abstract uint GetIndicesCount(uint faceCount);
+		public abstract int GetIndicesCount(int faceCount);
 
-		public abstract bool OnUpdateChunk(ref ChunkData map, System.Byte x, System.Byte y, System.Byte z);
+		public abstract bool OnUpdateChunk(ref ChunkPrimer map, System.Byte x, System.Byte y, System.Byte z);
 
 		public abstract void OnCreateBlock(ref TerrainMesh mesh, ref int index, Vector3 translate, Vector3 scale, VoxelVisiableFaces faces);
 	}

@@ -12,7 +12,7 @@ namespace Cubizer
 		private int _count;
 		private int _allocSize;
 		private int _chunkSize;
-		private VoxelDataNode<Vector3<System.Int16>, ChunkData>[] _data;
+		private VoxelDataNode<Vector3<System.Int16>, ChunkPrimer>[] _data;
 
 		public int count { get { return _count; } }
 		public int chunkSize { set { _chunkSize = value; } get { return _chunkSize; } }
@@ -39,10 +39,10 @@ namespace Cubizer
 
 			_count = 0;
 			_allocSize = usage;
-			_data = new VoxelDataNode<Vector3<System.Int16>, ChunkData>[_allocSize + 1];
+			_data = new VoxelDataNode<Vector3<System.Int16>, ChunkPrimer>[_allocSize + 1];
 		}
 
-		public bool Set(System.Int16 x, System.Int16 y, System.Int16 z, ChunkData value)
+		public bool Set(System.Int16 x, System.Int16 y, System.Int16 z, ChunkPrimer value)
 		{
 			if (_allocSize == 0)
 				this.Create(0xFF);
@@ -70,7 +70,7 @@ namespace Cubizer
 
 			if (value != null)
 			{
-				_data[index] = new VoxelDataNode<Vector3<System.Int16>, ChunkData>(new Vector3<System.Int16>(x, y, z), value);
+				_data[index] = new VoxelDataNode<Vector3<System.Int16>, ChunkPrimer>(new Vector3<System.Int16>(x, y, z), value);
 				_count++;
 
 				if (_count >= _allocSize)
@@ -82,12 +82,12 @@ namespace Cubizer
 			return false;
 		}
 
-		public bool Set(Vector3<System.Int16> pos, ChunkData value)
+		public bool Set(Vector3<System.Int16> pos, ChunkPrimer value)
 		{
 			return Set(pos.x, pos.y, pos.z, value);
 		}
 
-		public bool Get(System.Int16 x, System.Int16 y, System.Int16 z, ref ChunkData chunk)
+		public bool Get(System.Int16 x, System.Int16 y, System.Int16 z, ref ChunkPrimer chunk)
 		{
 			if (_allocSize == 0)
 				return false;
@@ -112,14 +112,14 @@ namespace Cubizer
 			return false;
 		}
 
-		public bool Get(Vector3<System.Int16> pos, ref ChunkData instanceID)
+		public bool Get(Vector3<System.Int16> pos, ref ChunkPrimer instanceID)
 		{
 			return this.Get(pos.x, pos.y, pos.z, ref instanceID);
 		}
 
 		public bool Exists(System.Int16 x, System.Int16 y, System.Int16 z)
 		{
-			ChunkData instanceID = null;
+			ChunkPrimer instanceID = null;
 			return this.Get(x, y, z, ref instanceID);
 		}
 
@@ -128,9 +128,9 @@ namespace Cubizer
 			return _count == 0;
 		}
 
-		public VoxelDataNodeEnumerable<Vector3<System.Int16>, ChunkData> GetEnumerator()
+		public VoxelDataNodeEnumerable<Vector3<System.Int16>, ChunkPrimer> GetEnumerator()
 		{
-			return new VoxelDataNodeEnumerable<Vector3<System.Int16>, ChunkData>(_data);
+			return new VoxelDataNodeEnumerable<Vector3<System.Int16>, ChunkPrimer>(_data);
 		}
 
 		public static bool Save(string path, ChunkDataManager _self)
@@ -156,7 +156,7 @@ namespace Cubizer
 			}
 		}
 
-		private bool Grow(VoxelDataNode<Vector3<System.Int16>, ChunkData> data)
+		private bool Grow(VoxelDataNode<Vector3<System.Int16>, ChunkPrimer> data)
 		{
 			var pos = data.position;
 			var index = HashInt(pos.x, pos.y, pos.z) & _allocSize;

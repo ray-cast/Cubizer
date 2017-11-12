@@ -4,13 +4,23 @@ using System.Collections;
 namespace Cubizer
 {
 	[DisallowMultipleComponent]
-	[RequireComponent(typeof(Terrain))]
 	[AddComponentMenu("Cubizer/TerrainPickCtrl")]
 	public class TerrainPickCtrl : MonoBehaviour
 	{
-		[SerializeField] private Mesh _drawPickMesh;
-		[SerializeField] private Material _drawPickMaterial;
-		[SerializeField] private LiveBehaviour _block;
+		[SerializeField]
+		private Camera _player;
+
+		[SerializeField]
+		private Terrain _terrain;
+
+		[SerializeField]
+		private LiveBehaviour _block;
+
+		[SerializeField]
+		private Mesh _drawPickMesh;
+
+		[SerializeField]
+		private Material _drawPickMaterial;
 
 		[SerializeField] private bool _isHitTestEnable = true;
 		[SerializeField] private bool _isHitTestWireframe = true;
@@ -18,7 +28,11 @@ namespace Cubizer
 
 		[SerializeField] private int _hitTestDistance = 8;
 
-		private Terrain _terrain;
+		public Terrain terrain
+		{
+			set { _terrain = value; }
+			get { return _terrain; }
+		}
 
 		public Mesh drawPickMesh
 		{
@@ -58,13 +72,20 @@ namespace Cubizer
 
 		private void Start()
 		{
+			if (_terrain == null)
+				_terrain = GetComponent<Terrain>();
+
+			if (_terrain == null)
+				UnityEngine.Debug.LogError("Please assign a terrain on the inspector");
+
+			if (_player == null)
+				UnityEngine.Debug.LogError("Please assign a camera on the inspector.");
+
 			if (_drawPickMesh == null)
 				UnityEngine.Debug.LogError("Please assign a material on the inspector");
 
 			if (_drawPickMaterial == null)
 				UnityEngine.Debug.LogError("Please assign a mesh on the inspector");
-
-			_terrain = this.GetComponent<Terrain>();
 		}
 
 		private void Reset()
@@ -103,12 +124,18 @@ namespace Cubizer
 			if (_isHitTestWireframe)
 			{
 				byte x, y, z;
-				ChunkData chunk = null;
+				ChunkPrimer chunk = null;
 
-				if (_terrain.HitTestByScreenPos(Input.mousePosition, _hitTestDistance, ref chunk, out x, out y, out z))
+				if (_terrain != null)
 				{
-					var position = new Vector3(chunk.position.x, chunk.position.y, chunk.position.z) * _terrain.chunkSize + new Vector3(x, y, z);
-					Graphics.DrawMesh(mesh, position, Quaternion.identity, material, gameObject.layer, Camera.main);
+					var ray = _player.ScreenPointToRay(Input.mousePosition);
+					ray.origin = _player.transform.position;
+
+					if (_terrain.HitTestByRay(ray, _hitTestDistance, ref chunk, out x, out y, out z))
+					{
+						var position = new Vector3(chunk.position.x, chunk.position.y, chunk.position.z) * _terrain.chunkSize + new Vector3(x, y, z);
+						Graphics.DrawMesh(mesh, position, Quaternion.identity, material, gameObject.layer, _player);
+					}
 				}
 			}
 		}
@@ -120,7 +147,7 @@ namespace Cubizer
 
 			_isHitTesting = true;
 
-			if (_block != null)
+			if (_terrain != null && _block != null)
 				_terrain.AddBlockByScreenPos(Input.mousePosition, _hitTestDistance, _block.material);
 
 			yield return new WaitWhile(() => Input.GetMouseButton(1));
@@ -135,7 +162,8 @@ namespace Cubizer
 
 			_isHitTesting = true;
 
-			_terrain.RemoveBlockByScreenPos(Input.mousePosition, _hitTestDistance);
+			if (_terrain != null)
+				_terrain.RemoveBlockByScreenPos(Input.mousePosition, _hitTestDistance);
 
 			yield return new WaitWhile(() => Input.GetMouseButton(0));
 

@@ -1,6 +1,6 @@
 ﻿namespace Cubizer
 {
-	public struct VoxelVisiableFaces
+	public unsafe struct VoxelVisiableFaces
 	{
 		public bool left;
 		public bool right;

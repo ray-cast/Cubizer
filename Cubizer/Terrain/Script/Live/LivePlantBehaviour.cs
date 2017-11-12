@@ -42,12 +42,12 @@ namespace Cubizer
 			{0, 3, 1, 0, 2, 3}
 		};
 
-		public override uint GetVerticesCount(uint faceCount)
+		public override int GetVerticesCount(int faceCount)
 		{
 			return (faceCount / 6) * 16;
 		}
 
-		public override uint GetIndicesCount(uint faceCount)
+		public override int GetIndicesCount(int faceCount)
 		{
 			return (faceCount / 6) * 24;
 		}
@@ -78,7 +78,7 @@ namespace Cubizer
 			}
 		}
 
-		public override bool OnUpdateChunk(ref ChunkData map, System.Byte x, System.Byte y, System.Byte z)
+		public override bool OnUpdateChunk(ref ChunkPrimer map, System.Byte x, System.Byte y, System.Byte z)
 		{
 			return false;
 		}

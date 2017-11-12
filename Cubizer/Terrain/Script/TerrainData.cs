@@ -20,12 +20,12 @@ namespace Cubizer
 	[AddComponentMenu("Cubizer/TerrainData")]
 	public class TerrainData : MonoBehaviour
 	{
-		private ChunkData _chunk;
+		private ChunkPrimer _chunk;
 
 		private float _repeatRateUpdate = 2.0f;
 		private Dictionary<LiveBehaviour, List<ChunkPosition>> _chunkEntitiesDynamic;
 
-		public ChunkData chunk
+		public ChunkPrimer chunk
 		{
 			set
 			{
@@ -67,17 +67,13 @@ namespace Cubizer
 			if (cruncher == null)
 				return;
 
-			var entities = new Dictionary<string, uint>();
+			var entities = new Dictionary<string, int>();
 			if (cruncher.CalcFaceCountAsAllocate(ref entities) == 0)
 				return;
 
 			foreach (var entity in entities)
 			{
-				var actor = GameResources.Load(entity.Key);
-				if (actor == null)
-					continue;
-
-				var controller = actor.GetComponent<LiveBehaviour>();
+				var controller = LiveResources.Load(entity.Key);
 				if (controller == null)
 					continue;
 
@@ -117,12 +113,12 @@ namespace Cubizer
 					mesh.triangles = data.triangles;
 
 					var gameObject = new GameObject(entity.Key);
-					gameObject.isStatic = actor.isStatic;
-					gameObject.layer = actor.layer;
+					gameObject.isStatic = controller.gameObject.isStatic;
+					gameObject.layer = controller.gameObject.layer;
 					gameObject.transform.parent = this.transform;
 					gameObject.transform.position = this.transform.position;
 
-					var renderer = actor.GetComponent<MeshRenderer>();
+					var renderer = controller.GetComponent<MeshRenderer>();
 					if (renderer != null)
 					{
 						gameObject.AddComponent<MeshFilter>().mesh = mesh;
@@ -132,7 +128,7 @@ namespace Cubizer
 						clone.shadowCastingMode = renderer.shadowCastingMode;
 					}
 
-					var collider = actor.GetComponent<Collider>();
+					var collider = controller.GetComponent<Collider>();
 					if (collider != null)
 					{
 						var type = collider.GetType();
@@ -173,14 +169,13 @@ namespace Cubizer
 
 		public void Start()
 		{
+			Debug.Assert(transform.parent != null);
+
 			if (_chunk != null)
 			{
-				if (transform.parent != null)
-				{
-					var terrain = transform.parent.GetComponent<Terrain>();
-					if (terrain != null)
-						terrain.chunks.Set(chunk.position, chunk);
-				}
+				var terrain = transform.parent.GetComponent<Terrain>();
+				if (terrain != null)
+					terrain.chunks.Set(chunk.position, chunk);
 
 				if (_chunk.voxels.count > 0)
 					this.UpdateChunk();
