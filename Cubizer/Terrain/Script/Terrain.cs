@@ -15,10 +15,7 @@ namespace Cubizer
 		public TerrainDelegates.OnSaveData onSaveData;
 		public TerrainDelegates.OnLoadData onLoadData;
 
-		private TerrainBiome _terrainBiome;
-
 		private ChunkDataManager _chunks;
-		private ChunkGeneratorManager _chunkGenerator;
 
 		public ChunkDataManager chunks { get { return _chunks; } }
 
@@ -59,27 +56,6 @@ namespace Cubizer
 			UnityEngine.Debug.Assert(_chunkSize > 0);
 
 			_chunks = new ChunkDataManager(_chunkSize);
-
-			var terrainGenerator = GameObject.Find("TerrainGenerator");
-			if (terrainGenerator != null)
-				terrainGenerator.GetComponent<ChunkGeneratorManager>().terrain = this;
-			else
-			{
-				var biome = new GameObject("TerrainGenerator");
-				biome.AddComponent<ChunkGeneratorManager>().terrain = this;
-			}
-
-			var terrainBiome = GameObject.Find("TerrainBiome");
-			if (terrainBiome != null)
-				terrainBiome.GetComponent<TerrainBiome>().terrain = this;
-			else
-			{
-				var biome = new GameObject("TerrainBiome");
-				biome.AddComponent<TerrainBiome>().terrain = this;
-			}
-
-			_terrainBiome = terrainBiome.GetComponent<TerrainBiome>();
-			_chunkGenerator = terrainGenerator.GetComponent<ChunkGeneratorManager>();
 		}
 
 		public bool HitTestByRay(Ray ray, int hitDistance, ref ChunkData chunk, out byte outX, out byte outY, out byte outZ, ref ChunkData lastChunk, out byte lastX, out byte lastY, out byte lastZ)

@@ -5,7 +5,8 @@ namespace Cubizer
 {
 	public abstract class TerrainBiomeGenerator : MonoBehaviour
 	{
-		[SerializeField] private ChunkGenerator _chunkGenerator;
+		[SerializeField]
+		private ChunkGenerator _chunkGenerator;
 
 		public abstract void OnBuildBiome();
 	}

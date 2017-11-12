@@ -1,9 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+﻿using System.Collections;
 
 using UnityEngine;
 
@@ -54,12 +49,14 @@ namespace Cubizer
 				UnityEngine.Debug.LogError("Please drag a Camera into Hierarchy View.");
 
 			if (_terrainBiome == null)
-				UnityEngine.Debug.LogError("Please drag a TerrainGenerator into Hierarchy View.");
+				UnityEngine.Debug.LogError("Please drag a TerrainBiome into Hierarchy View.");
 
 			if (_terrainGenerator == null)
 				UnityEngine.Debug.LogError("Please drag a TerrainGenerator into Hierarchy View.");
 
 			_terrain = GetComponent<Terrain>();
+			_terrainBiome.GetComponent<TerrainBiome>().terrain = _terrain;
+			_terrainGenerator.GetComponent<ChunkGeneratorManager>().terrain = _terrain;
 		}
 
 		private void Reset()
@@ -75,12 +72,12 @@ namespace Cubizer
 			{
 				_terrain.UpdateChunkForDestroy(transform, _chunkRadiusGC);
 
-				var script = _terrainGenerator.transform.GetChild(0).gameObject.GetComponent<ChunkGenerator>();
-				if (script)
+				var generator = _terrainGenerator.transform.GetChild(0).gameObject.GetComponent<ChunkGenerator>();
+				if (generator)
 				{
 					_terrain.UpdateChunkForCreate(
 						_camera,
-						script,
+						generator,
 						new Vector2Int[] { _chunkRadiusGenX, _chunkRadiusGenY, _chunkRadiusGenZ },
 						_chunkNumLimits,
 						_terrainHeightLimitLow,

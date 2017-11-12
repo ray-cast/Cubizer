@@ -10,6 +10,7 @@ namespace Cubizer
 	public class BasicObjectsGenerator : ChunkGenerator
 	{
 		public LiveBehaviour _materialGrass;
+		public LiveBehaviour _materialSand;
 		public LiveBehaviour _materialTree;
 		public LiveBehaviour _materialTreeLeaf;
 		public LiveBehaviour _materialFlower;
@@ -17,6 +18,7 @@ namespace Cubizer
 		public LiveBehaviour _materialObsidian;
 		public LiveBehaviour _materialWater;
 		public LiveBehaviour _materialCloud;
+		public LiveBehaviour _materialSoil;
 
 		public bool _isGenTree = true;
 		public bool _isGenWater = true;
@@ -26,6 +28,7 @@ namespace Cubizer
 		public bool _isGenGrass = true;
 		public bool _isGenObsidian = true;
 		public bool _isGenPlaneOnly = false;
+		public bool _isGenSoil = true;
 
 		public int _floorBase = 10;
 		public int _floorHeightLismit = 20;
@@ -35,6 +38,7 @@ namespace Cubizer
 		public int _layerObsidian = -10;
 
 		private VoxelMaterial _entityGrass;
+		private VoxelMaterial _entitySand;
 		private VoxelMaterial _entityTree;
 		private VoxelMaterial _entityTreeLeaf;
 		private VoxelMaterial _entityFlower;
@@ -42,11 +46,14 @@ namespace Cubizer
 		private VoxelMaterial _entityObsidian;
 		private VoxelMaterial _entityWater;
 		private VoxelMaterial _entityCloud;
+		private VoxelMaterial _entitySoil;
 
 		public void Start()
 		{
 			if (_materialGrass != null)
 				_entityGrass = _materialGrass.material;
+			if (_materialSand != null)
+				_entitySand = _materialSand.material;
 			if (_materialTree != null)
 				_entityTree = _materialTree.material;
 			if (_materialTreeLeaf != null)
@@ -61,6 +68,8 @@ namespace Cubizer
 				_entityWater = _materialWater.material;
 			if (_materialCloud != null)
 				_entityCloud = _materialCloud.material;
+			if (_materialCloud != null)
+				_entitySoil = _materialSoil.material;
 
 			if (_isGenTree && _entityTree == null)
 				UnityEngine.Debug.LogError("Please drag a Tree into Hierarchy View.");
@@ -68,6 +77,8 @@ namespace Cubizer
 				UnityEngine.Debug.LogError("Please drag a TreeLeaf into Hierarchy View.");
 			if ((_isGenGrass || _isGenPlaneOnly) && _entityGrass == null)
 				UnityEngine.Debug.LogError("Please drag a Grass into Hierarchy View.");
+			if (_isGenGrass && _entitySand == null)
+				UnityEngine.Debug.LogError("Please drag a Sand into Hierarchy View.");
 			if (_isGenFlower && _entityFlower == null)
 				UnityEngine.Debug.LogError("Please drag a Flower into Hierarchy View.");
 			if (_isGenWeed && _entityWeed == null)
@@ -78,6 +89,8 @@ namespace Cubizer
 				UnityEngine.Debug.LogError("Please drag a Water into Hierarchy View.");
 			if (_isGenCloud && _entityCloud == null)
 				UnityEngine.Debug.LogError("Please drag a Cloud into Hierarchy View.");
+			if (_isGenSoil && _entitySoil == null)
+				UnityEngine.Debug.LogError("Please drag a Soil into Hierarchy View.");
 		}
 
 		public override void OnCreateChunk(ChunkData map)
@@ -127,13 +140,20 @@ namespace Cubizer
 								map.voxels.Set(x, y, z, _entityGrass);
 						}
 
-						if (_isGenWater && h <= _floorBase - _floorHeightLismit * 0.2f)
+						var waterHeight = _floorBase - _floorHeightLismit * 0.2f;
+						if (_isGenWater && h < waterHeight)
 						{
 							for (byte y = h; y <= _floorBase - _floorHeightLismit * 0.2f; y++)
 								map.voxels.Set(x, y, z, _entityWater);
 						}
 						else
 						{
+							if (h == waterHeight)
+							{
+								if (f > 0.34 && f < 0.365)
+									map.voxels.Set(x, (byte)(h - 1), z, _entitySand);
+							}
+
 							if (_isGenWeed && Noise.simplex2(-dx * 0.1f, dz * 0.1f, 4, 0.8f, 2) > 0.7)
 								map.voxels.Set(x, h, z, _entityWeed);
 							else if (_isGenFlower && Noise.simplex2(dx * 0.05f, -dz * 0.05f, 4, 0.8f, 2) > 0.75)
@@ -174,6 +194,7 @@ namespace Cubizer
 					for (int z = 0; z < map.voxels.bound.y; z++)
 					{
 						int dx = offsetX + x;
+
 						int dz = offsetZ + z;
 
 						for (int y = 0; y < 8; y++)
@@ -185,16 +206,16 @@ namespace Cubizer
 						}
 					}
 				}
-			}
 
-			if (_isGenObsidian && layer == _layerObsidian)
-			{
-				for (byte x = 0; x < map.voxels.bound.x; x++)
+				if (_isGenObsidian && layer == _layerObsidian)
 				{
-					for (byte z = 0; z < map.voxels.bound.z; z++)
+					for (byte x = 0; x < map.voxels.bound.x; x++)
 					{
-						for (byte y = 0; y < 8; y++)
-							map.voxels.Set(x, y, z, _entityObsidian);
+						for (byte z = 0; z < map.voxels.bound.z; z++)
+						{
+							for (byte y = 0; y < 8; y++)
+								map.voxels.Set(x, y, z, _entityObsidian);
+						}
 					}
 				}
 			}

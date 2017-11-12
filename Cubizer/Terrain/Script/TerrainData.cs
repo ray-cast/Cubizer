@@ -63,7 +63,7 @@ namespace Cubizer
 				}
 			}
 
-			var cruncher = VoxelCruncher.CalcVoxelCruncher(_chunk.voxels, VoxelCruncherMode.Greedy);
+			var cruncher = VoxelCruncher.CalcVoxelCruncher(_chunk.voxels, VoxelCruncherMode.Culled);
 			if (cruncher == null)
 				return;
 
