@@ -8,13 +8,6 @@ namespace Cubizer
 {
 	using Vector3Int = Vector3<int>;
 
-	public class ChunkDataDelegates
-	{
-		public delegate void OnChunkChangeDelegate();
-
-		public delegate void OnDestroyDelegate();
-	}
-
 	[Serializable]
 	public class ChunkData
 	{
@@ -24,9 +17,6 @@ namespace Cubizer
 		[NonSerialized]
 		private ChunkDataDelegates.OnChunkChangeDelegate _onChunkChange;
 
-		[NonSerialized]
-		private ChunkDataManager _manager;
-
 		private Vector3<System.Int16> _position;
 		private VoxelData<VoxelMaterial> _voxels;
 
@@ -35,27 +25,6 @@ namespace Cubizer
 
 		public ChunkDataDelegates.OnChunkChangeDelegate onChunkChange { set { _onChunkChange = value; } get { return _onChunkChange; } }
 		public ChunkDataDelegates.OnDestroyDelegate onChunkDestroy { set { _onChunkDestroy = value; } get { return _onChunkDestroy; } }
-
-		public ChunkDataManager manager
-		{
-			set
-			{
-				if (_manager != value)
-				{
-					if (_manager != null)
-						_manager.Set(_position, null);
-
-					_manager = value;
-
-					if (_manager != null)
-						_manager.Set(_position, this);
-				}
-			}
-			get
-			{
-				return _manager;
-			}
-		}
 
 		public ChunkData(Vector3Int bound)
 		{
@@ -85,33 +54,6 @@ namespace Cubizer
 			_voxels = new VoxelData<VoxelMaterial>(bound_x, bound_y, bound_z, allocSize);
 		}
 
-		public bool GetForWrap(int x, int y, int z, ref VoxelMaterial instanceID)
-		{
-			UnityEngine.Debug.Assert(manager != null);
-
-			var pos = _position;
-
-			var ix = x;
-			var iy = y;
-			var iz = z;
-
-			while (ix < 0) { pos.x--; ix += _voxels.bound.x; };
-			while (iy < 0) { pos.y--; iy += _voxels.bound.y; };
-			while (iz < 0) { pos.z--; iz += _voxels.bound.z; };
-			while (ix > (_voxels.bound.x - 1)) { pos.x++; ix -= _voxels.bound.x; }
-			while (iy > (_voxels.bound.y - 1)) { pos.y++; iy -= _voxels.bound.y; }
-			while (iz > (_voxels.bound.z - 1)) { pos.z++; iz -= _voxels.bound.z; }
-
-			var chunk = this;
-			if (pos.x != _position.x || pos.y != _position.y || pos.z != _position.z)
-				manager.Get(pos, ref chunk);
-
-			if (chunk != null)
-				return chunk._voxels.Get((byte)ix, (byte)iy, (byte)iz, ref instanceID);
-
-			return false;
-		}
-
 		public float GetDistance(int x, int y, int z)
 		{
 			x = System.Math.Abs(this._position.x - x);
@@ -137,16 +79,6 @@ namespace Cubizer
 			using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
 			{
 				return new BinaryFormatter().Deserialize(stream) as ChunkData;
-			}
-		}
-
-		public static ChunkData Load(string path, ChunkDataManager manager)
-		{
-			using (var loadFile = new FileStream(path, FileMode.Open, FileAccess.Read))
-			{
-				var map = new BinaryFormatter().Deserialize(loadFile) as ChunkData;
-				map.manager = manager;
-				return map;
 			}
 		}
 

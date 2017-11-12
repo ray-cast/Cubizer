@@ -7,6 +7,7 @@ using Cubizer.Math;
 
 namespace Cubizer
 {
+	[AddComponentMenu("Cubizer/LivePlantBehaviour")]
 	public class LivePlantBehaviour : LiveBehaviour
 	{
 		public static Vector3[,] _positions = new Vector3[4, 4]
@@ -77,7 +78,7 @@ namespace Cubizer
 			}
 		}
 
-		public override bool OnUpdateChunk(ref ChunkData map, List<Vector3<System.Byte>> translate)
+		public override bool OnUpdateChunk(ref ChunkData map, System.Byte x, System.Byte y, System.Byte z)
 		{
 			return false;
 		}

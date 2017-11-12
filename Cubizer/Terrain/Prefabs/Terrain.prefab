@@ -96,7 +96,7 @@ MonoBehaviour:
   _camera: {fileID: 0}
   _terrainBiome: {fileID: 1161671301618372, guid: 076c491b99c8bbb4fa3ff7d93182c68a,
     type: 2}
-  _terrainGenerator: {fileID: 1957784267766072, guid: 008ad64dc1cc56e4794549bec07f9f4f,
+  _terrainGenerator: {fileID: 1006929406394994, guid: 999f6aed196e8cc4b84bd23d223abcb1,
     type: 2}
   _repeatRateUpdate: 0.1
 --- !u!114 &114692390754991416

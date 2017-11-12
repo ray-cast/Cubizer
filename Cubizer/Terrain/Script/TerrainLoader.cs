@@ -5,8 +5,10 @@ using UnityEngine;
 
 namespace Cubizer
 {
+	[ExecuteInEditMode]
 	[DisallowMultipleComponent]
 	[RequireComponent(typeof(Terrain))]
+	[AddComponentMenu("Cubizer/TerrainLoader")]
 	public class TerrainLoader : MonoBehaviour
 	{
 		public string rootPath;
@@ -35,8 +37,8 @@ namespace Cubizer
 			var data = chunk.GetComponent<TerrainData>();
 			if (data != null)
 			{
-				var archive = "chunk" + "_" + data.voxels.position.x + "_" + data.voxels.position.y + "_" + data.voxels.position.z;
-				CreateFile(archive, data.voxels);
+				var archive = "chunk" + "_" + data.chunk.position.x + "_" + data.chunk.position.y + "_" + data.chunk.position.z;
+				CreateFile(archive, data.chunk);
 			}
 		}
 

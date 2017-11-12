@@ -32,10 +32,10 @@ namespace Cubizer
 			if (count > 0) this.Create(count);
 		}
 
-		public void Create(int allocSize)
+		public void Create(int count)
 		{
 			int usage = 1;
-			while (usage < allocSize) usage = usage << 1 | 1;
+			while (usage < count) usage = usage << 1 | 1;
 
 			_count = 0;
 			_allocSize = usage;
@@ -70,7 +70,7 @@ namespace Cubizer
 
 			if (value != null)
 			{
-				_data[index] = new VoxelDataNode<Math.Vector3<System.Int16>, ChunkData>(new Math.Vector3<System.Int16>(x, y, z), value);
+				_data[index] = new VoxelDataNode<Vector3<System.Int16>, ChunkData>(new Vector3<System.Int16>(x, y, z), value);
 				_count++;
 
 				if (_count >= _allocSize)
@@ -87,7 +87,7 @@ namespace Cubizer
 			return Set(pos.x, pos.y, pos.z, value);
 		}
 
-		public bool Get(System.Int16 x, System.Int16 y, System.Int16 z, ref ChunkData instanceID)
+		public bool Get(System.Int16 x, System.Int16 y, System.Int16 z, ref ChunkData chunk)
 		{
 			if (_allocSize == 0)
 				return false;
@@ -100,15 +100,15 @@ namespace Cubizer
 				var pos = entry.position;
 				if (pos.x == x && pos.y == y && pos.z == z)
 				{
-					instanceID = entry.value;
-					return instanceID != null;
+					chunk = entry.value;
+					return chunk != null;
 				}
 
 				index = (index + 1) & _allocSize;
 				entry = _data[index];
 			}
 
-			instanceID = null;
+			chunk = null;
 			return false;
 		}
 

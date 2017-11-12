@@ -19,7 +19,6 @@ namespace Cubizer
 		public bool is_merge { get { return _merge; } }
 
 		public string name { set { _name = value; } get { return _name; } }
-		public string material { set { _material = value; } get { return _material; } }
 
 		public VoxelMaterial()
 		{
@@ -27,10 +26,9 @@ namespace Cubizer
 			_transparent = false;
 		}
 
-		public VoxelMaterial(string name, string material, bool transparent = false, bool dynamic = false, bool merge = true)
+		public VoxelMaterial(string name, bool transparent = false, bool dynamic = false, bool merge = true)
 		{
 			_name = name;
-			_material = material;
 			_dynamic = dynamic;
 			_merge = merge;
 			_transparent = transparent;

@@ -10,7 +10,7 @@ namespace Cubizer
 	{
 		public override void OnInspectorGUI()
 		{
-			TerrainData chunk = (TerrainData)target;
+			TerrainData data = (TerrainData)target;
 
 			base.DrawDefaultInspector();
 
@@ -22,12 +22,14 @@ namespace Cubizer
 				if (SelectedPath.Length == 0)
 					return;
 
-				var map = ChunkData.Load(SelectedPath, chunk.voxels.manager);
+				var map = ChunkData.Load(SelectedPath);
 				if (map != null)
 				{
-					map.position = chunk.voxels.position;
-					chunk.voxels = map;
-					chunk.UpdateChunk();
+					if (data.chunk != null)
+						map.position = data.chunk.position;
+
+					data.chunk = map;
+					data.UpdateChunk();
 
 					Debug.Log("Your data of chunk was loaded successfully");
 				}
@@ -43,7 +45,7 @@ namespace Cubizer
 				if (SelectedPath.Length == 0)
 					return;
 
-				var map = chunk.voxels;
+				var map = data.chunk;
 				if (map != null)
 				{
 					if (ChunkData.Save(SelectedPath, map))

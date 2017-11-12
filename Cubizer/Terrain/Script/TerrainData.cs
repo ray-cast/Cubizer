@@ -16,6 +16,8 @@ namespace Cubizer
 	}
 
 	[SelectionBase]
+	[DisallowMultipleComponent]
+	[AddComponentMenu("Cubizer/TerrainData")]
 	public class TerrainData : MonoBehaviour
 	{
 		private ChunkData _chunk;
@@ -23,15 +25,10 @@ namespace Cubizer
 		private float _repeatRateUpdate = 2.0f;
 		private Dictionary<LiveBehaviour, List<ChunkPosition>> _chunkEntitiesDynamic;
 
-		public ChunkData voxels
+		public ChunkData chunk
 		{
 			set
 			{
-				if (value != null)
-				{
-					Debug.Assert(value.manager != null);
-				}
-
 				if (_chunk != value)
 				{
 					if (_chunk != null)
@@ -107,7 +104,7 @@ namespace Cubizer
 
 				if (data.vertices.Length >= 65000)
 				{
-					Debug.LogError("Mesh vertices is too large");
+					Debug.LogError("Mesh vertices is too large: chunk is " + chunk.position.x + " " + chunk.position.y + " " + chunk.position.z);
 					continue;
 				}
 
@@ -157,7 +154,10 @@ namespace Cubizer
 			{
 				bool needUpdate = false;
 				foreach (var it in _chunkEntitiesDynamic)
-					needUpdate |= it.Key.OnUpdateChunk(ref _chunk, it.Value);
+				{
+					foreach (var pos in it.Value)
+						needUpdate |= it.Key.OnUpdateChunk(ref _chunk, pos.x, pos.y, pos.z);
+				}
 
 				if (needUpdate)
 					this.UpdateChunk();
@@ -175,6 +175,13 @@ namespace Cubizer
 		{
 			if (_chunk != null)
 			{
+				if (transform.parent != null)
+				{
+					var terrain = transform.parent.GetComponent<Terrain>();
+					if (terrain != null)
+						terrain.chunks.Set(chunk.position, chunk);
+				}
+
 				if (_chunk.voxels.count > 0)
 					this.UpdateChunk();
 			}
@@ -182,17 +189,22 @@ namespace Cubizer
 
 		public void OnDestroy()
 		{
-			_chunk.manager.Set(_chunk.position, null);
+			if (transform.parent != null)
+			{
+				var terrain = transform.parent.GetComponent<Terrain>();
+				if (terrain != null)
+					terrain.chunks.Set(chunk.position, null);
+			}
 		}
 
 		public void OnDrawGizmos()
 		{
-			if (voxels == null)
+			if (chunk == null)
 				return;
 
-			if (voxels.position.y == 0)
+			if (chunk.position.y == 0)
 			{
-				var bound = voxels.voxels.bound;
+				var bound = chunk.voxels.bound;
 
 				Vector3 pos = transform.position;
 				pos.x += (bound.x - 1) * 0.5f;

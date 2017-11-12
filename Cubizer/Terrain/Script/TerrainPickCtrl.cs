@@ -1,17 +1,16 @@
-﻿using System.Collections;
-
-using UnityEngine;
-using UnityEngine.Serialization;
+﻿using UnityEngine;
+using System.Collections;
 
 namespace Cubizer
 {
 	[DisallowMultipleComponent]
 	[RequireComponent(typeof(Terrain))]
+	[AddComponentMenu("Cubizer/TerrainPickCtrl")]
 	public class TerrainPickCtrl : MonoBehaviour
 	{
 		[SerializeField] private Mesh _drawPickMesh;
 		[SerializeField] private Material _drawPickMaterial;
-		[SerializeField] private GameObject _block;
+		[SerializeField] private LiveBehaviour _block;
 
 		[SerializeField] private bool _isHitTestEnable = true;
 		[SerializeField] private bool _isHitTestWireframe = true;
@@ -33,7 +32,7 @@ namespace Cubizer
 			get { return _drawPickMaterial; }
 		}
 
-		public GameObject block
+		public LiveBehaviour block
 		{
 			set { _block = value; }
 			get { return _block; }
@@ -122,10 +121,7 @@ namespace Cubizer
 			_isHitTesting = true;
 
 			if (_block != null)
-			{
-				var entity = new VoxelMaterial(_block.name, _block.name, false, false, false);
-				_terrain.AddEnitiyByScreenPos(Input.mousePosition, _hitTestDistance, entity);
-			}
+				_terrain.AddBlockByScreenPos(Input.mousePosition, _hitTestDistance, _block.material);
 
 			yield return new WaitWhile(() => Input.GetMouseButton(1));
 
@@ -139,7 +135,7 @@ namespace Cubizer
 
 			_isHitTesting = true;
 
-			_terrain.RemoveEnitiyByScreenPos(Input.mousePosition, _hitTestDistance);
+			_terrain.RemoveBlockByScreenPos(Input.mousePosition, _hitTestDistance);
 
 			yield return new WaitWhile(() => Input.GetMouseButton(0));
 

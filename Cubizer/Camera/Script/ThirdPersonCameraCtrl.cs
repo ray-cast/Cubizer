@@ -3,6 +3,7 @@
 namespace Cubizer
 {
 	[DisallowMultipleComponent]
+	[AddComponentMenu("Cubizer/ThirdPersonCameraCtrl")]
 	public class ThirdPersonCameraCtrl : MonoBehaviour
 	{
 		[SerializeField] private GameObject _target;
@@ -49,6 +50,11 @@ namespace Cubizer
 				_isCursorLocked = false;
 			else if (Input.GetMouseButtonUp(0))
 				_isCursorLocked = true;
+
+			if (_isCursorLocked)
+				Time.timeScale = 1;
+			else if (!_isCursorLocked)
+				Time.timeScale = 0;
 
 			if (_isCursorLocked)
 			{

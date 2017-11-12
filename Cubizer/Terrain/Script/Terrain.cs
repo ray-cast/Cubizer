@@ -5,23 +5,20 @@ using UnityEngine;
 
 namespace Cubizer
 {
-	public class TerrainDelegates
-	{
-		public delegate void OnSaveData(GameObject chunk);
-
-		public delegate bool OnLoadData(Vector3Int position, out ChunkData chunk);
-	}
-
 	[DisallowMultipleComponent]
+	[AddComponentMenu("Cubizer/Terrain")]
 	public class Terrain : MonoBehaviour
 	{
 		[SerializeField]
 		private int _chunkSize = 24;
 
-		private ChunkDataManager _chunks;
-
 		public TerrainDelegates.OnSaveData onSaveData;
 		public TerrainDelegates.OnLoadData onLoadData;
+
+		private TerrainBiome _terrainBiome;
+
+		private ChunkDataManager _chunks;
+		private ChunkGeneratorManager _chunkGenerator;
 
 		public ChunkDataManager chunks { get { return _chunks; } }
 
@@ -40,8 +37,19 @@ namespace Cubizer
 			}
 		}
 
+		public Terrain(int chunkSize = 24)
+		{
+			Debug.Assert(chunkSize > 0);
+
+			_chunks = new ChunkDataManager(chunkSize);
+			_chunkSize = chunkSize;
+		}
+
 		public Terrain(int chunkSize, ChunkDataManager chunks)
 		{
+			Debug.Assert(chunks != null);
+			Debug.Assert(chunkSize > 0);
+
 			_chunks = chunks;
 			_chunkSize = chunkSize;
 		}
@@ -51,6 +59,27 @@ namespace Cubizer
 			UnityEngine.Debug.Assert(_chunkSize > 0);
 
 			_chunks = new ChunkDataManager(_chunkSize);
+
+			var terrainGenerator = GameObject.Find("TerrainGenerator");
+			if (terrainGenerator != null)
+				terrainGenerator.GetComponent<ChunkGeneratorManager>().terrain = this;
+			else
+			{
+				var biome = new GameObject("TerrainGenerator");
+				biome.AddComponent<ChunkGeneratorManager>().terrain = this;
+			}
+
+			var terrainBiome = GameObject.Find("TerrainBiome");
+			if (terrainBiome != null)
+				terrainBiome.GetComponent<TerrainBiome>().terrain = this;
+			else
+			{
+				var biome = new GameObject("TerrainBiome");
+				biome.AddComponent<TerrainBiome>().terrain = this;
+			}
+
+			_terrainBiome = terrainBiome.GetComponent<TerrainBiome>();
+			_chunkGenerator = terrainGenerator.GetComponent<ChunkGeneratorManager>();
 		}
 
 		public bool HitTestByRay(Ray ray, int hitDistance, ref ChunkData chunk, out byte outX, out byte outY, out byte outZ, ref ChunkData lastChunk, out byte lastX, out byte lastY, out byte lastZ)
@@ -62,7 +91,7 @@ namespace Cubizer
 			lastChunk = null;
 			lastX = lastY = lastZ = outX = outY = outZ = 255;
 
-			if (!_chunks.Get(chunkX, chunkY, chunkZ, ref chunk))
+			if (!this.GetChunk(chunkX, chunkY, chunkZ, ref chunk))
 				return false;
 
 			Vector3 origin = ray.origin;
@@ -96,7 +125,7 @@ namespace Cubizer
 
 				if (isOutOfChunk)
 				{
-					if (!_chunks.Get(chunkX, chunkY, chunkZ, ref chunk))
+					if (!this.GetChunk(chunkX, chunkY, chunkZ, ref chunk))
 						return false;
 				}
 
@@ -134,9 +163,9 @@ namespace Cubizer
 			return this.HitTestByRay(ray, hitDistance, ref chunk, out outX, out outY, out outZ);
 		}
 
-		public bool AddEnitiyByRay(Ray ray, int hitDistance, VoxelMaterial entity)
+		public bool AddBlockByRay(Ray ray, int hitDistance, VoxelMaterial block)
 		{
-			Debug.Assert(entity != null);
+			Debug.Assert(block != null);
 
 			byte x, y, z, lx, ly, lz;
 			ChunkData chunkNow = null;
@@ -145,7 +174,7 @@ namespace Cubizer
 			if (HitTestByRay(ray, hitDistance, ref chunkNow, out x, out y, out z, ref chunkLast, out lx, out ly, out lz))
 			{
 				var chunk = chunkLast != null ? chunkLast : chunkNow;
-				chunk.voxels.Set(lx, ly, lz, entity);
+				chunk.voxels.Set(lx, ly, lz, block);
 				chunk.OnChunkChange();
 
 				return true;
@@ -154,14 +183,14 @@ namespace Cubizer
 			return false;
 		}
 
-		public bool AddEnitiyByScreenPos(Vector3 pos, int hitDistance, VoxelMaterial entity)
+		public bool AddBlockByScreenPos(Vector3 pos, int hitDistance, VoxelMaterial block)
 		{
 			var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			ray.origin = Camera.main.transform.position;
-			return this.AddEnitiyByRay(ray, hitDistance, entity);
+			return this.AddBlockByRay(ray, hitDistance, block);
 		}
 
-		public bool RemoveEnitiyByRay(Ray ray, int hitDistance)
+		public bool RemoveBlockByRay(Ray ray, int hitDistance)
 		{
 			byte x, y, z;
 			ChunkData chunk = null;
@@ -177,11 +206,16 @@ namespace Cubizer
 			return false;
 		}
 
-		public bool RemoveEnitiyByScreenPos(Vector3 pos, int hitDistance)
+		public bool RemoveBlockByScreenPos(Vector3 pos, int hitDistance)
 		{
 			var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			ray.origin = Camera.main.transform.position;
-			return this.RemoveEnitiyByRay(ray, hitDistance);
+			return this.RemoveBlockByRay(ray, hitDistance);
+		}
+
+		public bool GetChunk(System.Int16 x, System.Int16 y, System.Int16 z, ref ChunkData chunk)
+		{
+			return _chunks.Get(x, y, z, ref chunk);
 		}
 
 		public bool GetEmptryChunkPos(Vector3 translate, Plane[] planes, Vector2Int[] radius, out Vector3Int position)
@@ -238,8 +272,7 @@ namespace Cubizer
 			for (int i = 0; i < transform.childCount; i++)
 			{
 				var transformChild = transform.GetChild(i);
-				transformChild.parent = null;
-				GameObject.Destroy(transformChild.gameObject);
+				Destroy(transformChild.gameObject);
 			}
 		}
 
@@ -256,8 +289,7 @@ namespace Cubizer
 					if (onSaveData != null)
 						onSaveData(transformChild.gameObject);
 
-					transformChild.parent = null;
-					GameObject.Destroy(transformChild.gameObject);
+					Destroy(transformChild.gameObject);
 					break;
 				}
 			}
@@ -287,17 +319,17 @@ namespace Cubizer
 
 			if (chunk != null)
 			{
-				chunk.manager = _chunks;
-
 				var gameObject = new GameObject("Chunk");
 				gameObject.transform.parent = transform;
 				gameObject.transform.position = position * _chunkSize;
-				gameObject.AddComponent<TerrainData>().voxels = chunk;
+				gameObject.AddComponent<TerrainData>().chunk = chunk;
 			}
 		}
 
 		public bool Save(string path)
 		{
+			Debug.Assert(path != null);
+
 			using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write))
 			{
 				var serializer = new BinaryFormatter();
@@ -309,6 +341,8 @@ namespace Cubizer
 
 		public bool Load(string path)
 		{
+			Debug.Assert(path != null);
+
 			using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
 			{
 				if (stream == null)
@@ -328,12 +362,10 @@ namespace Cubizer
 
 				foreach (var chunk in _chunks.GetEnumerator())
 				{
-					chunk.value.manager = _chunks;
-
 					var gameObject = new GameObject("Chunk");
 					gameObject.transform.parent = transform;
 					gameObject.transform.position = new Vector3(chunk.position.x, chunk.position.y, chunk.position.z) * _chunkSize;
-					gameObject.AddComponent<TerrainData>().voxels = chunk.value;
+					gameObject.AddComponent<TerrainData>().chunk = chunk.value;
 				}
 
 				return true;

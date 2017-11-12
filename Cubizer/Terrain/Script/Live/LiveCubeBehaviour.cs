@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace Cubizer
 {
+	[AddComponentMenu("Cubizer/LiveCubeBehaviour")]
 	public class LiveCubeBehaviour : LiveBehaviour
 	{
 		private static Vector3[,] _positions = new Vector3[6, 4]
@@ -57,7 +58,7 @@ namespace Cubizer
 			return faceCount * 6;
 		}
 
-		public override bool OnUpdateChunk(ref ChunkData map, List<Math.Vector3<System.Byte>> translate)
+		public override bool OnUpdateChunk(ref ChunkData map, System.Byte x, System.Byte y, System.Byte z)
 		{
 			return false;
 		}

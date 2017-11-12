@@ -20,14 +20,14 @@ namespace Cubizer
 
 			if (material.is_transparent)
 			{
-				var name = material.material;
+				var name = material.name;
 
-				bool f1 = (instanceID[0] == null) ? true : instanceID[0].material != name ? true : false;
-				bool f2 = (instanceID[1] == null) ? true : instanceID[1].material != name ? true : false;
-				bool f3 = (instanceID[2] == null) ? true : instanceID[2].material != name ? true : false;
-				bool f4 = (instanceID[3] == null) ? true : instanceID[3].material != name ? true : false;
-				bool f5 = (instanceID[4] == null) ? true : instanceID[4].material != name ? true : false;
-				bool f6 = (instanceID[5] == null) ? true : instanceID[5].material != name ? true : false;
+				bool f1 = (instanceID[0] == null) ? true : instanceID[0].name != name ? true : false;
+				bool f2 = (instanceID[1] == null) ? true : instanceID[1].name != name ? true : false;
+				bool f3 = (instanceID[2] == null) ? true : instanceID[2].name != name ? true : false;
+				bool f4 = (instanceID[3] == null) ? true : instanceID[3].name != name ? true : false;
+				bool f5 = (instanceID[4] == null) ? true : instanceID[4].name != name ? true : false;
+				bool f6 = (instanceID[5] == null) ? true : instanceID[5].name != name ? true : false;
 
 				if (material.is_merge)
 				{

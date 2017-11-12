@@ -7,6 +7,7 @@ using Cubizer.Math;
 
 namespace Cubizer
 {
+	[AddComponentMenu("Cubizer/LiveMeshBehaviour")]
 	public class LiveMeshBehaviour : LiveBehaviour
 	{
 		public Mesh _mesh;
@@ -21,7 +22,7 @@ namespace Cubizer
 			return (uint)((faceCount / 6) * _mesh.triangles.Length);
 		}
 
-		public override bool OnUpdateChunk(ref ChunkData map, List<Vector3<System.Byte>> translate)
+		public override bool OnUpdateChunk(ref ChunkData map, System.Byte x, System.Byte y, System.Byte z)
 		{
 			return false;
 		}
