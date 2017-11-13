@@ -64,37 +64,41 @@ namespace Cubizer
 			if (!_biomes.Get(x, y, z, ref biomeData))
 				biomeData = this.buildBiome(x, y, z);
 
-			var biomes = new Vector3Int[6];
-			biomes[0] = new Vector3Int(x - 1, y, z);
-			biomes[1] = new Vector3Int(x, y - 1, z);
-			biomes[2] = new Vector3Int(x, y, z - 1);
-			biomes[3] = new Vector3Int(x + 1, y, z);
-			biomes[4] = new Vector3Int(x, y + 1, z);
-			biomes[5] = new Vector3Int(x, y, z + 1);
-
-			for (int j = 0; j < 6; j++)
+			if (biomeData.chunkGenerator != null)
 			{
-				if (_biomes.Exists(biomes[j].x, biomes[j].y, biomes[j].z))
-					continue;
+				var biomes = new Vector3Int[6];
+				biomes[0] = new Vector3Int(x - 1, y, z);
+				biomes[1] = new Vector3Int(x, y - 1, z);
+				biomes[2] = new Vector3Int(x, y, z - 1);
+				biomes[3] = new Vector3Int(x + 1, y, z);
+				biomes[4] = new Vector3Int(x, y + 1, z);
+				biomes[5] = new Vector3Int(x, y, z + 1);
 
-				BiomeData biomeTemp = null;
-				for (int i = 0; i < transform.childCount; i++)
+				for (int j = 0; j < 6; j++)
 				{
-					var biomeGenerator = transform.GetChild(i).GetComponent<BiomeGenerator>();
+					if (_biomes.Exists(biomes[j].x, biomes[j].y, biomes[j].z))
+						continue;
 
-					biomeTemp = biomeGenerator.OnBuildBiome((short)biomes[j].x, (short)biomes[j].y, (short)biomes[j].z);
-					if (biomeTemp != null)
-						break;
+					BiomeData biomeTemp = null;
+					for (int i = 0; i < transform.childCount; i++)
+					{
+						var biomeGenerator = transform.GetChild(i).GetComponent<BiomeGenerator>();
+
+						biomeTemp = biomeGenerator.OnBuildBiome((short)biomes[j].x, (short)biomes[j].y, (short)biomes[j].z);
+						if (biomeTemp != null)
+							break;
+					}
+
+					if (biomeTemp == null)
+						biomeTemp = _biomeNull;
+
+					_biomes.Set((short)biomes[j].x, (short)biomes[j].y, (short)biomes[j].z, biomeTemp);
 				}
-
-				if (biomeTemp == null)
-					biomeTemp = _biomeNull;
-
-				_biomes.Set((short)biomes[j].x, (short)biomes[j].y, (short)biomes[j].z, biomeTemp);
 			}
 
-			var chunk = new ChunkPrimer(_terrain.chunkSize, _terrain.chunkSize, _terrain.chunkSize, x, y, z);
-			biomeData.OnBuildChunk(_terrain, chunk);
+			var chunk = biomeData.OnBuildChunk(_terrain, x, y, z);
+			if (chunk == null)
+				chunk = new ChunkPrimer(_terrain.chunkSize, _terrain.chunkSize, _terrain.chunkSize, x, y, z);
 
 			return chunk;
 		}

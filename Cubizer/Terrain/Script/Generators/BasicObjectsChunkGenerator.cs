@@ -33,33 +33,36 @@ namespace Cubizer
 				UnityEngine.Debug.LogError("Please drag a Soil into Hierarchy View.");
 		}
 
-		public void BuildPlaneOnly(ChunkPrimer map)
+		public ChunkPrimer BuildPlaneOnly(Terrain terrain, short x, short y, short z)
 		{
-			byte h = (byte)_params.floorBase;
-			for (byte x = 0; x < map.voxels.bound.x; x++)
+			var map = new ChunkPrimer(terrain.chunkSize, terrain.chunkSize, terrain.chunkSize, x, y, z, terrain.chunkSize * terrain.chunkSize * _params.floorBase);
+
+			for (byte ix = 0; ix < map.voxels.bound.x; ix++)
 			{
-				for (byte z = 0; z < map.voxels.bound.z; z++)
+				for (byte iz = 0; iz < map.voxels.bound.z; iz++)
 				{
-					for (byte y = 0; y < h; y++)
-						map.voxels.Set(x, y, z, _materials.grass);
+					for (byte iy = 0; iy < _params.floorBase; iy++)
+						map.voxels.Set(ix, iy, iz, _materials.grass);
 				}
 			}
+
+			return map;
 		}
 
-		public void BuildGrassland(ChunkPrimer map)
+		public ChunkPrimer BuildGrassland(Terrain terrain, short x, short y, short z)
 		{
-			var pos = map.position;
+			var map = new ChunkPrimer(terrain.chunkSize, terrain.chunkSize, terrain.chunkSize, x, y, z, terrain.chunkSize * terrain.chunkSize * _params.floorBase);
 
-			int offsetX = pos.x * map.voxels.bound.x;
-			int offsetY = pos.y * map.voxels.bound.y;
-			int offsetZ = pos.z * map.voxels.bound.z;
+			int offsetX = x * map.voxels.bound.x;
+			int offsetY = y * map.voxels.bound.y;
+			int offsetZ = z * map.voxels.bound.z;
 
-			for (byte x = 0; x < map.voxels.bound.x; x++)
+			for (byte ix = 0; ix < map.voxels.bound.x; ix++)
 			{
-				for (byte z = 0; z < map.voxels.bound.z; z++)
+				for (byte iz = 0; iz < map.voxels.bound.z; iz++)
 				{
-					int dx = offsetX + x;
-					int dz = offsetZ + z;
+					int dx = offsetX + ix;
+					int dz = offsetZ + iz;
 
 					float f = Noise.simplex2(dx * 0.01f, dz * 0.01f, 4, 0.4f, 2);
 
@@ -67,111 +70,118 @@ namespace Cubizer
 
 					if (_params.isGenGrass)
 					{
-						for (byte y = 0; y < h; y++)
-							map.voxels.Set(x, y, z, _materials.grass);
+						for (byte iy = 0; iy < h; iy++)
+							map.voxels.Set(ix, iy, iz, _materials.grass);
 					}
 
 					var waterHeight = _params.floorBase - _params.floorHeightLismit * 0.2f;
 					if (_params.isGenWater && h < waterHeight)
 					{
-						for (byte y = h; y <= _params.floorBase - _params.floorHeightLismit * 0.2f; y++)
-							map.voxels.Set(x, y, z, _materials.water);
+						for (byte iy = h; iy <= _params.floorBase - _params.floorHeightLismit * 0.2f; iy++)
+							map.voxels.Set(ix, iy, iz, _materials.water);
 					}
 					else
 					{
 						if (h == waterHeight)
 						{
 							if (f > 0.34 && f < 0.365)
-								map.voxels.Set(x, (byte)(h - 1), z, _materials.sand);
+								map.voxels.Set(ix, (byte)(h - 1), iz, _materials.sand);
 						}
 
 						if (_params.isGenWeed && Noise.simplex2(-dx * 0.1f, dz * 0.1f, 4, 0.8f, 2) > 0.7)
-							map.voxels.Set(x, h, z, _materials.weed);
+							map.voxels.Set(ix, h, iz, _materials.weed);
 						else if (_params.isGenFlower && Noise.simplex2(dx * 0.05f, -dz * 0.05f, 4, 0.8f, 2) > 0.75)
-							map.voxels.Set(x, h, z, _materials.flower);
+							map.voxels.Set(ix, h, iz, _materials.flower);
 						else if (_params.isGenTree && h < map.voxels.bound.y - 8)
 						{
-							if (x > 3 && x < map.voxels.bound.y - 3 && z > 3 && z < map.voxels.bound.y - 3)
+							if (ix > 3 && ix < map.voxels.bound.y - 3 && iz > 3 && iz < map.voxels.bound.y - 3)
 							{
 								if (Noise.simplex2(dx, dz, 6, 0.5f, 2) > 0.84)
 								{
-									for (int y = h + 3; y < h + 8; y++)
+									for (int iy = h + 3; iy < h + 8; iy++)
 									{
 										for (int ox = -3; ox <= 3; ox++)
 										{
 											for (int oz = -3; oz <= 3; oz++)
 											{
-												int d = (ox * ox) + (oz * oz) + (y - (h + 4)) * (y - (h + 4));
+												int d = (ox * ox) + (oz * oz) + (iy - (h + 4)) * (iy - (h + 4));
 												if (d < 11)
-													map.voxels.Set((byte)(x + ox), (byte)y, (byte)(z + oz), _materials.treeLeaf);
+													map.voxels.Set((byte)(ix + ox), (byte)iy, (byte)(iz + oz), _materials.treeLeaf);
 											}
 										}
 									}
 
-									for (byte y = h; y < h + 7; y++)
-										map.voxels.Set(x, y, z, _materials.tree);
+									for (byte iy = h; iy < h + 7; iy++)
+										map.voxels.Set(ix, iy, iz, _materials.tree);
 								}
 							}
 						}
 					}
 				}
 			}
+
+			return map;
 		}
 
-		public void BuildClouds(ChunkPrimer map)
+		public ChunkPrimer BuildClouds(Terrain terrain, short x, short y, short z)
 		{
-			var pos = map.position;
+			var map = new ChunkPrimer(terrain.chunkSize, terrain.chunkSize, terrain.chunkSize, x, y, z);
 
-			int offsetX = pos.x * map.voxels.bound.x;
-			int offsetY = pos.y * map.voxels.bound.y;
-			int offsetZ = pos.z * map.voxels.bound.z;
+			int offsetX = x * map.voxels.bound.x;
+			int offsetY = y * map.voxels.bound.y;
+			int offsetZ = z * map.voxels.bound.z;
 
-			for (int x = 0; x < map.voxels.bound.x; x++)
+			for (int ix = 0; ix < map.voxels.bound.x; ix++)
 			{
-				for (int z = 0; z < map.voxels.bound.y; z++)
+				for (int iz = 0; iz < map.voxels.bound.y; iz++)
 				{
-					int dx = offsetX + x;
+					int dx = offsetX + ix;
+					int dz = offsetZ + iz;
 
-					int dz = offsetZ + z;
-
-					for (int y = 0; y < 8; y++)
+					for (int iy = 0; iy < 8; iy++)
 					{
-						int dy = offsetY + y;
+						int dy = offsetY + iy;
 
 						if (Noise.simplex3(dx * 0.01f, dy * 0.1f, dz * 0.01f, 8, 0.5f, 2) > 0.75)
-							map.voxels.Set((byte)x, (byte)y, (byte)z, _materials.cloud);
+							map.voxels.Set((byte)ix, (byte)iy, (byte)iz, _materials.cloud);
 					}
 				}
 			}
+
+			return map;
 		}
 
-		public void buildObsidian(ChunkPrimer map)
+		public ChunkPrimer buildObsidian(Terrain terrain, short x, short y, short z)
 		{
-			for (byte x = 0; x < map.voxels.bound.x; x++)
+			var map = new ChunkPrimer(terrain.chunkSize, terrain.chunkSize, terrain.chunkSize, x, y, z, terrain.chunkSize * terrain.chunkSize * 8);
+
+			for (byte ix = 0; ix < map.voxels.bound.x; ix++)
 			{
-				for (byte z = 0; z < map.voxels.bound.z; z++)
+				for (byte iz = 0; iz < map.voxels.bound.z; iz++)
 				{
-					for (byte y = 0; y < 8; y++)
-						map.voxels.Set(x, y, z, _materials.obsidian);
+					for (byte iy = 0; iy < 8; iy++)
+						map.voxels.Set(ix, iy, iz, _materials.obsidian);
 				}
 			}
+
+			return map;
 		}
 
-		public override void OnCreateChunk(ChunkPrimer map)
+		public override ChunkPrimer OnCreateChunk(Terrain terrain, short x, short y, short z)
 		{
 			switch (_params.layer)
 			{
 				case BasicObjectBiomeType.Plane:
-					this.BuildPlaneOnly(map);
-					break;
+					return BuildPlaneOnly(terrain, x, y, z);
 
 				case BasicObjectBiomeType.Clound:
-					this.BuildClouds(map);
-					break;
+					return BuildClouds(terrain, x, y, z);
 
 				case BasicObjectBiomeType.Grassland:
-					this.BuildGrassland(map);
-					break;
+					return BuildGrassland(terrain, x, y, z);
+
+				default:
+					return null;
 			}
 		}
 	}

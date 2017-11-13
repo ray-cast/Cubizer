@@ -2,6 +2,6 @@
 {
 	public abstract class ChunkGenerator
 	{
-		public abstract void OnCreateChunk(ChunkPrimer map);
+		public abstract ChunkPrimer OnCreateChunk(Terrain terrain, short x, short y, short z);
 	}
 }

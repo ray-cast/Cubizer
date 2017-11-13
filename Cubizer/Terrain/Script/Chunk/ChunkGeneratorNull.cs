@@ -2,8 +2,9 @@
 {
 	public class ChunkGeneratorNull : ChunkGenerator
 	{
-		public override void OnCreateChunk(ChunkPrimer map)
+		public override ChunkPrimer OnCreateChunk(Terrain terrain, short x, short y, short z)
 		{
+			return null;
 		}
 	}
 }

@@ -13,10 +13,12 @@ namespace Cubizer
 			get { return _chunkGenerator; }
 		}
 
-		public virtual void OnBuildChunk(Terrain terrain, ChunkPrimer chunk)
+		public virtual ChunkPrimer OnBuildChunk(Terrain terrain, short x, short y, short z)
 		{
 			if (_chunkGenerator != null)
-				_chunkGenerator.OnCreateChunk(chunk);
+				return _chunkGenerator.OnCreateChunk(terrain, x, y, z);
+
+			return null;
 		}
 	}
 }
