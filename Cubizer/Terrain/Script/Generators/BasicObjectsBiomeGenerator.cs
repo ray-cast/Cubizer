@@ -70,7 +70,6 @@ namespace Cubizer
 				var biomeData = biome.AddComponent<BiomeData>();
 
 				biome.transform.parent = transform;
-				biomeData.terrain = terrain;
 				biomeData.chunkGenerator = new BasicObjectsChunkGenerator(param.Value, materials);
 
 				_biomeDatas[written++] = biomeData;

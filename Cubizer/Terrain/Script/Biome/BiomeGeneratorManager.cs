@@ -94,7 +94,7 @@ namespace Cubizer
 			}
 
 			var chunk = new ChunkPrimer(_terrain.chunkSize, _terrain.chunkSize, _terrain.chunkSize, x, y, z);
-			biomeData.OnBuildChunk(chunk);
+			biomeData.OnBuildChunk(_terrain, chunk);
 
 			return chunk;
 		}

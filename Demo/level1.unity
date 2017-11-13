@@ -267,6 +267,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88ea3f1b09a3ab54eb342aa4279c0f74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _terrain: {fileID: 626552213}
 --- !u!1001 &448295477
 Prefab:
   m_ObjectHideFlags: 0
@@ -359,14 +360,10 @@ MonoBehaviour:
   _materialWater: {fileID: 800678232}
   _materialCloud: {fileID: 1003215093}
   _materialSoil: {fileID: 53273937}
-  _chunkRadiusGenX: {x: -6, y: 6}
-  _chunkRadiusGenY: {x: -2, y: 6}
-  _chunkRadiusGenZ: {x: -6, y: 6}
   layerGrass: 0
   layerCloud: 3
   layerObsidian: -10
   _isGenPlaneOnly: 0
-  _repeatRateUpdate: 0.1
 --- !u!1 &626552210
 GameObject:
   m_ObjectHideFlags: 0
@@ -619,12 +616,12 @@ Prefab:
     - target: {fileID: 224328295561139070, guid: 52eb078de896190488e6c13e15635297,
         type: 2}
       propertyPath: m_LocalPosition.x
-      value: 596.5
+      value: 598.5
       objectReference: {fileID: 0}
     - target: {fileID: 224328295561139070, guid: 52eb078de896190488e6c13e15635297,
         type: 2}
       propertyPath: m_LocalPosition.y
-      value: 388
+      value: 384.5
       objectReference: {fileID: 0}
     - target: {fileID: 224328295561139070, guid: 52eb078de896190488e6c13e15635297,
         type: 2}
@@ -787,15 +784,15 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4999981234944568, guid: 076c491b99c8bbb4fa3ff7d93182c68a, type: 2}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 4999981234944568, guid: 076c491b99c8bbb4fa3ff7d93182c68a, type: 2}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 4999981234944568, guid: 076c491b99c8bbb4fa3ff7d93182c68a, type: 2}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 4999981234944568, guid: 076c491b99c8bbb4fa3ff7d93182c68a, type: 2}
       propertyPath: m_LocalRotation.w
