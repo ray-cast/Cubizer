@@ -1,9 +1,6 @@
-﻿using UnityEngine;
-using System.Collections;
-
-namespace Cubizer
+﻿namespace Cubizer
 {
-	public class BiomeData : MonoBehaviour
+	public class BiomeData
 	{
 		private ChunkGenerator _chunkGenerator;
 
@@ -11,6 +8,11 @@ namespace Cubizer
 		{
 			set { _chunkGenerator = value; }
 			get { return _chunkGenerator; }
+		}
+
+		public BiomeData(ChunkGenerator generator)
+		{
+			_chunkGenerator = generator;
 		}
 
 		public virtual ChunkPrimer OnBuildChunk(Terrain terrain, short x, short y, short z)

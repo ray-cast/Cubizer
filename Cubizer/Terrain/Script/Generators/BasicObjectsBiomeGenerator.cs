@@ -66,12 +66,7 @@ namespace Cubizer
 
 			foreach (var param in biomeParams)
 			{
-				var biome = new GameObject(param.Key);
-				var biomeData = biome.AddComponent<BiomeData>();
-
-				biome.transform.parent = transform;
-				biomeData.chunkGenerator = new BasicObjectsChunkGenerator(param.Value, materials);
-
+				var biomeData = new BiomeData(new BasicObjectsChunkGenerator(param.Value, materials));
 				_biomeDatas[written++] = biomeData;
 			}
 		}
