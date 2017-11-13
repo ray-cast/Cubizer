@@ -16,14 +16,7 @@ namespace Cubizer
 		{
 			foreach (var it in voxels)
 			{
-				int facesCount = 0;
-				if (it.faces.left) facesCount++;
-				if (it.faces.right) facesCount++;
-				if (it.faces.top) facesCount++;
-				if (it.faces.bottom) facesCount++;
-				if (it.faces.front) facesCount++;
-				if (it.faces.back) facesCount++;
-
+				int facesCount = it.faces.count;
 				if (facesCount > 0)
 				{
 					var name = it.material.name;

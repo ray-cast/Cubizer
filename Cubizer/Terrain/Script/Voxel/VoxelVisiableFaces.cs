@@ -9,6 +9,22 @@
 		public bool back;
 		public bool front;
 
+		public int count
+		{
+			get
+			{
+				int facesCount = 0;
+				if (left) facesCount++;
+				if (right) facesCount++;
+				if (top) facesCount++;
+				if (bottom) facesCount++;
+				if (front) facesCount++;
+				if (back) facesCount++;
+
+				return facesCount;
+			}
+		}
+
 		public VoxelVisiableFaces(bool _left, bool _right, bool _bottom, bool _top, bool _back, bool _front)
 		{
 			left = _left;
