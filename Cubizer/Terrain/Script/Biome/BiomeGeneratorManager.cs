@@ -1,205 +1,102 @@
 ﻿using System;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 
-using Cubizer.Math;
+using UnityEngine;
 
 namespace Cubizer
 {
-	[Serializable]
-	public class BiomeGeneratorManager
+	[ExecuteInEditMode]
+	[AddComponentMenu("Cubizer/BiomeGeneratorManager")]
+	public class BiomeGeneratorManager : MonoBehaviour
 	{
-		private int _count;
-		private int _allocSize;
+		[SerializeField]
+		private Terrain _terrain;
 
-		private VoxelDataNode<Vector3<System.Int16>, BiomeGenerator>[] _data;
+		private BiomeDataNull _biomeNull = new BiomeDataNull();
+		private BiomeDataManager _biomes = new BiomeDataManager();
 
-		public int count
+		public Terrain terrain
 		{
-			get { return _count; }
+			get { return _terrain; }
 		}
 
-		public BiomeGeneratorManager()
+		public BiomeDataManager biomes
 		{
-			_count = 0;
-			_allocSize = 0;
+			get { return _biomes; }
 		}
 
-		public BiomeGeneratorManager(int count)
+		public void Awake()
 		{
-			_count = 0;
-			_allocSize = 0;
-			if (count > 0) this.Create(count);
+			if (_terrain == null)
+				Debug.LogError("Please assign a Terrain in Inspector.");
 		}
 
-		public void Create(int count)
+		public void OnBiomeEnable(BiomeGenerator biome)
 		{
-			int usage = 1;
-			while (usage < count) usage = usage << 1 | 1;
-
-			_count = 0;
-			_allocSize = usage;
-			_data = new VoxelDataNode<Vector3<System.Int16>, BiomeGenerator>[_allocSize + 1];
+			biome.terrain = _terrain;
 		}
 
-		public bool Set(System.Int16 x, System.Int16 y, System.Int16 z, BiomeGenerator value)
+		public void OnBiomeDisable(BiomeGenerator biome)
 		{
-			if (_allocSize == 0)
-				this.Create(0xFF);
+		}
 
-			var index = HashInt(x, y, z) & _allocSize;
-			var entry = _data[index];
+		public BiomeData buildBiome(short x, short y, short z)
+		{
+			Debug.Assert(_biomes != null);
 
-			while (entry != null)
+			for (int i = 0; i < transform.childCount; i++)
 			{
-				var pos = entry.position;
-				if (pos.x == x && pos.y == y && pos.z == z)
+				var transformChild = transform.GetChild(i);
+				var biome = transformChild.GetComponent<BiomeGenerator>().OnBuildBiome(x, y, z);
+				if (biome != null)
 				{
-					_data[index].value = value;
-					return true;
+					_biomes.Set(x, y, z, biome);
+					return biome;
+				}
+			}
+
+			_biomes.Set(x, y, z, _biomeNull);
+			return _biomeNull;
+		}
+
+		public ChunkPrimer buildChunk(short x, short y, short z)
+		{
+			BiomeData biomeData = null;
+			if (!_biomes.Get(x, y, z, ref biomeData))
+				biomeData = this.buildBiome(x, y, z);
+
+			var biomes = new Vector3Int[6];
+			biomes[0] = new Vector3Int(x - 1, y, z);
+			biomes[1] = new Vector3Int(x, y - 1, z);
+			biomes[2] = new Vector3Int(x, y, z - 1);
+			biomes[3] = new Vector3Int(x + 1, y, z);
+			biomes[4] = new Vector3Int(x, y + 1, z);
+			biomes[5] = new Vector3Int(x, y, z + 1);
+
+			for (int j = 0; j < 6; j++)
+			{
+				if (_biomes.Exists(biomes[j].x, biomes[j].y, biomes[j].z))
+					continue;
+
+				BiomeData biomeTemp = null;
+				for (int i = 0; i < transform.childCount; i++)
+				{
+					var biomeGenerator = transform.GetChild(i).GetComponent<BiomeGenerator>();
+
+					biomeTemp = biomeGenerator.OnBuildBiome((short)biomes[j].x, (short)biomes[j].y, (short)biomes[j].z);
+					if (biomeTemp != null)
+						break;
 				}
 
-				index = (index + 1) & _allocSize;
-				entry = _data[index];
+				if (biomeTemp == null)
+					biomeTemp = _biomeNull;
+
+				_biomes.Set((short)biomes[j].x, (short)biomes[j].y, (short)biomes[j].z, biomeTemp);
 			}
 
-			if (value != null)
-			{
-				_data[index] = new VoxelDataNode<Vector3<System.Int16>, BiomeGenerator>(new Vector3<System.Int16>(x, y, z), value);
-				_count++;
+			var chunk = new ChunkPrimer(_terrain.chunkSize, _terrain.chunkSize, _terrain.chunkSize, x, y, z);
+			biomeData.OnBuildChunk(chunk);
 
-				if (_count >= _allocSize)
-					this.Grow();
-
-				return true;
-			}
-
-			return false;
-		}
-
-		public bool Set(Vector3<System.Int16> pos, BiomeGenerator value)
-		{
-			return Set(pos.x, pos.y, pos.z, value);
-		}
-
-		public bool Get(System.Int16 x, System.Int16 y, System.Int16 z, ref BiomeGenerator chunk)
-		{
-			if (_allocSize == 0)
-				return false;
-
-			var index = HashInt(x, y, z) & _allocSize;
-			var entry = _data[index];
-
-			while (entry != null)
-			{
-				var pos = entry.position;
-				if (pos.x == x && pos.y == y && pos.z == z)
-				{
-					chunk = entry.value;
-					return chunk != null;
-				}
-
-				index = (index + 1) & _allocSize;
-				entry = _data[index];
-			}
-
-			chunk = null;
-			return false;
-		}
-
-		public bool Get(Vector3<System.Int16> pos, ref BiomeGenerator instanceID)
-		{
-			return this.Get(pos.x, pos.y, pos.z, ref instanceID);
-		}
-
-		public bool Exists(System.Int16 x, System.Int16 y, System.Int16 z)
-		{
-			BiomeGenerator instanceID = null;
-			return this.Get(x, y, z, ref instanceID);
-		}
-
-		public bool Empty()
-		{
-			return _count == 0;
-		}
-
-		public VoxelDataNodeEnumerable<Vector3<System.Int16>, BiomeGenerator> GetEnumerator()
-		{
-			return new VoxelDataNodeEnumerable<Vector3<System.Int16>, BiomeGenerator>(_data);
-		}
-
-		public static bool Save(string path, ChunkDataManager _self)
-		{
-			using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write))
-			{
-				var serializer = new BinaryFormatter();
-				serializer.Serialize(stream, _self);
-
-				stream.Close();
-
-				return true;
-			}
-		}
-
-		public static ChunkDataManager Load(string path)
-		{
-			using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
-			{
-				var serializer = new BinaryFormatter();
-
-				return serializer.Deserialize(stream) as ChunkDataManager;
-			}
-		}
-
-		private bool Grow(VoxelDataNode<Vector3<System.Int16>, BiomeGenerator> data)
-		{
-			var pos = data.position;
-			var index = HashInt(pos.x, pos.y, pos.z) & _allocSize;
-			var entry = _data[index];
-
-			while (entry != null)
-			{
-				index = (index + 1) & _allocSize;
-				entry = _data[index];
-			}
-
-			if (data.value != null)
-			{
-				_data[index] = data;
-				_count++;
-
-				return true;
-			}
-
-			return false;
-		}
-
-		private void Grow()
-		{
-			var map = new BiomeGeneratorManager(_allocSize << 1 | 1);
-
-			foreach (var it in GetEnumerator())
-				map.Grow(it);
-
-			_count = map._count;
-			_allocSize = map._allocSize;
-			_data = map._data;
-		}
-
-		private static int _hash_int(int key)
-		{
-			key = ~key + (key << 15);
-			key = key ^ (key >> 12);
-			key = key + (key << 2);
-			key = key ^ (key >> 4);
-			key = key * 2057;
-			key = key ^ (key >> 16);
-			return key;
-		}
-
-		private static int HashInt(int x, int y, int z)
-		{
-			return _hash_int(x) ^ _hash_int(y) ^ _hash_int(z);
+			return chunk;
 		}
 	}
 }

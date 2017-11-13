@@ -9,6 +9,7 @@ namespace Cubizer
 {
 	public class LiveResources : MonoBehaviour
 	{
+		[SerializeField]
 		private Terrain _terrain;
 
 		private static List<LiveBehaviour> _lives = new List<LiveBehaviour>();
@@ -16,10 +17,6 @@ namespace Cubizer
 
 		public Terrain terrain
 		{
-			set
-			{
-				_terrain = value;
-			}
 			get
 			{
 				return _terrain;
@@ -29,6 +26,12 @@ namespace Cubizer
 		public static Dictionary<string, int> materials
 		{
 			get { return _liveIndex; }
+		}
+
+		public void Awake()
+		{
+			if (_terrain == null)
+				Debug.LogError("Please assign a Terrain in Inspector.");
 		}
 
 		public static int RegisterMaterial(string name, LiveBehaviour entity)

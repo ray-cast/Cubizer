@@ -1,10 +1,5 @@
 ﻿using UnityEngine;
 
-using System.Collections;
-using System.Collections.Generic;
-
-using Cubizer.Math;
-
 namespace Cubizer
 {
 	[AddComponentMenu("Cubizer/LiveMeshBehaviour")]
@@ -55,12 +50,10 @@ namespace Cubizer
 			index++;
 		}
 
-		public override void Start()
+		public void Start()
 		{
 			if (_mesh == null)
 				UnityEngine.Debug.LogError("Please drag a Mesh into Hierarchy View.");
-
-			this.RegisterDefaultMaterial();
 		}
 	}
 }

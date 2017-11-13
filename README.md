@@ -18,6 +18,7 @@ Features :
 ------------
 * Cube-based infinite terrain generation
 * Voxel file import for [MagicalVoxel](http://voxel.codeplex.com/)
+* Mesh Optimization
 
 Requirements:
 ========
@@ -50,3 +51,7 @@ Contact :
     BRIAN PAUL BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
     AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+References:
+--------
+* Meshing in a Minecraft Game \[[link](https://0fps.net/2012/07/07/meshing-minecraft-part-2/)\]

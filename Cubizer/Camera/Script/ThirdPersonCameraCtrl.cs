@@ -3,10 +3,11 @@
 namespace Cubizer
 {
 	[DisallowMultipleComponent]
+	[RequireComponent(typeof(Camera))]
 	[AddComponentMenu("Cubizer/ThirdPersonCameraCtrl")]
 	public class ThirdPersonCameraCtrl : MonoBehaviour
 	{
-		[SerializeField] private GameObject _target;
+		[SerializeField] private GameObject _player;
 
 		[SerializeField, Range(0.0f, 4.0f)] private float _velocityVertical = 2.0f;
 		[SerializeField, Range(0.0f, 4.0f)] private float _velocityHorizontal = 2.0f;
@@ -31,12 +32,12 @@ namespace Cubizer
 
 		public Vector3 foward { set { _foward = value; } get { return _foward; } }
 
-		public GameObject target { set { _target = value; } get { return _target; } }
+		public GameObject player { set { _player = value; } get { return _player; } }
 
 		public void Start()
 		{
-			if (_target == null)
-				UnityEngine.Debug.LogError("Please assign a GameObject on the inspector");
+			if (_player == null)
+				UnityEngine.Debug.LogError("Please assign a GameObject on the inspector.");
 
 			_isCursorLocked = true;
 
@@ -88,7 +89,7 @@ namespace Cubizer
 				euler.x -= angle_y;
 
 				transform.eulerAngles = euler;
-				transform.position = target.transform.position - (transform.localRotation * _foward * _distance);
+				transform.position = _player.transform.position - (transform.localRotation * _foward * _distance);
 			}
 		}
 	}

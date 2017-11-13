@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Threading;
 using System.Runtime.Serialization.Formatters.Binary;
 
 using UnityEngine;
@@ -9,39 +11,54 @@ namespace Cubizer
 	[AddComponentMenu("Cubizer/Terrain")]
 	public class Terrain : MonoBehaviour
 	{
-		[SerializeField]
+		[SerializeField, Range(16, 32)]
 		private int _chunkSize = 24;
 
-		[SerializeField]
-		private int _terrainSeed = 255;
+		[SerializeField, Range(256, 2048)]
+		private int _chunkNumLimits = 1024;
 
-		[SerializeField]
-		private LiveResources _liveResources;
+		[SerializeField] private int _chunkHeightLimitLow = -10;
+		[SerializeField] private int _chunkHeightLimitHigh = 20;
 
-		[SerializeField]
-		private BiomeManager _biomeManager;
-
-		[SerializeField]
-		public ChunkGeneratorManager _chunkGenerator;
-
-		public TerrainDelegates.OnSaveData onSaveChunkData;
-		public TerrainDelegates.OnLoadData onLoadChunkData;
+		[SerializeField] private int _terrainSeed = 255;
+		[SerializeField] private LiveResources _liveResources;
+		[SerializeField] private BiomeGeneratorManager _biomeManager;
 
 		private ChunkDataManager _chunks;
+
+		private TerrainDelegates _events;
+
+		public int chunkSize
+		{
+			get { return _chunkSize; }
+		}
+
+		public int chunkNumLimits
+		{
+			set { _chunkNumLimits = value; }
+			get { return _chunkNumLimits; }
+		}
+
+		public int chunkHeightLimitLow
+		{
+			set { _chunkHeightLimitLow = value; }
+			get { return _chunkHeightLimitLow; }
+		}
+
+		public int chunkHeightLimitHigh
+		{
+			set { _chunkHeightLimitHigh = value; }
+			get { return _chunkHeightLimitHigh; }
+		}
 
 		public LiveResources liveResources
 		{
 			get { return _liveResources; }
 		}
 
-		public BiomeManager biomeManager
+		public BiomeGeneratorManager biomeManager
 		{
 			get { return _biomeManager; }
-		}
-
-		public ChunkGeneratorManager chunkGenerators
-		{
-			get { return _chunkGenerator; }
 		}
 
 		public ChunkDataManager chunks
@@ -49,12 +66,12 @@ namespace Cubizer
 			get { return _chunks; }
 		}
 
-		public int chunkSize
+		public TerrainDelegates events
 		{
-			get { return _chunkSize; }
+			get { return _events; }
 		}
 
-		public Terrain(int chunkSize = 24)
+		public Terrain(int chunkSize)
 		{
 			Debug.Assert(chunkSize > 0);
 
@@ -64,11 +81,19 @@ namespace Cubizer
 
 		public Terrain(int chunkSize, ChunkDataManager chunks)
 		{
-			Debug.Assert(chunks != null);
-			Debug.Assert(chunkSize > 0);
+			Debug.Assert(chunkSize > 0 && chunks != null);
 
 			_chunks = chunks;
 			_chunkSize = chunkSize;
+		}
+
+		public void Awake()
+		{
+			if (_liveResources == null)
+				Debug.LogError("Please drag a LiveResources into Hierarchy View.");
+
+			if (_biomeManager == null)
+				Debug.LogError("Please drag a TerrainBiome into Hierarchy View.");
 		}
 
 		public void Start()
@@ -77,27 +102,25 @@ namespace Cubizer
 
 			Math.Noise.simplex_seed(_terrainSeed);
 
-			if (_liveResources == null)
-				Debug.LogError("Please drag a LiveResources into Hierarchy View.");
-
-			if (_biomeManager == null)
-				Debug.LogError("Please drag a TerrainBiome into Hierarchy View.");
-
-			if (_chunkGenerator == null)
-				Debug.LogError("Please drag a TerrainGenerator into Hierarchy View.");
-
-			_liveResources.terrain = this;
-			_biomeManager.terrain = this;
-			_chunkGenerator.terrain = this;
-
 			_chunks = new ChunkDataManager(_chunkSize);
+			_events = new TerrainDelegates();
+		}
+
+		public void OnDestroy()
+		{
+			this.DestroyChunks();
+		}
+
+		public short CalculateChunkPosByWorld(float x)
+		{
+			return (short)Mathf.FloorToInt(x / _chunkSize);
 		}
 
 		public bool HitTestByRay(Ray ray, int hitDistance, ref ChunkPrimer chunk, out byte outX, out byte outY, out byte outZ, ref ChunkPrimer lastChunk, out byte lastX, out byte lastY, out byte lastZ)
 		{
-			var chunkX = CalcChunkPos(ray.origin.x);
-			var chunkY = CalcChunkPos(ray.origin.y);
-			var chunkZ = CalcChunkPos(ray.origin.z);
+			var chunkX = CalculateChunkPosByWorld(ray.origin.x);
+			var chunkY = CalculateChunkPosByWorld(ray.origin.y);
+			var chunkZ = CalculateChunkPosByWorld(ray.origin.z);
 
 			lastChunk = null;
 			lastX = lastY = lastZ = outX = outY = outZ = 255;
@@ -226,9 +249,9 @@ namespace Cubizer
 
 		public bool GetEmptryChunkPos(Vector3 translate, Plane[] planes, Vector2Int[] radius, out Vector3Int position)
 		{
-			int x = CalcChunkPos(translate.x);
-			int y = CalcChunkPos(translate.y);
-			int z = CalcChunkPos(translate.z);
+			int x = CalculateChunkPosByWorld(translate.x);
+			int y = CalculateChunkPosByWorld(translate.y);
+			int z = CalculateChunkPosByWorld(translate.z);
 
 			int bestX = 0, bestY = 0, bestZ = 0;
 			int bestScore = int.MaxValue;
@@ -246,6 +269,9 @@ namespace Cubizer
 						int dx = x + ix;
 						int dy = y + iy;
 						int dz = z + iz;
+
+						if (dy < _chunkHeightLimitLow || dy > _chunkHeightLimitHigh)
+							continue;
 
 						var hit = _chunks.Exists((short)dx, (short)dy, (short)dz);
 						if (hit)
@@ -269,31 +295,56 @@ namespace Cubizer
 			}
 
 			position = new Vector3Int(bestX, bestY, bestZ);
-
 			return start != bestScore;
 		}
 
-		public void DestroyChunks(Transform transform)
+		public void DestroyChunks(bool is_save = true)
 		{
 			for (int i = 0; i < transform.childCount; i++)
 			{
 				var transformChild = transform.GetChild(i);
-				Destroy(transformChild.gameObject);
+				var child = transformChild.gameObject;
+
+				if (is_save)
+				{
+					if (_events.onSaveChunkData != null)
+						_events.onSaveChunkData(child);
+				}
+
+				Destroy(child);
 			}
 		}
 
-		public void UpdateChunkForDestroy(Transform transform, float maxDistance)
+		public void DestroyChunksImmediate(bool is_save = true)
+		{
+			for (int i = 0; i < transform.childCount; i++)
+			{
+				var transformChild = transform.GetChild(i);
+				var child = transformChild.gameObject;
+
+				if (is_save)
+				{
+					if (_events.onSaveChunkData != null)
+						_events.onSaveChunkData(child);
+				}
+
+				DestroyImmediate(child);
+			}
+		}
+
+		public void UpdateChunkForDestroy(Camera player, float maxDistance)
 		{
 			var length = transform.childCount;
 
 			for (int i = 0; i < length; i++)
 			{
 				var transformChild = transform.GetChild(i);
-				var distance = Vector3.Distance(transformChild.position, Camera.main.transform.position) / _chunkSize;
-				if (distance > maxDistance)
+
+				var distance = Vector3.Distance(transformChild.position, player.transform.position);
+				if (distance > maxDistance * _chunkSize)
 				{
-					if (onSaveChunkData != null)
-						onSaveChunkData(transformChild.gameObject);
+					if (_events.onSaveChunkData != null)
+						_events.onSaveChunkData(transformChild.gameObject);
 
 					Destroy(transformChild.gameObject);
 					break;
@@ -301,37 +352,21 @@ namespace Cubizer
 			}
 		}
 
-		public void UpdateChunkForCreate(Camera camera, Vector2Int[] radius, float maxChunkCount, int _terrainHeightLimitLow, int _terrainHeightLimitHigh)
+		public void UpdateChunkForCreate(Camera camera, Vector2Int[] radius)
 		{
-			if (_chunks.count > maxChunkCount)
+			if (_chunks.count > _chunkNumLimits)
 				return;
 
 			Vector3Int position;
-			if (!GetEmptryChunkPos(camera.transform.position, GeometryUtility.CalculateFrustumPlanes(Camera.main), radius, out position))
-				return;
-
-			if (position.y < _terrainHeightLimitLow || position.y > _terrainHeightLimitHigh)
+			if (!GetEmptryChunkPos(camera.transform.position, GeometryUtility.CalculateFrustumPlanes(camera), radius, out position))
 				return;
 
 			ChunkPrimer chunk = null;
-			if (onLoadChunkData != null)
-				onLoadChunkData(position, out chunk);
+			if (_events.onLoadChunkData != null)
+				_events.onLoadChunkData(position, out chunk);
 
 			if (chunk == null)
-			{
-				BiomeGenerator biomeGenerator = null;
-				if (!_biomeManager.biomes.Get((short)position.x, (short)position.y, (short)position.z, ref biomeGenerator))
-					biomeGenerator = _biomeManager.buildBiome((short)position.x, (short)position.y, (short)position.z);
-
-				if (biomeGenerator)
-				{
-					if (biomeGenerator.chunkGenerator == null)
-						throw new System.Exception("The chunk generator of biome cannot be null");
-
-					chunk = new ChunkPrimer(_chunkSize, _chunkSize, _chunkSize, (short)position.x, (short)position.y, (short)position.z);
-					biomeGenerator.chunkGenerator.OnCreateChunk(chunk);
-				}
-			}
+				chunk = _biomeManager.buildChunk((short)position.x, (short)position.y, (short)position.z);
 
 			if (chunk != null)
 			{
@@ -355,7 +390,7 @@ namespace Cubizer
 			}
 		}
 
-		public bool Load(string path)
+		public bool Load(string path, bool is_save = true)
 		{
 			Debug.Assert(path != null);
 
@@ -369,12 +404,7 @@ namespace Cubizer
 				_chunks = serializer.Deserialize(stream) as ChunkDataManager;
 				_chunkSize = _chunks.chunkSize;
 
-				while (transform.childCount > 0)
-				{
-					var transformChild = transform.GetChild(0);
-					transformChild.parent = null;
-					DestroyImmediate(transformChild.gameObject);
-				}
+				DestroyChunksImmediate(is_save);
 
 				foreach (var chunk in _chunks.GetEnumerator())
 				{
@@ -386,11 +416,6 @@ namespace Cubizer
 
 				return true;
 			}
-		}
-
-		public short CalcChunkPos(float x)
-		{
-			return (short)Mathf.FloorToInt(x / _chunkSize);
 		}
 	}
 }

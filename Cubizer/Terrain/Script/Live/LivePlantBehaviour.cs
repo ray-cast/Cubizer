@@ -1,10 +1,5 @@
 ﻿using UnityEngine;
 
-using System.Collections;
-using System.Collections.Generic;
-
-using Cubizer.Math;
-
 namespace Cubizer
 {
 	[AddComponentMenu("Cubizer/LivePlantBehaviour")]

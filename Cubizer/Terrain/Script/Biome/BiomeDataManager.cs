@@ -7,32 +7,27 @@ using Cubizer.Math;
 namespace Cubizer
 {
 	[Serializable]
-	public class ChunkDataManager
+	public class BiomeDataManager
 	{
 		private int _count;
 		private int _allocSize;
-		private int _chunkSize;
-		private VoxelDataNode<Vector3<System.Int16>, ChunkPrimer>[] _data;
 
-		public int count { get { return _count; } }
-		public int chunkSize { get { return _chunkSize; } }
+		private VoxelDataNode<Vector3<System.Int16>, BiomeData>[] _data;
 
-		public VoxelDataNode<Vector3<System.Int16>, ChunkPrimer>[] data
+		public int count
 		{
-			get { return _data; }
+			get { return _count; }
 		}
 
-		public ChunkDataManager(int chunkSize)
+		public BiomeDataManager()
 		{
 			_count = 0;
-			_chunkSize = chunkSize;
 			_allocSize = 0;
 		}
 
-		public ChunkDataManager(int chunkSize, int count)
+		public BiomeDataManager(int count)
 		{
 			_count = 0;
-			_chunkSize = chunkSize;
 			_allocSize = 0;
 			if (count > 0) this.Create(count);
 		}
@@ -44,10 +39,10 @@ namespace Cubizer
 
 			_count = 0;
 			_allocSize = usage;
-			_data = new VoxelDataNode<Vector3<System.Int16>, ChunkPrimer>[_allocSize + 1];
+			_data = new VoxelDataNode<Vector3<System.Int16>, BiomeData>[_allocSize + 1];
 		}
 
-		public bool Set(System.Int16 x, System.Int16 y, System.Int16 z, ChunkPrimer value)
+		public bool Set(System.Int16 x, System.Int16 y, System.Int16 z, BiomeData value)
 		{
 			if (_allocSize == 0)
 				this.Create(0xFF);
@@ -60,12 +55,7 @@ namespace Cubizer
 				var pos = entry.position;
 				if (pos.x == x && pos.y == y && pos.z == z)
 				{
-					var element = _data[index].value;
-					if (element != value && element != null)
-						element.OnChunkDestroy();
-
 					_data[index].value = value;
-
 					return true;
 				}
 
@@ -75,7 +65,7 @@ namespace Cubizer
 
 			if (value != null)
 			{
-				_data[index] = new VoxelDataNode<Vector3<System.Int16>, ChunkPrimer>(new Vector3<System.Int16>(x, y, z), value);
+				_data[index] = new VoxelDataNode<Vector3<System.Int16>, BiomeData>(new Vector3<System.Int16>(x, y, z), value);
 				_count++;
 
 				if (_count >= _allocSize)
@@ -87,12 +77,12 @@ namespace Cubizer
 			return false;
 		}
 
-		public bool Set(Vector3<System.Int16> pos, ChunkPrimer value)
+		public bool Set(Vector3<System.Int16> pos, BiomeData value)
 		{
 			return Set(pos.x, pos.y, pos.z, value);
 		}
 
-		public bool Get(System.Int16 x, System.Int16 y, System.Int16 z, ref ChunkPrimer chunk)
+		public bool Get(int x, int y, int z, ref BiomeData chunk)
 		{
 			if (_allocSize == 0)
 				return false;
@@ -117,14 +107,14 @@ namespace Cubizer
 			return false;
 		}
 
-		public bool Get(Vector3<System.Int16> pos, ref ChunkPrimer instanceID)
+		public bool Get(Vector3<System.Int16> pos, ref BiomeData instanceID)
 		{
 			return this.Get(pos.x, pos.y, pos.z, ref instanceID);
 		}
 
-		public bool Exists(System.Int16 x, System.Int16 y, System.Int16 z)
+		public bool Exists(int x, int y, int z)
 		{
-			ChunkPrimer instanceID = null;
+			BiomeData instanceID = null;
 			return this.Get(x, y, z, ref instanceID);
 		}
 
@@ -133,9 +123,9 @@ namespace Cubizer
 			return _count == 0;
 		}
 
-		public VoxelDataNodeEnumerable<Vector3<System.Int16>, ChunkPrimer> GetEnumerator()
+		public VoxelDataNodeEnumerable<Vector3<System.Int16>, BiomeData> GetEnumerator()
 		{
-			return new VoxelDataNodeEnumerable<Vector3<System.Int16>, ChunkPrimer>(_data);
+			return new VoxelDataNodeEnumerable<Vector3<System.Int16>, BiomeData>(_data);
 		}
 
 		public static bool Save(string path, ChunkDataManager _self)
@@ -144,6 +134,8 @@ namespace Cubizer
 			{
 				var serializer = new BinaryFormatter();
 				serializer.Serialize(stream, _self);
+
+				stream.Close();
 
 				return true;
 			}
@@ -154,11 +146,12 @@ namespace Cubizer
 			using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
 			{
 				var serializer = new BinaryFormatter();
+
 				return serializer.Deserialize(stream) as ChunkDataManager;
 			}
 		}
 
-		private bool Grow(VoxelDataNode<Vector3<System.Int16>, ChunkPrimer> data)
+		private bool Grow(VoxelDataNode<Vector3<System.Int16>, BiomeData> data)
 		{
 			var pos = data.position;
 			var index = HashInt(pos.x, pos.y, pos.z) & _allocSize;
@@ -183,7 +176,7 @@ namespace Cubizer
 
 		private void Grow()
 		{
-			var map = new ChunkDataManager(_chunkSize, _allocSize << 1 | 1);
+			var map = new BiomeDataManager(_allocSize << 1 | 1);
 
 			foreach (var it in GetEnumerator())
 				map.Grow(it);

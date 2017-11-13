@@ -19,8 +19,8 @@ namespace Cubizer
 		private void Start()
 		{
 			_terrain = GetComponent<Terrain>();
-			_terrain.onSaveChunkData += this.OnSaveData;
-			_terrain.onLoadChunkData += this.OnLoadData;
+			_terrain.events.onSaveChunkData += this.OnSaveData;
+			_terrain.events.onLoadChunkData += this.OnLoadData;
 
 			rootPath = Application.persistentDataPath;
 

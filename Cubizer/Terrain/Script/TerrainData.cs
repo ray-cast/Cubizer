@@ -5,16 +5,6 @@ using UnityEngine;
 
 namespace Cubizer
 {
-	using ChunkPosition = Math.Vector3<System.Byte>;
-
-	public struct TerrainMesh
-	{
-		public Vector3[] vertices;
-		public Vector3[] normals;
-		public Vector2[] uv;
-		public int[] triangles;
-	}
-
 	[SelectionBase]
 	[DisallowMultipleComponent]
 	[AddComponentMenu("Cubizer/TerrainData")]
@@ -23,7 +13,7 @@ namespace Cubizer
 		private ChunkPrimer _chunk;
 
 		private float _repeatRateUpdate = 2.0f;
-		private Dictionary<LiveBehaviour, List<ChunkPosition>> _chunkEntitiesDynamic;
+		private Dictionary<LiveBehaviour, List<Math.Vector3<System.Byte>>> _chunkEntitiesDynamic;
 
 		public ChunkPrimer chunk
 		{
@@ -126,6 +116,7 @@ namespace Cubizer
 						clone.material = renderer.material;
 						clone.receiveShadows = renderer.receiveShadows;
 						clone.shadowCastingMode = renderer.shadowCastingMode;
+						renderer = clone;
 					}
 
 					var collider = controller.GetComponent<Collider>();
@@ -135,10 +126,23 @@ namespace Cubizer
 						if (type == typeof(MeshCollider))
 							gameObject.AddComponent<MeshCollider>().sharedMesh = mesh;
 					}
-				}
 
-				if (_chunkEntitiesDynamic.Count > 0)
-					StartCoroutine("OnUpdateEntities");
+					var lod = controller.GetComponent<LODGroup>();
+					if (lod != null)
+					{
+						var lods = lod.GetLODs();
+						for (int i = 0; i < lods.Length; i++)
+						{
+							if (lods[i].renderers.Length > 0)
+								lods[i].renderers[0] = renderer;
+						}
+
+						gameObject.AddComponent<LODGroup>().SetLODs(lods);
+					}
+
+					if (_chunkEntitiesDynamic.Count > 0)
+						StartCoroutine("OnUpdateEntities");
+				}
 			}
 		}
 
@@ -164,7 +168,7 @@ namespace Cubizer
 
 		public void Awake()
 		{
-			_chunkEntitiesDynamic = new Dictionary<LiveBehaviour, List<ChunkPosition>>();
+			_chunkEntitiesDynamic = new Dictionary<LiveBehaviour, List<Math.Vector3<System.Byte>>>();
 		}
 
 		public void Start()
@@ -199,6 +203,9 @@ namespace Cubizer
 
 			if (chunk.position.y == 0)
 			{
+				if (chunk.voxels == null)
+					return;
+
 				var bound = chunk.voxels.bound;
 
 				Vector3 pos = transform.position;

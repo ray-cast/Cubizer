@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Cubizer
 {
@@ -23,18 +20,19 @@ namespace Cubizer
 		{
 			get
 			{
-				if (_material == null)
-					_material = new VoxelMaterial(name, is_transparent, is_dynamic, is_merge);
 				return _material;
 			}
 		}
 
 		public void RegisterDefaultMaterial()
 		{
+			if (_material == null)
+				_material = new VoxelMaterial(name, is_transparent, is_dynamic, is_merge);
+
 			LiveResources.RegisterMaterial(this.gameObject.name, this);
 		}
 
-		public virtual void Start()
+		public void Awake()
 		{
 			this.RegisterDefaultMaterial();
 		}

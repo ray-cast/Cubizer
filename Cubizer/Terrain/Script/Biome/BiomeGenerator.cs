@@ -7,26 +7,17 @@ namespace Cubizer
 	{
 		private Terrain _terrain;
 
-		[SerializeField]
-		private ChunkGenerator _chunkGenerator;
-
 		public Terrain terrain
 		{
 			set { _terrain = value; }
 			get { return _terrain; }
 		}
 
-		public ChunkGenerator chunkGenerator
-		{
-			set { _chunkGenerator = value; }
-			get { return _chunkGenerator; }
-		}
-
 		public void InvokeDefaultOnEnable()
 		{
 			if (transform.parent != null)
 			{
-				var biome = transform.parent.GetComponent<BiomeManager>();
+				var biome = transform.parent.GetComponent<BiomeGeneratorManager>();
 				biome.OnBiomeEnable(this);
 			}
 		}
@@ -35,7 +26,7 @@ namespace Cubizer
 		{
 			if (transform.parent != null)
 			{
-				var biome = transform.parent.GetComponent<BiomeManager>();
+				var biome = transform.parent.GetComponent<BiomeGeneratorManager>();
 				biome.OnBiomeDisable(this);
 			}
 		}
@@ -50,9 +41,6 @@ namespace Cubizer
 			this.InvokeDefaultOnDisable();
 		}
 
-		public virtual BiomeGenerator OnBuildBiome(short x, short y, short z)
-		{
-			return null;
-		}
+		public abstract BiomeData OnBuildBiome(short x, short y, short z);
 	}
 }

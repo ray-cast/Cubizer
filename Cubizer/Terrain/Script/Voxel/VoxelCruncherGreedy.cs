@@ -6,13 +6,13 @@ namespace Cubizer
 {
 	public class VoxelCruncherGreedy : IVoxelCruncherStrategy
 	{
-		private int[] x = new int[3] { 0, 0, 0 };
-		private int[] q = new int[3] { 0, 0, 0 };
+		private static int[] x = new int[3] { 0, 0, 0 };
+		private static int[] q = new int[3] { 0, 0, 0 };
 
-		private int[] du = new int[3] { 0, 0, 0 };
-		private int[] dv = new int[3] { 0, 0, 0 };
+		private static int[] du = new int[3] { 0, 0, 0 };
+		private static int[] dv = new int[3] { 0, 0, 0 };
 
-		private VoxelVisiableFaces faces = new VoxelVisiableFaces(false, false, false, false, false, false);
+		private static VoxelVisiableFaces faces = new VoxelVisiableFaces(false, false, false, false, false, false);
 
 		public void CalcVoxelCruncher(VoxelMaterial[,,] voxels, Bounds bound, ref List<VoxelPrimitive> crunchers)
 		{

@@ -14,17 +14,14 @@ namespace Cubizer
 		[SerializeField]
 		private Terrain _terrain;
 
-		public int _chunkRadiusGC = 6;
-		public int _chunkNumLimits = 1024;
+		[SerializeField]
+		private int _chunkRadiusGC = 8;
 
-		public Vector2Int _chunkRadiusGenX = new Vector2Int(-3, 3);
-		public Vector2Int _chunkRadiusGenY = new Vector2Int(-1, 3);
-		public Vector2Int _chunkRadiusGenZ = new Vector2Int(-3, 3);
+		[SerializeField] private Vector2Int _chunkRadiusGenX = new Vector2Int(-4, 4);
+		[SerializeField] private Vector2Int _chunkRadiusGenY = new Vector2Int(-1, 3);
+		[SerializeField] private Vector2Int _chunkRadiusGenZ = new Vector2Int(-4, 4);
 
-		public int _terrainHeightLimitLow = -10;
-		public int _terrainHeightLimitHigh = 20;
-
-		public float _repeatRateUpdate = 0.1f;
+		[SerializeField] private float _repeatRateUpdate = 0.1f;
 
 		public Camera player
 		{
@@ -38,7 +35,37 @@ namespace Cubizer
 			get { return _terrain; }
 		}
 
-		private void Start()
+		public int chunkRadiusGC
+		{
+			set { chunkRadiusGC = value; }
+			get { return chunkRadiusGC; }
+		}
+
+		public Vector2Int chunkRadiusGenX
+		{
+			set { _chunkRadiusGenX = value; }
+			get { return _chunkRadiusGenX; }
+		}
+
+		public Vector2Int chunkRadiusGenY
+		{
+			set { _chunkRadiusGenY = value; }
+			get { return _chunkRadiusGenY; }
+		}
+
+		public Vector2Int chunkRadiusGenZ
+		{
+			set { _chunkRadiusGenZ = value; }
+			get { return _chunkRadiusGenZ; }
+		}
+
+		public float repeatRateUpdate
+		{
+			set { _repeatRateUpdate = value; }
+			get { return _repeatRateUpdate; }
+		}
+
+		public void Start()
 		{
 			if (_player == null)
 				Debug.LogError("Please assign a camera on the inspector.");
@@ -50,38 +77,31 @@ namespace Cubizer
 				Debug.LogError("Please assign a terrain on the inspector.");
 		}
 
-		private void Reset()
+		public void Reset()
 		{
 			StopCoroutine("UpdateChunkWithCoroutine");
 		}
 
-		private void OnEnable()
+		public void OnEnable()
 		{
 			StartCoroutine("UpdateChunkWithCoroutine");
 		}
 
-		private void OnDisable()
+		public void OnDisable()
 		{
 			StopCoroutine("UpdateChunkWithCoroutine");
 		}
 
-		private IEnumerator UpdateChunkWithCoroutine()
+		public IEnumerator UpdateChunkWithCoroutine()
 		{
 			yield return new WaitForSeconds(_repeatRateUpdate);
 
 			if (_terrain)
 			{
-				_terrain.UpdateChunkForDestroy(transform, _chunkRadiusGC);
-
 				if (_player)
 				{
-					_terrain.UpdateChunkForCreate(
-						_player,
-						new Vector2Int[] { _chunkRadiusGenX, _chunkRadiusGenY, _chunkRadiusGenZ },
-						_chunkNumLimits,
-						_terrainHeightLimitLow,
-						_terrainHeightLimitHigh
-						);
+					_terrain.UpdateChunkForDestroy(_player, _chunkRadiusGC);
+					_terrain.UpdateChunkForCreate(_player, new Vector2Int[] { _chunkRadiusGenX, _chunkRadiusGenY, _chunkRadiusGenZ });
 				}
 			}
 
