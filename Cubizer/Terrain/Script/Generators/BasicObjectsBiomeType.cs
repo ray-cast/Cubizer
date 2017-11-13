@@ -5,6 +5,9 @@
 		Space,
 		Plane,
 		Clound,
-		Grassland
+		Sea,
+		Grassland,
+		Sandyland,
+		Forest
 	}
 }

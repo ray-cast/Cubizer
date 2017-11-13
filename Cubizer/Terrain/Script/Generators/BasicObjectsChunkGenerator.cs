@@ -49,7 +49,7 @@ namespace Cubizer
 			return map;
 		}
 
-		public ChunkPrimer BuildGrassland(Terrain terrain, short x, short y, short z)
+		public ChunkPrimer Buildland(Terrain terrain, short x, short y, short z, VoxelMaterial main)
 		{
 			var map = new ChunkPrimer(terrain.chunkSize, terrain.chunkSize, terrain.chunkSize, x, y, z, terrain.chunkSize * terrain.chunkSize * _params.floorBase);
 
@@ -67,11 +67,22 @@ namespace Cubizer
 					float f = Noise.simplex2(dx * 0.01f, dz * 0.01f, 4, 0.4f, 2);
 
 					byte h = (byte)(f * (f * _params.floorHeightLismit + _params.floorBase));
+					h = System.Math.Max((byte)1, h);
 
-					if (_params.isGenGrass)
+					if (_params.isGenGrass || _params.isGenSand)
 					{
-						for (byte iy = 0; iy < h; iy++)
-							map.voxels.Set(ix, iy, iz, _materials.grass);
+						if (_params.isGenGrass && _params.isGenSand)
+						{
+							UnityEngine.Random.InitState(ix ^ iz * h);
+
+							for (byte iy = 0; iy < h; iy++)
+								map.voxels.Set(ix, iy, iz, UnityEngine.Random.value > _params.thresholdSand ? _materials.grass : _materials.sand);
+						}
+						else
+						{
+							for (byte iy = 0; iy < h; iy++)
+								map.voxels.Set(ix, iy, iz, main);
+						}
 					}
 
 					var waterHeight = _params.floorBase - _params.floorHeightLismit * 0.2f;
@@ -96,7 +107,7 @@ namespace Cubizer
 						{
 							if (ix > 3 && ix < map.voxels.bound.y - 3 && iz > 3 && iz < map.voxels.bound.y - 3)
 							{
-								if (Noise.simplex2(dx, dz, 6, 0.5f, 2) > 0.84)
+								if (Noise.simplex2(dx, dz, 6, 0.5f, 2) > _params.thresholdTree)
 								{
 									for (int iy = h + 3; iy < h + 8; iy++)
 									{
@@ -142,7 +153,7 @@ namespace Cubizer
 					{
 						int dy = offsetY + iy;
 
-						if (Noise.simplex3(dx * 0.01f, dy * 0.1f, dz * 0.01f, 8, 0.5f, 2) > 0.75)
+						if (Noise.simplex3(dx * 0.01f, dy * 0.1f, dz * 0.01f, 8, 0.5f, 2) > _params.thresholdCloud)
 							map.voxels.Set((byte)ix, (byte)iy, (byte)iz, _materials.cloud);
 					}
 				}
@@ -178,7 +189,13 @@ namespace Cubizer
 					return BuildClouds(terrain, x, y, z);
 
 				case BasicObjectBiomeType.Grassland:
-					return BuildGrassland(terrain, x, y, z);
+					return Buildland(terrain, x, y, z, _materials.grass);
+
+				case BasicObjectBiomeType.Forest:
+					return Buildland(terrain, x, y, z, _materials.grass);
+
+				case BasicObjectBiomeType.Sandyland:
+					return Buildland(terrain, x, y, z, _materials.sand);
 
 				default:
 					return null;

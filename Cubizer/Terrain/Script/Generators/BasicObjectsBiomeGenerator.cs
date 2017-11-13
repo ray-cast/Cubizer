@@ -1,12 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
+using Cubizer.Math;
+
 using UnityEngine;
 
 namespace Cubizer
 {
 	[DisallowMultipleComponent]
-	[AddComponentMenu("Cubizer/BasicObjectsBiome")]
+	[AddComponentMenu("Cubizer/BasicObjectsBiomeGenerator")]
 	public class BasicObjectsBiomeGenerator : BiomeGenerator
 	{
 		public LiveBehaviour _materialGrass;
@@ -27,38 +29,42 @@ namespace Cubizer
 		public bool _isGenPlaneOnly = false;
 
 		private BiomeData[] _biomeDatas;
+		private BasicObjectsMaterials _materials;
 
 		private static Dictionary<string, BasicObjectsParams> biomeParams = new Dictionary<string, BasicObjectsParams>
 		{
 			{ "None", new BasicObjectsParams { layer = BasicObjectBiomeType.Space } },
 			{ "Plane", new BasicObjectsParams { layer = BasicObjectBiomeType.Plane } },
 			{ "Cloud", new BasicObjectsParams { layer = BasicObjectBiomeType.Clound } },
-			{ "Grassland", new BasicObjectsParams { layer = BasicObjectBiomeType.Grassland } }
+			{ "Sea", new BasicObjectsParams { layer = BasicObjectBiomeType.Sea } },
+			{ "Grassland", new BasicObjectsParams { layer = BasicObjectBiomeType.Grassland } },
+			{ "Sandland", new BasicObjectsParams { layer = BasicObjectBiomeType.Sandyland, isGenSand = true, isGenFlower = false,  isGenTree = false } },
+			{ "Forest", new BasicObjectsParams { layer = BasicObjectBiomeType.Forest, thresholdTree = 0.7f } }
 		};
 
 		public void Start()
 		{
-			var materials = new BasicObjectsMaterials();
+			_materials = new BasicObjectsMaterials();
 			if (_materialGrass != null)
-				materials.grass = _materialGrass.material;
+				_materials.grass = _materialGrass.material;
 			if (_materialSand != null)
-				materials.sand = _materialSand.material;
+				_materials.sand = _materialSand.material;
 			if (_materialTree != null)
-				materials.tree = _materialTree.material;
+				_materials.tree = _materialTree.material;
 			if (_materialTreeLeaf != null)
-				materials.treeLeaf = _materialTreeLeaf.material;
+				_materials.treeLeaf = _materialTreeLeaf.material;
 			if (_materialFlower != null)
-				materials.flower = _materialFlower.material;
+				_materials.flower = _materialFlower.material;
 			if (_materialWeed != null)
-				materials.weed = _materialWeed.material;
+				_materials.weed = _materialWeed.material;
 			if (_materialObsidian != null)
-				materials.obsidian = _materialObsidian.material;
+				_materials.obsidian = _materialObsidian.material;
 			if (_materialWater != null)
-				materials.water = _materialWater.material;
+				_materials.water = _materialWater.material;
 			if (_materialCloud != null)
-				materials.cloud = _materialCloud.material;
+				_materials.cloud = _materialCloud.material;
 			if (_materialCloud != null)
-				materials.soil = _materialSoil.material;
+				_materials.soil = _materialSoil.material;
 
 			_biomeDatas = new BiomeData[biomeParams.Count];
 
@@ -66,8 +72,42 @@ namespace Cubizer
 
 			foreach (var param in biomeParams)
 			{
-				var biomeData = new BiomeData(new BasicObjectsChunkGenerator(param.Value, materials));
+				var biomeData = new BiomeData(new BasicObjectsChunkGenerator(param.Value, _materials));
 				_biomeDatas[written++] = biomeData;
+			}
+		}
+
+		public BiomeData buildForest(float noise)
+		{
+			var parameters = new BasicObjectsParams { layer = BasicObjectBiomeType.Forest, thresholdTree = 0.87f - (0.52f - noise) * 10.0f };
+			return new BiomeData(new BasicObjectsChunkGenerator(parameters, _materials));
+		}
+
+		public BiomeData buildSandyland(float noise)
+		{
+			if (noise > 0.497)
+			{
+				var parameters = new BasicObjectsParams { layer = BasicObjectBiomeType.Sandyland, isGenSand = true, isGenFlower = false, isGenTree = false, thresholdSand = (0.5f - noise) * 1000.0f };
+				return new BiomeData(new BasicObjectsChunkGenerator(parameters, _materials));
+			}
+			else
+			{
+				var parameters = new BasicObjectsParams { layer = BasicObjectBiomeType.Sandyland, isGenSand = true, isGenFlower = false, isGenTree = false, isGenGrass = false };
+				return new BiomeData(new BasicObjectsChunkGenerator(parameters, _materials));
+			}
+		}
+
+		public BiomeData buildGrassland(float noise)
+		{
+			if (noise > 0.485f)
+			{
+				var parameters = new BasicObjectsParams { layer = BasicObjectBiomeType.Sandyland, isGenSand = true, thresholdSand = (0.49f - 0.485f) * 50.0f };
+				return new BiomeData(new BasicObjectsChunkGenerator(parameters, _materials));
+			}
+			else
+			{
+				var parameters = new BasicObjectsParams { layer = BasicObjectBiomeType.Grassland, };
+				return new BiomeData(new BasicObjectsChunkGenerator(parameters, _materials));
 			}
 		}
 
@@ -83,7 +123,17 @@ namespace Cubizer
 			else
 			{
 				if (y == layerGrass)
-					return _biomeDatas[(int)BasicObjectBiomeType.Grassland];
+				{
+					var noise = Noise.simplex2(x * 0.006f, y * 0.006f, 4, 0.5f, 2);
+					if (noise >= 0.51 && noise <= 0.52)
+						return buildForest(noise);
+					else if (noise >= 0.5)
+						return _biomeDatas[(int)BasicObjectBiomeType.Grassland];
+					else if (noise >= 0.49)
+						return buildSandyland(noise);
+					else
+						return buildGrassland(noise);
+				}
 				else if (y == layerCloud)
 					return _biomeDatas[(int)BasicObjectBiomeType.Clound];
 				else
