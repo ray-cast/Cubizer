@@ -249,6 +249,7 @@ namespace Cubizer
 				Debug.Assert(colors.Length == 256);
 
 				Texture2D texture = new Texture2D(16, 16, TextureFormat.ARGB32, false, false);
+				texture.name = "texture";
 				texture.SetPixels32(colors);
 				texture.Apply();
 
@@ -260,6 +261,7 @@ namespace Cubizer
 				Debug.Assert(colors.Length == 256);
 
 				Texture2D texture = new Texture2D(256, 1, TextureFormat.ARGB32, false, false);
+				texture.name = "texture";
 				texture.SetPixels32(colors);
 				texture.Apply();
 
@@ -339,6 +341,7 @@ namespace Cubizer
 							if (triangles.Length > 0)
 							{
 								Mesh mesh = new Mesh();
+								mesh.name = "mesh";
 								mesh.vertices = vertices;
 								mesh.normals = normals;
 								mesh.uv = uv;
@@ -347,8 +350,11 @@ namespace Cubizer
 								var meshFilter = gameObject.AddComponent<MeshFilter>();
 								var meshRenderer = gameObject.AddComponent<MeshRenderer>();
 #if UNITY_EDITOR
+								MeshUtility.Optimize(mesh);
+
 								meshFilter.sharedMesh = mesh;
 								meshRenderer.sharedMaterial = new Material(Shader.Find("Mobile/Diffuse"));
+								meshRenderer.sharedMaterial.name = "material";
 								meshRenderer.sharedMaterial.mainTexture = texture;
 #else
 								meshFilter.mesh = mesh;
@@ -386,53 +392,21 @@ namespace Cubizer
 				{
 					gameObject = LoadVoxelFileAsGameObject(voxel, name);
 
+					var prefabPath = path + name + ".prefab";
+
 					var meshFilter = gameObject.GetComponent<MeshFilter>();
 					if (meshFilter != null)
 					{
-						var outpath = path + name + ".obj";
-
-						ObjFileExport.WriteToFile(outpath, meshFilter, new Vector3(-0.1f, 0.1f, 0.1f));
-
-						AssetDatabase.Refresh();
-						AssetDatabase.MoveAsset("Assets/Materials/" + name + "Mat.mat", path + name + ".mat");
-						AssetDatabase.Refresh();
-
-						meshFilter.mesh = AssetDatabase.LoadAssetAtPath<Mesh>(outpath);
+						AssetDatabase.AddObjectToAsset(meshFilter.sharedMesh, prefabPath);
 					}
-
-					AssetDatabase.Refresh();
 
 					var renderer = gameObject.GetComponent<MeshRenderer>();
 					if (renderer != null)
 					{
 						if (renderer.sharedMaterial != null)
 						{
-							var material = AssetDatabase.LoadAssetAtPath<Material>(path + name + ".mat");
-							if (material != null)
-							{
-								var outpath = path + name + ".png";
-
-								using (FileStream file = File.Open(outpath, FileMode.Create))
-								{
-									BinaryWriter writer = new BinaryWriter(file);
-									writer.Write(((Texture2D)renderer.sharedMaterial.mainTexture).EncodeToPNG());
-									file.Close();
-								}
-
-								AssetDatabase.Refresh();
-
-								TextureImporter textureImporter = AssetImporter.GetAtPath(outpath) as TextureImporter;
-								textureImporter.textureType = TextureImporterType.Default;
-								textureImporter.textureCompression = TextureImporterCompression.Uncompressed;
-								textureImporter.npotScale = TextureImporterNPOTScale.ToNearest;
-								textureImporter.wrapMode = TextureWrapMode.Clamp;
-
-								AssetDatabase.ImportAsset(outpath);
-
-								material.mainTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(outpath);
-
-								renderer.sharedMaterial = material;
-							}
+							AssetDatabase.AddObjectToAsset(renderer.sharedMaterial, prefabPath);
+							AssetDatabase.AddObjectToAsset(renderer.sharedMaterial.mainTexture, prefabPath);
 						}
 					}
 
