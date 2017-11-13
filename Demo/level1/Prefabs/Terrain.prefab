@@ -1,0 +1,114 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1572944359504568}
+  m_IsPrefabParent: 1
+--- !u!1 &1572944359504568
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4068000008022946}
+  - component: {fileID: 114182709234928260}
+  - component: {fileID: 114074985463436606}
+  - component: {fileID: 114218659001570640}
+  - component: {fileID: 114170223502679368}
+  m_Layer: 0
+  m_Name: Terrain
+  m_TagString: GameController
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 4294967295
+  m_IsActive: 1
+--- !u!4 &4068000008022946
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1572944359504568}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114074985463436606
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1572944359504568}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0eacfbbc27ad7e4ba372b26350b94f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rootPath: C:/Users/ray/AppData/LocalLow/DefaultCompany/Minecraft
+  username: /SaveData/
+--- !u!114 &114170223502679368
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1572944359504568}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bef5ba5bda7663045b06749d52826689, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _player: {fileID: 0}
+  _terrain: {fileID: 114182709234928260}
+  _block: {fileID: 0}
+  _drawPickMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  _drawPickMaterial: {fileID: 2100000, guid: ca8651ba28620ec49a6efa144f310bf1, type: 2}
+  _isHitTestEnable: 1
+  _isHitTestWireframe: 1
+  _isHitTesting: 1
+  _hitTestDistance: 8
+--- !u!114 &114182709234928260
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1572944359504568}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: feff7ffc46e648941b0599b9b0793886, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _chunkSize: 24
+  _chunkNumLimits: 1024
+  _chunkHeightLimitLow: -10
+  _chunkHeightLimitHigh: 20
+  _terrainSeed: 0
+  _liveResources: {fileID: 0}
+  _biomeManager: {fileID: 0}
+--- !u!114 &114218659001570640
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1572944359504568}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 888f835a1285d6746a8d82f23729938f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _player: {fileID: 0}
+  _terrain: {fileID: 114182709234928260}
+  _chunkRadiusGC: 8
+  _chunkRadiusGenX: {x: -4, y: 4}
+  _chunkRadiusGenY: {x: -1, y: 3}
+  _chunkRadiusGenZ: {x: -4, y: 4}
+  _repeatRateUpdate: 0.1
