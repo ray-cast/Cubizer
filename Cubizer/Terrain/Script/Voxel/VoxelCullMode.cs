@@ -1,6 +1,6 @@
 ﻿namespace Cubizer
 {
-	public enum VoxelCruncherMode
+	public enum VoxelCullMode
 	{
 		Stupid = 0,
 		Culled = 1,

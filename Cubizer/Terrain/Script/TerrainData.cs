@@ -102,12 +102,12 @@ namespace Cubizer
 				}
 			}
 
-			var cruncher = VoxelCruncher.CalcVoxelCruncher(_chunk.voxels, VoxelCruncherMode.Culled);
-			if (cruncher == null)
+			var model = VoxelModel.CreateVoxelModel(_chunk.voxels, VoxelCullMode.Culled);
+			if (model == null)
 				return;
 
 			var entities = new Dictionary<string, int>();
-			if (cruncher.CalcFaceCountAsAllocate(ref entities) == 0)
+			if (model.CalcFaceCountAsAllocate(ref entities) == 0)
 				return;
 
 			foreach (var entity in entities)
@@ -128,7 +128,7 @@ namespace Cubizer
 				data.triangles = new int[numIndices];
 
 				var writeCount = 0;
-				foreach (var it in cruncher.voxels)
+				foreach (var it in model.voxels)
 				{
 					if (it.material.name != entity.Key)
 						continue;
@@ -136,12 +136,6 @@ namespace Cubizer
 					Vector3 pos, scale;
 					it.GetTranslateScale(out pos, out scale);
 					controller.OnBuildBlock(ref data, ref writeCount, pos, scale, it.faces);
-				}
-
-				if (data.vertices.Length >= 65000)
-				{
-					Debug.LogError("Mesh vertices is too large: chunk is " + chunk.position.x + " " + chunk.position.y + " " + chunk.position.z);
-					continue;
 				}
 
 				if (data.triangles.Length > 0)

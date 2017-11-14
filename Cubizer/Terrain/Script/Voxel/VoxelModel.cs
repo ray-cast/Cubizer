@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Cubizer
 {
@@ -28,6 +27,26 @@ namespace Cubizer
 			}
 
 			return entities.Count;
+		}
+
+		public static VoxelModel CreateVoxelModel(VoxelData<VoxelMaterial> map, VoxelCullMode mode)
+		{
+			UnityEngine.Debug.Assert(map != null);
+
+			switch (mode)
+			{
+				case VoxelCullMode.Stupid:
+					return new VoxelCruncherStupid().CalcVoxelCruncher(map);
+
+				case VoxelCullMode.Culled:
+					return new VoxelCruncherCulled().CalcVoxelCruncher(map);
+
+				case VoxelCullMode.Greedy:
+					return new VoxelCruncherGreedy().CalcVoxelCruncher(map);
+
+				default:
+					throw new System.Exception("Bad VoxelCullMode");
+			}
 		}
 	}
 }
