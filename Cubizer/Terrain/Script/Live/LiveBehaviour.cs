@@ -43,6 +43,8 @@ namespace Cubizer
 
 		public abstract bool OnUpdateChunk(ref ChunkPrimer map, System.Byte x, System.Byte y, System.Byte z);
 
-		public abstract void OnCreateBlock(ref TerrainMesh mesh, ref int index, Vector3 translate, Vector3 scale, VoxelVisiableFaces faces);
+		public abstract void OnBuildBlock(ref TerrainMesh mesh, ref int index, Vector3 translate, Vector3 scale, VoxelVisiableFaces faces);
+
+		public abstract void OnBuildComponents(GameObject gameObject, Mesh mesh);
 	}
 }

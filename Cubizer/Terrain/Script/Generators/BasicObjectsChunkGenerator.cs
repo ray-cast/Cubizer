@@ -54,7 +54,6 @@ namespace Cubizer
 			var map = new ChunkPrimer(terrain.chunkSize, terrain.chunkSize, terrain.chunkSize, x, y, z, terrain.chunkSize * terrain.chunkSize * _params.floorBase);
 
 			int offsetX = x * map.voxels.bound.x;
-			int offsetY = y * map.voxels.bound.y;
 			int offsetZ = z * map.voxels.bound.z;
 
 			for (byte ix = 0; ix < map.voxels.bound.x; ix++)

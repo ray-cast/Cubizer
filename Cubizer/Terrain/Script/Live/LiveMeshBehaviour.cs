@@ -22,7 +22,7 @@ namespace Cubizer
 			return false;
 		}
 
-		public override void OnCreateBlock(ref TerrainMesh mesh, ref int index, Vector3 pos, Vector3 scale, VoxelVisiableFaces faces)
+		public override void OnBuildBlock(ref TerrainMesh mesh, ref int index, Vector3 pos, Vector3 scale, VoxelVisiableFaces faces)
 		{
 			var startVertices = _mesh.vertexCount * index;
 			var startIndices = _mesh.triangles.Length * index;
@@ -48,6 +48,28 @@ namespace Cubizer
 			}
 
 			index++;
+		}
+
+		public override void OnBuildComponents(GameObject gameObject, Mesh mesh)
+		{
+			var renderer = this.GetComponent<MeshRenderer>();
+			if (renderer != null)
+			{
+				gameObject.AddComponent<MeshFilter>().mesh = mesh;
+				var clone = gameObject.AddComponent<MeshRenderer>();
+				clone.material = renderer.material;
+				clone.receiveShadows = renderer.receiveShadows;
+				clone.shadowCastingMode = renderer.shadowCastingMode;
+				renderer = clone;
+			}
+
+			var collider = this.GetComponent<Collider>();
+			if (collider != null)
+			{
+				var type = collider.GetType();
+				if (type == typeof(MeshCollider))
+					gameObject.AddComponent<MeshCollider>().sharedMesh = mesh;
+			}
 		}
 
 		public void Start()

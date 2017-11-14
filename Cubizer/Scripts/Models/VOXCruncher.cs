@@ -39,25 +39,43 @@ namespace Cubizer
 
 		public class VOXCruncher
 		{
-			public int begin_x;
-			public int begin_y;
-			public int begin_z;
+			public struct Vector3
+			{
+				public int x;
+				public int y;
+				public int z;
+			}
 
-			public int end_x;
-			public int end_y;
-			public int end_z;
+			public Vector3 begin;
+			public Vector3 end;
 
 			public VOXMaterial material;
 			public VOXVisiableFaces faces;
 
+			public VOXCruncher(Vector3 begin, Vector3 end, VOXMaterial _material)
+			{
+				this.begin = begin;
+				this.end = end;
+
+				material = _material;
+
+				faces.left = true;
+				faces.right = true;
+				faces.top = true;
+				faces.bottom = true;
+				faces.front = true;
+				faces.back = true;
+			}
+
 			public VOXCruncher(int begin_x, int end_x, int begin_y, int end_y, int begin_z, int end_z, VOXMaterial _material)
 			{
-				this.begin_x = begin_x;
-				this.begin_y = begin_y;
-				this.begin_z = begin_z;
-				this.end_x = end_x;
-				this.end_y = end_y;
-				this.end_z = end_z;
+				begin.x = begin_x;
+				begin.y = begin_y;
+				begin.z = begin_z;
+
+				end.x = end_x;
+				end.y = end_y;
+				end.z = end_z;
 
 				material = _material;
 
@@ -71,13 +89,13 @@ namespace Cubizer
 
 			public VOXCruncher(int begin_x, int end_x, int begin_y, int end_y, int begin_z, int end_z, VOXVisiableFaces _faces, VOXMaterial _material)
 			{
-				this.begin_x = begin_x;
-				this.begin_y = begin_y;
-				this.begin_z = begin_z;
+				begin.x = begin_x;
+				begin.y = begin_y;
+				begin.z = begin_z;
 
-				this.end_x = end_x;
-				this.end_y = end_y;
-				this.end_z = end_z;
+				end.x = end_x;
+				end.y = end_y;
+				end.z = end_z;
 
 				material = _material;
 				faces = _faces;

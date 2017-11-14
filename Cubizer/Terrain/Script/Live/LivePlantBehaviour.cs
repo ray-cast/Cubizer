@@ -78,9 +78,44 @@ namespace Cubizer
 			return false;
 		}
 
-		public override void OnCreateBlock(ref TerrainMesh mesh, ref int index, Vector3 pos, Vector3 scale, VoxelVisiableFaces faces)
+		public override void OnBuildBlock(ref TerrainMesh mesh, ref int index, Vector3 pos, Vector3 scale, VoxelVisiableFaces faces)
 		{
 			CreatePlantMesh(ref mesh.vertices, ref mesh.normals, ref mesh.uv, ref mesh.triangles, ref index, pos, scale);
+		}
+
+		public override void OnBuildComponents(GameObject gameObject, Mesh mesh)
+		{
+			var renderer = this.GetComponent<MeshRenderer>();
+			if (renderer != null)
+			{
+				gameObject.AddComponent<MeshFilter>().mesh = mesh;
+				var clone = gameObject.AddComponent<MeshRenderer>();
+				clone.material = renderer.material;
+				clone.receiveShadows = renderer.receiveShadows;
+				clone.shadowCastingMode = renderer.shadowCastingMode;
+				renderer = clone;
+			}
+
+			var collider = this.GetComponent<Collider>();
+			if (collider != null)
+			{
+				var type = collider.GetType();
+				if (type == typeof(MeshCollider))
+					gameObject.AddComponent<MeshCollider>().sharedMesh = mesh;
+			}
+
+			var lod = this.GetComponent<LODGroup>();
+			if (lod != null)
+			{
+				var lods = lod.GetLODs();
+				for (int i = 0; i < lods.Length; i++)
+				{
+					if (lods[i].renderers.Length > 0)
+						lods[i].renderers[0] = renderer;
+				}
+
+				gameObject.AddComponent<LODGroup>().SetLODs(lods);
+			}
 		}
 	}
 }

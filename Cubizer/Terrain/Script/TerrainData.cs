@@ -75,7 +75,13 @@ namespace Cubizer
 				if (numIndices == 0)
 					continue;
 
-				var data = new TerrainMesh { vertices = new Vector3[numVertices], normals = new Vector3[numVertices], uv = new Vector2[numVertices], triangles = new int[numIndices] };
+				var data = new TerrainMesh
+				{
+					vertices = new Vector3[numVertices],
+					normals = new Vector3[numVertices],
+					uv = new Vector2[numVertices],
+					triangles = new int[numIndices]
+				};
 
 				var writeCount = 0;
 				foreach (var it in cruncher.voxels)
@@ -85,7 +91,7 @@ namespace Cubizer
 
 					Vector3 pos, scale;
 					it.GetTranslateScale(out pos, out scale);
-					controller.OnCreateBlock(ref data, ref writeCount, pos, scale, it.faces);
+					controller.OnBuildBlock(ref data, ref writeCount, pos, scale, it.faces);
 				}
 
 				if (data.vertices.Length >= 65000)
@@ -108,42 +114,12 @@ namespace Cubizer
 					gameObject.transform.parent = this.transform;
 					gameObject.transform.position = this.transform.position;
 
-					var renderer = controller.GetComponent<MeshRenderer>();
-					if (renderer != null)
-					{
-						gameObject.AddComponent<MeshFilter>().mesh = mesh;
-						var clone = gameObject.AddComponent<MeshRenderer>();
-						clone.material = renderer.material;
-						clone.receiveShadows = renderer.receiveShadows;
-						clone.shadowCastingMode = renderer.shadowCastingMode;
-						renderer = clone;
-					}
-
-					var collider = controller.GetComponent<Collider>();
-					if (collider != null)
-					{
-						var type = collider.GetType();
-						if (type == typeof(MeshCollider))
-							gameObject.AddComponent<MeshCollider>().sharedMesh = mesh;
-					}
-
-					var lod = controller.GetComponent<LODGroup>();
-					if (lod != null)
-					{
-						var lods = lod.GetLODs();
-						for (int i = 0; i < lods.Length; i++)
-						{
-							if (lods[i].renderers.Length > 0)
-								lods[i].renderers[0] = renderer;
-						}
-
-						gameObject.AddComponent<LODGroup>().SetLODs(lods);
-					}
-
-					if (_chunkEntitiesDynamic.Count > 0)
-						StartCoroutine("OnUpdateEntities");
+					controller.OnBuildComponents(gameObject, mesh);
 				}
 			}
+
+			if (_chunkEntitiesDynamic.Count > 0)
+				StartCoroutine("OnUpdateEntities");
 		}
 
 		public IEnumerator OnUpdateEntities()
