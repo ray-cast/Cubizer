@@ -12,7 +12,7 @@ namespace Cubizer
 		private int _count;
 		private int _allocSize;
 
-		private VoxelDataNode<Vector3<System.Int16>, BiomeData>[] _data;
+		private BiomeDataNode<Vector3<System.Int16>, BiomeData>[] _data;
 
 		public int count
 		{
@@ -39,7 +39,7 @@ namespace Cubizer
 
 			_count = 0;
 			_allocSize = usage;
-			_data = new VoxelDataNode<Vector3<System.Int16>, BiomeData>[_allocSize + 1];
+			_data = new BiomeDataNode<Vector3<System.Int16>, BiomeData>[_allocSize + 1];
 		}
 
 		public bool Set(System.Int16 x, System.Int16 y, System.Int16 z, BiomeData value)
@@ -65,7 +65,7 @@ namespace Cubizer
 
 			if (value != null)
 			{
-				_data[index] = new VoxelDataNode<Vector3<System.Int16>, BiomeData>(new Vector3<System.Int16>(x, y, z), value);
+				_data[index] = new BiomeDataNode<Vector3<System.Int16>, BiomeData>(new Vector3<System.Int16>(x, y, z), value);
 				_count++;
 
 				if (_count >= _allocSize)
@@ -123,12 +123,12 @@ namespace Cubizer
 			return _count == 0;
 		}
 
-		public VoxelDataNodeEnumerable<Vector3<System.Int16>, BiomeData> GetEnumerator()
+		public BiomeDataNodeEnumerable<Vector3<System.Int16>, BiomeData> GetEnumerator()
 		{
-			return new VoxelDataNodeEnumerable<Vector3<System.Int16>, BiomeData>(_data);
+			return new BiomeDataNodeEnumerable<Vector3<System.Int16>, BiomeData>(_data);
 		}
 
-		public static bool Save(string path, ChunkDataManager _self)
+		public static bool Save(string path, BiomeDataManager _self)
 		{
 			using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write))
 			{
@@ -141,16 +141,16 @@ namespace Cubizer
 			}
 		}
 
-		public static ChunkDataManager Load(string path)
+		public static BiomeDataManager Load(string path)
 		{
 			using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
 			{
 				var serializer = new BinaryFormatter();
-				return serializer.Deserialize(stream) as ChunkDataManager;
+				return serializer.Deserialize(stream) as BiomeDataManager;
 			}
 		}
 
-		private bool Grow(VoxelDataNode<Vector3<System.Int16>, BiomeData> data)
+		private bool Grow(BiomeDataNode<Vector3<System.Int16>, BiomeData> data)
 		{
 			var pos = data.position;
 			var index = HashInt(pos.x, pos.y, pos.z) & _allocSize;

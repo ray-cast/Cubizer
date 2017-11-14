@@ -42,6 +42,13 @@ namespace Cubizer
 			return _lives.Count - 1;
 		}
 
+		public static int GetInstanceID(string name)
+		{
+			if (_liveIndex.ContainsKey(name))
+				return _liveIndex[name];
+			return int.MaxValue;
+		}
+
 		public static LiveBehaviour Load(string name)
 		{
 			if (_liveIndex.ContainsKey(name))
