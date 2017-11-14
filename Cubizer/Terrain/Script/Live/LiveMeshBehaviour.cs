@@ -28,11 +28,6 @@ namespace Cubizer
 			return (faceCount / 6) * _mesh.triangles.Length;
 		}
 
-		public override bool OnUpdateChunk(ref ChunkPrimer map, System.Byte x, System.Byte y, System.Byte z)
-		{
-			return false;
-		}
-
 		public override void OnBuildBlock(ref TerrainMesh mesh, ref int index, Vector3 pos, Vector3 scale, VoxelVisiableFaces faces)
 		{
 			var startVertices = _mesh.vertexCount * index;
@@ -73,6 +68,11 @@ namespace Cubizer
 
 			gameObject.AddComponent<MeshFilter>().mesh = mesh;
 			gameObject.AddComponent<MeshCollider>().sharedMesh = mesh;
+		}
+
+		public override bool OnUpdateChunk(ref ChunkPrimer map, System.Byte x, System.Byte y, System.Byte z)
+		{
+			return false;
 		}
 	}
 }

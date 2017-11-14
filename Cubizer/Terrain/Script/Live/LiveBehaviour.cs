@@ -26,10 +26,11 @@ namespace Cubizer
 
 		public void RegisterDefaultMaterial()
 		{
-			if (_material == null)
-				_material = new VoxelMaterial(name, is_transparent, is_dynamic, is_merge);
-
-			LiveResources.RegisterMaterial(this.gameObject.name, this);
+			_material = VoxelMaterialManager.CreateMaterial(this.name);
+			_material.is_transparent = is_transparent;
+			_material.is_dynamic = is_dynamic;
+			_material.is_merge = is_merge;
+			_material.userdata = this;
 		}
 
 		public void Awake()
@@ -41,10 +42,10 @@ namespace Cubizer
 
 		public abstract int GetIndicesCount(int faceCount);
 
-		public abstract bool OnUpdateChunk(ref ChunkPrimer map, System.Byte x, System.Byte y, System.Byte z);
-
 		public abstract void OnBuildBlock(ref TerrainMesh mesh, ref int index, Vector3 translate, Vector3 scale, VoxelVisiableFaces faces);
 
 		public abstract void OnBuildComponents(GameObject gameObject, Mesh mesh);
+
+		public abstract bool OnUpdateChunk(ref ChunkPrimer map, System.Byte x, System.Byte y, System.Byte z);
 	}
 }

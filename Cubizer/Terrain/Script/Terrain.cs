@@ -21,7 +21,7 @@ namespace Cubizer
 		[SerializeField] private int _chunkHeightLimitHigh = 20;
 
 		[SerializeField] private int _terrainSeed = 255;
-		[SerializeField] private LiveResources _liveResources;
+
 		[SerializeField] private BiomeGeneratorManager _biomeManager;
 
 		private ChunkDataManager _chunks;
@@ -49,11 +49,6 @@ namespace Cubizer
 		{
 			set { _chunkHeightLimitHigh = value; }
 			get { return _chunkHeightLimitHigh; }
-		}
-
-		public LiveResources liveResources
-		{
-			get { return _liveResources; }
 		}
 
 		public BiomeGeneratorManager biomeManager
@@ -89,9 +84,6 @@ namespace Cubizer
 
 		public void Awake()
 		{
-			if (_liveResources == null)
-				Debug.LogError("Please drag a LiveResources into Hierarchy View.");
-
 			if (_biomeManager == null)
 				Debug.LogError("Please drag a TerrainBiome into Hierarchy View.");
 		}

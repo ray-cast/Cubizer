@@ -5,32 +5,33 @@ using System.Runtime.Serialization.Formatters.Binary;
 namespace Cubizer
 {
 	[Serializable]
-	public class VoxelMaterial : ICloneable
+	public sealed class VoxelMaterial : ICloneable
 	{
-		private bool _dynamic;
-		private bool _transparent;
-		private bool _merge;
+		private int _instanceID;
+
+		public bool _dynamic = false;
+		public bool _transparent = false;
+		public bool _merge = false;
 
 		private string _name;
 
-		public bool is_dynamic { get { return _dynamic; } }
-		public bool is_transparent { get { return _transparent; } }
-		public bool is_merge { get { return _merge; } }
+		public object userdata;
 
-		public string name { set { _name = value; } get { return _name; } }
+		public bool is_dynamic { set { _dynamic = value; } get { return _dynamic; } }
+		public bool is_transparent { set { _transparent = value; } get { return _transparent; } }
+		public bool is_merge { set { _transparent = value; } get { return _merge; } }
 
-		public VoxelMaterial()
-		{
-			_dynamic = false;
-			_transparent = false;
-		}
+		public string name { get { return _name; } }
 
-		public VoxelMaterial(string name, bool transparent = false, bool dynamic = false, bool merge = true)
+		public VoxelMaterial(string name, int instanceID)
 		{
 			_name = name;
-			_dynamic = dynamic;
-			_merge = merge;
-			_transparent = transparent;
+			_instanceID = instanceID;
+		}
+
+		public int GetInstanceID()
+		{
+			return _instanceID;
 		}
 
 		public object Clone()
