@@ -56,7 +56,7 @@ namespace Cubizer
 			return faces.any;
 		}
 
-		public VoxelModel CalcVoxelCruncher(VoxelData<VoxelMaterial> voxels)
+		public IVoxelModel CalcVoxelCruncher(VoxelData<VoxelMaterial> voxels)
 		{
 			var map = new VoxelMaterial[voxels.bound.x, voxels.bound.y, voxels.bound.z];
 
@@ -87,7 +87,7 @@ namespace Cubizer
 				crunchers.Add(new VoxelPrimitive(x, x, y, y, z, z, faces, c));
 			}
 
-			return new VoxelModel(crunchers);
+			return new VoxelModelList(crunchers);
 		}
 	}
 }

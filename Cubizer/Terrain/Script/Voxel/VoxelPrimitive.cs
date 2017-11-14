@@ -1,6 +1,6 @@
 ﻿namespace Cubizer
 {
-	public struct VoxelPrimitive
+	public class VoxelPrimitive
 	{
 		public struct Vector3
 		{

@@ -128,8 +128,8 @@ namespace Cubizer
 				data.triangles = new int[numIndices];
 
 				var writeCount = 0;
-				foreach (var it in model.voxels)
-				{
+				foreach (VoxelPrimitive it in model.GetEnumerator())
+				{	
 					if (it.material.name != entity.Key)
 						continue;
 

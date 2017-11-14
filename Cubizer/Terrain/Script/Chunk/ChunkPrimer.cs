@@ -90,7 +90,7 @@ namespace Cubizer
 			return System.Math.Max(System.Math.Max(x, y), z);
 		}
 
-		public VoxelModel CreateVoxelModel(VoxelCullMode mode)
+		public IVoxelModel CreateVoxelModel(VoxelCullMode mode)
 		{
 			switch (mode)
 			{

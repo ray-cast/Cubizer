@@ -19,7 +19,7 @@ namespace Cubizer
 
 		public bool is_dynamic { set { _dynamic = value; } get { return _dynamic; } }
 		public bool is_transparent { set { _transparent = value; } get { return _transparent; } }
-		public bool is_merge { set { _transparent = value; } get { return _merge; } }
+		public bool is_merge { set { _merge = value; } get { return _merge; } }
 
 		public string name { get { return _name; } }
 

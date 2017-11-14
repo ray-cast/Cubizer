@@ -2,6 +2,6 @@
 {
 	public interface IVoxelCruncher
 	{
-		VoxelModel CalcVoxelCruncher(VoxelData<VoxelMaterial> map);
+		IVoxelModel CalcVoxelCruncher(VoxelData<VoxelMaterial> map);
 	}
 }

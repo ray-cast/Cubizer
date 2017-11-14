@@ -169,7 +169,7 @@ namespace Cubizer
 			}
 		}
 
-		public VoxelModel CalcVoxelCruncher(VoxelData<VoxelMaterial> voxels)
+		public IVoxelModel CalcVoxelCruncher(VoxelData<VoxelMaterial> voxels)
 		{
 			var map = new VoxelMaterial[voxels.bound.x, voxels.bound.y, voxels.bound.z];
 
@@ -203,7 +203,7 @@ namespace Cubizer
 
 			CalcVoxelCruncher(map, bound, ref crunchers);
 
-			return new VoxelModel(crunchers);
+			return new VoxelModelList(crunchers);
 		}
 	}
 }

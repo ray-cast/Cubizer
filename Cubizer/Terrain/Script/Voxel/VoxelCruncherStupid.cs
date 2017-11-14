@@ -6,7 +6,7 @@ namespace Cubizer
 	{
 		private static VoxelVisiableFaces faces = new VoxelVisiableFaces();
 
-		public VoxelModel CalcVoxelCruncher(VoxelData<VoxelMaterial> map)
+		public IVoxelModel CalcVoxelCruncher(VoxelData<VoxelMaterial> map)
 		{
 			var crunchers = new List<VoxelPrimitive>(map.count);
 
@@ -20,7 +20,7 @@ namespace Cubizer
 				crunchers.Add(new VoxelPrimitive(x, x, z, z, y, y, faces, c));
 			}
 
-			return new VoxelModel(crunchers);
+			return new VoxelModelList(crunchers);
 		}
 	}
 }
