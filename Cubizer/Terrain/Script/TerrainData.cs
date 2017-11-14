@@ -75,13 +75,11 @@ namespace Cubizer
 				if (numIndices == 0)
 					continue;
 
-				var data = new TerrainMesh
-				{
-					vertices = new Vector3[numVertices],
-					normals = new Vector3[numVertices],
-					uv = new Vector2[numVertices],
-					triangles = new int[numIndices]
-				};
+				var data = new TerrainMesh();
+				data.vertices = new Vector3[numVertices];
+				data.normals = new Vector3[numVertices];
+				data.uv = new Vector2[numVertices];
+				data.triangles = new int[numIndices];
 
 				var writeCount = 0;
 				foreach (var it in cruncher.voxels)
