@@ -1,8 +1,8 @@
 ﻿namespace Cubizer
 {
-	public class ChunkGeneratorNull : ChunkGenerator
+	public class ChunkGeneratorNull : IChunkGenerator
 	{
-		public override ChunkPrimer OnCreateChunk(Terrain terrain, short x, short y, short z)
+		public ChunkPrimer OnCreateChunk(Terrain terrain, short x, short y, short z)
 		{
 			return null;
 		}

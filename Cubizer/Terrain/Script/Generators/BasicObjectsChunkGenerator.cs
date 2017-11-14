@@ -3,7 +3,7 @@ using Cubizer.Math;
 
 namespace Cubizer
 {
-	public class BasicObjectsChunkGenerator : ChunkGenerator
+	public class BasicObjectsChunkGenerator : IChunkGenerator
 	{
 		private BasicObjectsMaterials _materials;
 		private BasicObjectsParams _params;
@@ -177,7 +177,7 @@ namespace Cubizer
 			return map;
 		}
 
-		public override ChunkPrimer OnCreateChunk(Terrain terrain, short x, short y, short z)
+		public ChunkPrimer OnCreateChunk(Terrain terrain, short x, short y, short z)
 		{
 			switch (_params.layer)
 			{

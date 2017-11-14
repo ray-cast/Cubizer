@@ -7,12 +7,12 @@ using Cubizer.Math;
 namespace Cubizer
 {
 	[Serializable]
-	public class BiomeDataManager
+	public class BiomeDataManager : IBiomeDataManager
 	{
 		private int _count;
 		private int _allocSize;
 
-		private BiomeDataNode<Vector3<System.Int16>, BiomeData>[] _data;
+		private BiomeDataNode<Vector3<int>, IBiomeData>[] _data;
 
 		public int count
 		{
@@ -39,10 +39,10 @@ namespace Cubizer
 
 			_count = 0;
 			_allocSize = usage;
-			_data = new BiomeDataNode<Vector3<System.Int16>, BiomeData>[_allocSize + 1];
+			_data = new BiomeDataNode<Vector3<int>, IBiomeData>[_allocSize + 1];
 		}
 
-		public bool Set(System.Int16 x, System.Int16 y, System.Int16 z, BiomeData value)
+		public bool Set(int x, int y, int z, IBiomeData value)
 		{
 			if (_allocSize == 0)
 				this.Create(0xFF);
@@ -65,7 +65,7 @@ namespace Cubizer
 
 			if (value != null)
 			{
-				_data[index] = new BiomeDataNode<Vector3<System.Int16>, BiomeData>(new Vector3<System.Int16>(x, y, z), value);
+				_data[index] = new BiomeDataNode<Vector3<int>, IBiomeData>(new Vector3<int>(x, y, z), value);
 				_count++;
 
 				if (_count >= _allocSize)
@@ -77,12 +77,12 @@ namespace Cubizer
 			return false;
 		}
 
-		public bool Set(Vector3<System.Int16> pos, BiomeData value)
+		public bool Set(Vector3<int> pos, BiomeData value)
 		{
 			return Set(pos.x, pos.y, pos.z, value);
 		}
 
-		public bool Get(int x, int y, int z, ref BiomeData chunk)
+		public bool Get(int x, int y, int z, ref IBiomeData chunk)
 		{
 			if (_allocSize == 0)
 				return false;
@@ -107,14 +107,14 @@ namespace Cubizer
 			return false;
 		}
 
-		public bool Get(Vector3<System.Int16> pos, ref BiomeData instanceID)
+		public bool Get(Vector3<int> pos, ref IBiomeData instanceID)
 		{
 			return this.Get(pos.x, pos.y, pos.z, ref instanceID);
 		}
 
 		public bool Exists(int x, int y, int z)
 		{
-			BiomeData instanceID = null;
+			IBiomeData instanceID = null;
 			return this.Get(x, y, z, ref instanceID);
 		}
 
@@ -123,34 +123,37 @@ namespace Cubizer
 			return _count == 0;
 		}
 
-		public BiomeDataNodeEnumerable<Vector3<System.Int16>, BiomeData> GetEnumerator()
+		public BiomeDataNodeEnumerable<Vector3<int>, IBiomeData> GetEnumerator()
 		{
-			return new BiomeDataNodeEnumerable<Vector3<System.Int16>, BiomeData>(_data);
+			return new BiomeDataNodeEnumerable<Vector3<int>, IBiomeData>(_data);
 		}
 
-		public static bool Save(string path, BiomeDataManager _self)
+		public bool Save(string path)
 		{
 			using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write))
 			{
 				var serializer = new BinaryFormatter();
-				serializer.Serialize(stream, _self);
-
-				stream.Close();
+				serializer.Serialize(stream, this);
 
 				return true;
 			}
 		}
 
-		public static BiomeDataManager Load(string path)
+		public bool Load(string path)
 		{
 			using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
 			{
-				var serializer = new BinaryFormatter();
-				return serializer.Deserialize(stream) as BiomeDataManager;
+				var _new = new BinaryFormatter().Deserialize(stream) as BiomeDataManager;
+
+				this._count = _new._count;
+				this._data = _new._data;
+				this._allocSize = _new._allocSize;
+
+				return true;
 			}
 		}
 
-		private bool Grow(BiomeDataNode<Vector3<System.Int16>, BiomeData> data)
+		private bool Grow(BiomeDataNode<Vector3<int>, IBiomeData> data)
 		{
 			var pos = data.position;
 			var index = HashInt(pos.x, pos.y, pos.z) & _allocSize;

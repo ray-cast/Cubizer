@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Cubizer
 {
-	public class VoxelCruncherGreedy : IVoxelCruncherStrategy
+	public class VoxelCruncherGreedy : IVoxelCruncher
 	{
 		private static int[] x = new int[3] { 0, 0, 0 };
 		private static int[] q = new int[3] { 0, 0, 0 };

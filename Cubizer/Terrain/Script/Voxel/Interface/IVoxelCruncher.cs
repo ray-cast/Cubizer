@@ -1,6 +1,6 @@
 ﻿namespace Cubizer
 {
-	public interface IVoxelCruncherStrategy
+	public interface IVoxelCruncher
 	{
 		VoxelModel CalcVoxelCruncher(VoxelData<VoxelMaterial> map);
 	}

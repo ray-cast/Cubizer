@@ -102,7 +102,7 @@ namespace Cubizer
 				}
 			}
 
-			var model = VoxelModel.CreateVoxelModel(_chunk.voxels, VoxelCullMode.Culled);
+			var model = _chunk.CreateVoxelModel(VoxelCullMode.Culled);
 			if (model == null)
 				return;
 
@@ -112,7 +112,7 @@ namespace Cubizer
 
 			foreach (var entity in entities)
 			{
-				var controller = VoxelMaterialManager.GetMaterial(entity.Key).userdata as LiveBehaviour;
+				var controller = VoxelMaterialManager.GetInstance().GetMaterial(entity.Key).userdata as LiveBehaviour;
 				if (controller == null)
 					continue;
 

@@ -92,7 +92,7 @@ namespace Cubizer
 			return Set(pos.x, pos.y, pos.z, value);
 		}
 
-		public bool Get(System.Int16 x, System.Int16 y, System.Int16 z, ref ChunkPrimer chunk)
+		public bool Get(int x, int y, int z, ref ChunkPrimer chunk)
 		{
 			if (_allocSize == 0)
 				return false;
@@ -122,7 +122,7 @@ namespace Cubizer
 			return this.Get(pos.x, pos.y, pos.z, ref instanceID);
 		}
 
-		public bool Exists(System.Int16 x, System.Int16 y, System.Int16 z)
+		public bool Exists(int x, int y, int z)
 		{
 			ChunkPrimer instanceID = null;
 			return this.Get(x, y, z, ref instanceID);
@@ -131,6 +131,11 @@ namespace Cubizer
 		public bool Empty()
 		{
 			return _count == 0;
+		}
+
+		public int Count()
+		{
+			return _count;
 		}
 
 		public ChunkDataNodeEnumerable<Vector3<System.Int16>, ChunkPrimer> GetEnumerator()

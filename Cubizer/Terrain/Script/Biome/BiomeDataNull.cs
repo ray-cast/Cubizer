@@ -1,10 +1,10 @@
 ﻿namespace Cubizer
 {
-	public class BiomeDataNull : BiomeData
+	public class BiomeDataNull : IBiomeData
 	{
-		public BiomeDataNull()
-			: base(null)
+		public virtual ChunkPrimer OnBuildChunk(Terrain terrain, short x, short y, short z)
 		{
+			return null;
 		}
 	}
 }

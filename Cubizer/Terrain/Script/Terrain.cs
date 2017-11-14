@@ -346,7 +346,7 @@ namespace Cubizer
 
 		public void UpdateChunkForCreate(Camera camera, Vector2Int[] radius)
 		{
-			if (_chunks.count > _chunkNumLimits)
+			if (_chunks.Count() > _chunkNumLimits)
 				return;
 
 			Vector3Int position;

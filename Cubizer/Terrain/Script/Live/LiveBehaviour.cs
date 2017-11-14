@@ -26,11 +26,14 @@ namespace Cubizer
 
 		public void RegisterDefaultMaterial()
 		{
-			_material = VoxelMaterialManager.CreateMaterial(this.name);
-			_material.is_transparent = is_transparent;
-			_material.is_dynamic = is_dynamic;
-			_material.is_merge = is_merge;
-			_material.userdata = this;
+			_material = VoxelMaterialManager.GetInstance().CreateMaterial(this.name);
+			if (_material != null)
+			{
+				_material.is_transparent = is_transparent;
+				_material.is_dynamic = is_dynamic;
+				_material.is_merge = is_merge;
+				_material.userdata = this;
+			}
 		}
 
 		public void Awake()

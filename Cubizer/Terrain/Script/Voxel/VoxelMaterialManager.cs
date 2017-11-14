@@ -1,20 +1,30 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Collections.Generic;
 
 namespace Cubizer
 {
-	public class VoxelMaterialManager
+	public sealed class VoxelMaterialManager : IVoxelMaterialManager
 	{
 		private static List<VoxelMaterial> _lives = new List<VoxelMaterial>();
 		private static Dictionary<string, int> _liveIndex = new Dictionary<string, int>();
 
-		public static Dictionary<string, int> materials
+		public static Dictionary<string, int> lives
 		{
 			get { return _liveIndex; }
 		}
 
-		public static VoxelMaterial CreateMaterial(string name)
+		private static readonly VoxelMaterialManager instance = new VoxelMaterialManager();
+
+		private VoxelMaterialManager()
+		{
+		}
+
+		public static VoxelMaterialManager GetInstance()
+		{
+			return instance;
+		}
+
+		public VoxelMaterial CreateMaterial(string name)
 		{
 			Debug.Assert(!System.String.IsNullOrEmpty(name));
 
@@ -28,19 +38,26 @@ namespace Cubizer
 			return material;
 		}
 
-		public static VoxelMaterial GetMaterial(string name)
+		public VoxelMaterial GetMaterial(string name)
 		{
 			Debug.Assert(!System.String.IsNullOrEmpty(name));
 
-			if (_liveIndex.ContainsKey(name))
-				return _lives[_liveIndex[name]];
-
-			return null;
+			if (!_liveIndex.ContainsKey(name))
+				return null;
+			return _lives[_liveIndex[name]];
 		}
 
-		public static VoxelMaterial GetMaterial(int id)
+		public VoxelMaterial GetMaterial(int id)
 		{
 			return _lives.Count <= id ? null : _lives[id];
+		}
+
+		public VoxelMaterial[] GetMaterials()
+		{
+			VoxelMaterial[] materials = new VoxelMaterial[_lives.Count];
+			for (int i = 0; i < _lives.Count; i++)
+				materials[i] = _lives[i];
+			return materials;
 		}
 	}
 }

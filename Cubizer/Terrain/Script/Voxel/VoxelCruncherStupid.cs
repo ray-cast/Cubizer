@@ -2,7 +2,7 @@
 
 namespace Cubizer
 {
-	public class VoxelCruncherStupid : IVoxelCruncherStrategy
+	public class VoxelCruncherStupid : IVoxelCruncher
 	{
 		private static VoxelVisiableFaces faces = new VoxelVisiableFaces();
 

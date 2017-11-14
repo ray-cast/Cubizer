@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Cubizer
 {
-	public class VoxelCruncherCulled : IVoxelCruncherStrategy
+	public class VoxelCruncherCulled : IVoxelCruncher
 	{
 		private static VoxelMaterial[] instanceID = new VoxelMaterial[6] { null, null, null, null, null, null };
 

@@ -1,15 +1,10 @@
 ﻿namespace Cubizer
 {
-	public class BiomeData
+	public class BiomeData : IBiomeData
 	{
-		private ChunkGenerator _chunkGenerator;
+		public IChunkGenerator _chunkGenerator;
 
-		public ChunkGenerator chunkGenerator
-		{
-			get { return _chunkGenerator; }
-		}
-
-		public BiomeData(ChunkGenerator generator)
+		public BiomeData(IChunkGenerator generator)
 		{
 			_chunkGenerator = generator;
 		}

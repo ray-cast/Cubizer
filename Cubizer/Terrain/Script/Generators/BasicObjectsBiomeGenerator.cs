@@ -111,7 +111,7 @@ namespace Cubizer
 			}
 		}
 
-		public override BiomeData OnBuildBiome(short x, short y, short z)
+		public override IBiomeData OnBuildBiome(short x, short y, short z)
 		{
 			if (_isGenPlaneOnly)
 			{

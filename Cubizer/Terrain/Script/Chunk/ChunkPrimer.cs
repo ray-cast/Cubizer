@@ -90,6 +90,24 @@ namespace Cubizer
 			return System.Math.Max(System.Math.Max(x, y), z);
 		}
 
+		public VoxelModel CreateVoxelModel(VoxelCullMode mode)
+		{
+			switch (mode)
+			{
+				case VoxelCullMode.Stupid:
+					return new VoxelCruncherStupid().CalcVoxelCruncher(this.voxels);
+
+				case VoxelCullMode.Culled:
+					return new VoxelCruncherCulled().CalcVoxelCruncher(this.voxels);
+
+				case VoxelCullMode.Greedy:
+					return new VoxelCruncherGreedy().CalcVoxelCruncher(this.voxels);
+
+				default:
+					throw new System.Exception("Bad VoxelCullMode");
+			}
+		}
+
 		public static ChunkPrimer Load(string path)
 		{
 			using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
