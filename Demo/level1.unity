@@ -234,6 +234,11 @@ Prefab:
       propertyPath: _terrain
       value: 
       objectReference: {fileID: 626552213}
+    - target: {fileID: 114512015290778124, guid: 20faae71164380d4aa45d9dfbc779289,
+        type: 2}
+      propertyPath: titlePadding
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 20faae71164380d4aa45d9dfbc779289, type: 2}
   m_IsPrefabParent: 0
@@ -399,12 +404,12 @@ Prefab:
     - target: {fileID: 224431451281944538, guid: 52eb078de896190488e6c13e15635297,
         type: 2}
       propertyPath: m_LocalPosition.x
-      value: 599
+      value: 598
       objectReference: {fileID: 0}
     - target: {fileID: 224431451281944538, guid: 52eb078de896190488e6c13e15635297,
         type: 2}
       propertyPath: m_LocalPosition.y
-      value: 381.5
+      value: 380.5
       objectReference: {fileID: 0}
     - target: {fileID: 224431451281944538, guid: 52eb078de896190488e6c13e15635297,
         type: 2}

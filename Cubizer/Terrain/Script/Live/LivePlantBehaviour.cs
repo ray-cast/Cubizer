@@ -78,7 +78,7 @@ namespace Cubizer
 			return false;
 		}
 
-		public override void OnCreateBlock(ref TerrainMesh mesh, ref int index, Vector3 pos, Vector3 scale, VoxelVisiableFaces faces, int[] tiles, int tileSize, int titlePadding)
+		public override void OnCreateBlock(ref TerrainMesh mesh, ref int index, Vector3 pos, Vector3 scale, VoxelVisiableFaces faces)
 		{
 			CreatePlantMesh(ref mesh.vertices, ref mesh.normals, ref mesh.uv, ref mesh.triangles, ref index, pos, scale);
 		}

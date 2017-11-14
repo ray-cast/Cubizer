@@ -22,7 +22,7 @@ namespace Cubizer
 			return false;
 		}
 
-		public override void OnCreateBlock(ref TerrainMesh mesh, ref int index, Vector3 pos, Vector3 scale, VoxelVisiableFaces faces, int[] tiles, int tileSize, int titlePadding)
+		public override void OnCreateBlock(ref TerrainMesh mesh, ref int index, Vector3 pos, Vector3 scale, VoxelVisiableFaces faces)
 		{
 			var startVertices = _mesh.vertexCount * index;
 			var startIndices = _mesh.triangles.Length * index;

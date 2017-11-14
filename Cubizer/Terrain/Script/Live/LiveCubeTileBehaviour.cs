@@ -2,9 +2,14 @@
 
 namespace Cubizer
 {
-	[AddComponentMenu("Cubizer/LiveCubeBehaviour")]
-	public class LiveCubeBehaviour : LiveBehaviour
+	[AddComponentMenu("Cubizer/LiveCubeTileBehaviour")]
+	public class LiveCubeTileBehaviour : LiveBehaviour
 	{
+		public int tileSize = 1;
+		public int tilePadding = 2048;
+
+		public int[] tiles = new int[] { 0, 0, 0, 0, 0, 0 };
+
 		private static Vector3[,] _positions = new Vector3[6, 4]
 		{
 			{ new Vector3(-1, -1, -1), new Vector3(-1, -1, +1), new Vector3(-1, +1, -1), new Vector3(-1, +1, +1) },
@@ -25,14 +30,14 @@ namespace Cubizer
 			new Vector3(0, 0, +1)
 		};
 
-		private static Vector2[,] _uvs = new Vector2[6, 4]
+		private static Vector2Int[,] _uvs = new Vector2Int[6, 4]
 		{
-			{ new Vector2(0, 0), new Vector2(1, 0), new Vector2(0, 1), new Vector2(1, 1) },
-			{ new Vector2(1, 0), new Vector2(0, 0), new Vector2(1, 1), new Vector2(0, 1) },
-			{ new Vector2(0, 1), new Vector2(0, 0), new Vector2(1, 1), new Vector2(1, 0) },
-			{ new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 0), new Vector2(1, 1) },
-			{ new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 0), new Vector2(1, 1) },
-			{ new Vector2(1, 0), new Vector2(1, 1), new Vector2(0, 0), new Vector2(0, 1) }
+			{ new Vector2Int(0, 0), new Vector2Int(1, 0), new Vector2Int(0, 1), new Vector2Int(1, 1) },
+			{ new Vector2Int(1, 0), new Vector2Int(0, 0), new Vector2Int(1, 1), new Vector2Int(0, 1) },
+			{ new Vector2Int(0, 1), new Vector2Int(0, 0), new Vector2Int(1, 1), new Vector2Int(1, 0) },
+			{ new Vector2Int(0, 0), new Vector2Int(0, 1), new Vector2Int(1, 0), new Vector2Int(1, 1) },
+			{ new Vector2Int(0, 0), new Vector2Int(0, 1), new Vector2Int(1, 0), new Vector2Int(1, 1) },
+			{ new Vector2Int(1, 0), new Vector2Int(1, 1), new Vector2Int(0, 0), new Vector2Int(0, 1) }
 		};
 
 		private static int[,] _indices = new int[6, 6]
@@ -64,10 +69,18 @@ namespace Cubizer
 		{
 			bool[] visiable = new bool[] { faces.left, faces.right, faces.top, faces.bottom, faces.front, faces.back };
 
+			float s = tilePadding > 0 ? 1.0f / tilePadding : 0;
+
+			float a = s;
+			float b = 1.0f / tileSize - a;
+
 			for (int i = 0; i < 6; i++)
 			{
 				if (!visiable[i])
 					continue;
+
+				float du = (tiles[i] % tileSize) / (float)tileSize;
+				float dv = (tiles[i] / (float)tileSize) / tileSize;
 
 				for (int n = index * 4, k = 0; k < 4; k++, n++)
 				{
@@ -81,7 +94,8 @@ namespace Cubizer
 
 					mesh.vertices[n] = v;
 					mesh.normals[n] = _normals[i];
-					mesh.uv[n] = _uvs[i, k];
+					mesh.uv[n].x = du + (_uvs[i, k].x > 0 ? b : a);
+					mesh.uv[n].y = dv + (_uvs[i, k].y > 0 ? b : a);
 				}
 
 				for (int j = index * 6, k = 0; k < 6; k++, j++)
