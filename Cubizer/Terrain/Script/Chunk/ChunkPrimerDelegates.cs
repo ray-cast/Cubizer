@@ -1,6 +1,6 @@
 ﻿namespace Cubizer
 {
-	public class ChunkDataDelegates
+	public class ChunkPrimerDelegates
 	{
 		public delegate void OnChangeDelegate();
 

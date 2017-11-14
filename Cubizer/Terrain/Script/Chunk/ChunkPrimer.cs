@@ -13,10 +13,10 @@ namespace Cubizer
 		private VoxelData<VoxelMaterial> _voxels;
 
 		[NonSerialized]
-		private ChunkDataDelegates.OnChangeDelegate _onChunkChange;
+		private ChunkPrimerDelegates.OnChangeDelegate _onChunkChange;
 
 		[NonSerialized]
-		private ChunkDataDelegates.OnDestroyDelegate _onChunkDestroy;
+		private ChunkPrimerDelegates.OnDestroyDelegate _onChunkDestroy;
 
 		public Vector3<System.Int16> position
 		{
@@ -30,13 +30,13 @@ namespace Cubizer
 			get { return _voxels; }
 		}
 
-		public ChunkDataDelegates.OnChangeDelegate onChunkChange
+		public ChunkPrimerDelegates.OnChangeDelegate onChunkChange
 		{
 			set { _onChunkChange = value; }
 			get { return _onChunkChange; }
 		}
 
-		public ChunkDataDelegates.OnDestroyDelegate onChunkDestroy
+		public ChunkPrimerDelegates.OnDestroyDelegate onChunkDestroy
 		{
 			set { _onChunkDestroy = value; }
 			get { return _onChunkDestroy; }
