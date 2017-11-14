@@ -146,7 +146,6 @@ namespace Cubizer
 			using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
 			{
 				var serializer = new BinaryFormatter();
-
 				return serializer.Deserialize(stream) as ChunkDataManager;
 			}
 		}

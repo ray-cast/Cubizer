@@ -17,7 +17,7 @@ namespace Cubizer
 
 		public VoxelDataNode(_Tx x, _Ty value)
 		{
-			position = x;
+			this.position = x;
 			this.value = value;
 		}
 

@@ -11,6 +11,8 @@ namespace Cubizer
 
 		public int[] tiles = new int[] { 0, 0, 0, 0, 0, 0 };
 
+		public bool collide = true;
+
 		private MeshRenderer _renderer;
 
 		private static Vector3[,] _positions = new Vector3[6, 4]
@@ -124,7 +126,9 @@ namespace Cubizer
 			}
 
 			gameObject.AddComponent<MeshFilter>().mesh = mesh;
-			gameObject.AddComponent<MeshCollider>().sharedMesh = mesh;
+
+			if (collide)
+				gameObject.AddComponent<MeshCollider>().sharedMesh = mesh;
 		}
 	}
 }

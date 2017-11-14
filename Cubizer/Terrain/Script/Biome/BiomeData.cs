@@ -6,7 +6,6 @@
 
 		public ChunkGenerator chunkGenerator
 		{
-			set { _chunkGenerator = value; }
 			get { return _chunkGenerator; }
 		}
 

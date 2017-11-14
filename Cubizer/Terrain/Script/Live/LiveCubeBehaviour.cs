@@ -6,7 +6,7 @@ namespace Cubizer
 	[AddComponentMenu("Cubizer/LiveCubeBehaviour")]
 	public class LiveCubeBehaviour : LiveBehaviour
 	{
-		public bool isEnableCollider = true;
+		public bool collide = true;
 
 		private MeshRenderer _renderer;
 
@@ -113,7 +113,7 @@ namespace Cubizer
 
 			gameObject.AddComponent<MeshFilter>().mesh = mesh;
 
-			if (isEnableCollider)
+			if (collide)
 				gameObject.AddComponent<MeshCollider>().sharedMesh = mesh;
 		}
 	}

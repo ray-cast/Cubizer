@@ -12,7 +12,6 @@ namespace Cubizer
 		private bool _merge;
 
 		private string _name;
-		private string _material;
 
 		public bool is_dynamic { get { return _dynamic; } }
 		public bool is_transparent { get { return _transparent; } }
