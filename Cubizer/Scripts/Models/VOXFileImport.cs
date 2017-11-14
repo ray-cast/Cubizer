@@ -153,7 +153,7 @@ namespace Cubizer
 						for (int k = 0; k < lodLevel; k++)
 						{
 							if (xx + i > x - 1 || yy + j > y - 1 || zz + k > z - 1)
-								samples[i * lodLevel * lodLevel + j * lodLevel + k] = 0;
+								samples[i * lodLevel * lodLevel + j * lodLevel + k] = int.MaxValue;
 							else
 								samples[i * lodLevel * lodLevel + j * lodLevel + k] = voxels[xx + i, yy + j, zz + k];
 						}
@@ -166,13 +166,13 @@ namespace Cubizer
 				int[] numIndex = new int[samples.Length];
 
 				for (int i = 0; i < samples.Length; i++)
-					numIndex[i] = samples[i] == 0 ? 0 : 1;
+					numIndex[i] = samples[i] == int.MaxValue ? 0 : 1;
 
 				for (int i = 0; i < samples.Length; i++)
 				{
 					for (int j = 0; j < samples.Length; j++)
 					{
-						if (i != j && samples[i] != 0 && samples[i] == samples[j])
+						if (i != j && samples[i] != int.MaxValue && samples[i] == samples[j])
 						{
 							numIndex[i]++;
 							if (numIndex[i] > maxNum)
@@ -189,13 +189,14 @@ namespace Cubizer
 
 			public VoxData GetVoxelDataLOD(int level)
 			{
-				Debug.Assert(x > level && y > level && z > level);
-
 				if (x <= 1 || y <= 1 || z <= 1)
 					return null;
 
 				level = Mathf.Clamp(level, 0, 16);
 				if (level <= 1)
+					return this;
+
+				if (x <= level && y <= level && z <= level)
 					return this;
 
 				VoxData data = new VoxData();
@@ -595,6 +596,7 @@ namespace Cubizer
 								if (!prefabTextures.ContainsKey(textureName))
 								{
 									prefabTextures.Add(textureName, 1);
+
 									AssetDatabase.AddObjectToAsset(renderer.sharedMaterial.mainTexture, prefabPath);
 								}
 							}

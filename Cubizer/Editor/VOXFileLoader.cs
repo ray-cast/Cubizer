@@ -34,6 +34,22 @@ public class VOXFileLoader : EditorWindow
 		}
 	}
 
+	[MenuItem("Tools/Cubizer/Load .vox file as Prefab LOD")]
+	public static void LoadVoxelFileAsPrefabLOD()
+	{
+		var filepath = EditorUtility.OpenFilePanel("Load .vox file", "", "vox");
+		if (!String.IsNullOrEmpty(filepath))
+		{
+			if (!filepath.Contains(".vox"))
+			{
+				EditorUtility.DisplayDialog("Invalid File", "The end of the path wasn't \".vox\"", "Ok");
+				return;
+			}
+
+			VoxFileImport.LoadVoxelFileAsPrefab(filepath, "Assets/", 3);
+		}
+	}
+
 	[MenuItem("Tools/Cubizer/Load .vox file as GameObject")]
 	public static void LoadVoxelFileAsGameObject()
 	{
@@ -47,6 +63,22 @@ public class VOXFileLoader : EditorWindow
 			}
 
 			VoxFileImport.LoadVoxelFileAsGameObject(filepath);
+		}
+	}
+
+	[MenuItem("Tools/Cubizer/Load .vox file as GameObject LOD")]
+	public static void LoadVoxelFileAsGameObjectLOD()
+	{
+		var filepath = EditorUtility.OpenFilePanel("Load .vox file", "", "vox");
+		if (!String.IsNullOrEmpty(filepath))
+		{
+			if (!filepath.Contains(".vox"))
+			{
+				EditorUtility.DisplayDialog("Invalid File", "The end of the path wasn't \".vox\"", "Ok");
+				return;
+			}
+
+			VoxFileImport.LoadVoxelFileAsGameObjectLOD(filepath, 3);
 		}
 	}
 

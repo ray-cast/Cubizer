@@ -85,7 +85,7 @@ namespace Cubizer
 
 					Vector3 pos, scale;
 					it.GetTranslateScale(out pos, out scale);
-					controller.OnCreateBlock(ref data, ref writeCount, pos, scale, it.faces);
+					controller.OnCreateBlock(ref data, ref writeCount, pos, scale, it.faces, controller.tiles, controller.tileSize, controller.titlePadding);
 				}
 
 				if (data.vertices.Length >= 65000)

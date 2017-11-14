@@ -14,6 +14,11 @@ namespace Cubizer
 		public bool is_transparent { set { _transparent = value; } get { return _transparent; } }
 		public bool is_merge { set { _merge = value; } get { return _merge; } }
 
+		public int tileSize = 1;
+		public int titlePadding = 2048;
+
+		public int[] tiles = new int[] { 0, 0, 0, 0, 0, 0 };
+
 		private VoxelMaterial _material;
 
 		public VoxelMaterial material
@@ -43,6 +48,6 @@ namespace Cubizer
 
 		public abstract bool OnUpdateChunk(ref ChunkPrimer map, System.Byte x, System.Byte y, System.Byte z);
 
-		public abstract void OnCreateBlock(ref TerrainMesh mesh, ref int index, Vector3 translate, Vector3 scale, VoxelVisiableFaces faces);
+		public abstract void OnCreateBlock(ref TerrainMesh mesh, ref int index, Vector3 translate, Vector3 scale, VoxelVisiableFaces faces, int[] tiles, int tileSize, int titlePadding);
 	}
 }
