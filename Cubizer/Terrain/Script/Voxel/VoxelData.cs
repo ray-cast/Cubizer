@@ -100,7 +100,7 @@ namespace Cubizer
 			return this.Set(pos.x, pos.y, pos.z, instanceID, replace);
 		}
 
-		public bool Get(System.Byte x, System.Byte y, System.Byte z, ref _Element instanceID)
+		public bool Get(int x, int y, int z, ref _Element instanceID)
 		{
 			if (_allocSize == 0)
 				return false;

@@ -5,9 +5,9 @@ namespace Cubizer
 {
 	public class VoxelModel
 	{
-		public VoxelPrimitive[] voxels;
+		public List<VoxelPrimitive> voxels;
 
-		public VoxelModel(VoxelPrimitive[] array)
+		public VoxelModel(List<VoxelPrimitive> array)
 		{
 			voxels = array;
 		}

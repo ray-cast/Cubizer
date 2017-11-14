@@ -25,58 +25,35 @@ namespace Cubizer
 			{
 				var name = material.name;
 
-				bool f1 = (instanceID[0] == null) ? true : instanceID[0].name != name ? true : false;
-				bool f2 = (instanceID[1] == null) ? true : instanceID[1].name != name ? true : false;
-				bool f3 = (instanceID[2] == null) ? true : instanceID[2].name != name ? true : false;
-				bool f4 = (instanceID[3] == null) ? true : instanceID[3].name != name ? true : false;
-				bool f5 = (instanceID[4] == null) ? true : instanceID[4].name != name ? true : false;
-				bool f6 = (instanceID[5] == null) ? true : instanceID[5].name != name ? true : false;
+				faces.left = (instanceID[0] == null) ? true : instanceID[0].name != name ? true : false;
+				faces.right = (instanceID[1] == null) ? true : instanceID[1].name != name ? true : false;
+				faces.bottom = (instanceID[2] == null) ? true : instanceID[2].name != name ? true : false;
+				faces.top = (instanceID[3] == null) ? true : instanceID[3].name != name ? true : false;
+				faces.front = (instanceID[4] == null) ? true : instanceID[4].name != name ? true : false;
+				faces.back = (instanceID[5] == null) ? true : instanceID[5].name != name ? true : false;
 
 				if (material.is_merge)
 				{
-					if (x == 0) f1 = false;
-					if (z == 0) f5 = false;
-					if (x + 1 == bound.x) f2 = false;
-					if (z + 1 == bound.z) f6 = false;
+					if (x == 0) faces.left = false;
+					if (z == 0) faces.front = false;
+					if (x + 1 == bound.x) faces.right = false;
+					if (z + 1 == bound.z) faces.back = false;
 				}
-
-				faces.left = f1;
-				faces.right = f2;
-				faces.bottom = f3;
-				faces.top = f4;
-				faces.front = f5;
-				faces.back = f6;
 			}
 			else
 			{
-				bool f1 = (instanceID[0] == null) ? true : instanceID[0].is_transparent ? true : false;
-				bool f2 = (instanceID[1] == null) ? true : instanceID[1].is_transparent ? true : false;
-				bool f3 = (instanceID[2] == null) ? true : instanceID[2].is_transparent ? true : false;
-				bool f4 = (instanceID[3] == null) ? true : instanceID[3].is_transparent ? true : false;
-				bool f5 = (instanceID[4] == null) ? true : instanceID[4].is_transparent ? true : false;
-				bool f6 = (instanceID[5] == null) ? true : instanceID[5].is_transparent ? true : false;
-
-				faces.left = f1;
-				faces.right = f2;
-				faces.bottom = f3;
-				faces.top = f4;
-				faces.front = f5;
-				faces.back = f6;
+				faces.left = (instanceID[0] == null) ? true : instanceID[0].is_transparent ? true : false;
+				faces.right = (instanceID[1] == null) ? true : instanceID[1].is_transparent ? true : false;
+				faces.bottom = (instanceID[2] == null) ? true : instanceID[2].is_transparent ? true : false;
+				faces.top = (instanceID[3] == null) ? true : instanceID[3].is_transparent ? true : false;
+				faces.front = (instanceID[4] == null) ? true : instanceID[4].is_transparent ? true : false;
+				faces.back = (instanceID[5] == null) ? true : instanceID[5].is_transparent ? true : false;
 			}
 
 			if (!material.is_merge)
-			{
-				bool all = faces.left | faces.right | faces.bottom | faces.top | faces.front | faces.back;
+				faces = new VoxelVisiableFaces(faces.any);
 
-				faces.left = all;
-				faces.right = all;
-				faces.bottom = all;
-				faces.top = all;
-				faces.front = all;
-				faces.back = all;
-			}
-
-			return faces.left | faces.right | faces.bottom | faces.top | faces.front | faces.back;
+			return faces.any;
 		}
 
 		public VoxelModel CalcVoxelCruncher(VoxelData<VoxelMaterial> voxels)
@@ -110,13 +87,7 @@ namespace Cubizer
 				crunchers.Add(new VoxelPrimitive(x, x, y, y, z, z, faces, c));
 			}
 
-			var array = new VoxelPrimitive[crunchers.Count];
-
-			int numbers = 0;
-			foreach (var it in crunchers)
-				array[numbers++] = it;
-
-			return new VoxelModel(array);
+			return new VoxelModel(crunchers);
 		}
 	}
 }

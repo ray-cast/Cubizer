@@ -1,13 +1,14 @@
-﻿namespace Cubizer
+﻿using System.Collections.Generic;
+
+namespace Cubizer
 {
 	public class VoxelCruncherStupid : IVoxelCruncherStrategy
 	{
+		private static VoxelVisiableFaces faces = new VoxelVisiableFaces();
+
 		public VoxelModel CalcVoxelCruncher(VoxelData<VoxelMaterial> map)
 		{
-			var crunchers = new VoxelPrimitive[map.count];
-
-			var n = 0;
-			var faces = new VoxelVisiableFaces(true, true, true, true, true, true);
+			var crunchers = new List<VoxelPrimitive>(map.count);
 
 			foreach (var it in map.GetEnumerator())
 			{
@@ -16,7 +17,7 @@
 				var z = it.position.z;
 				var c = it.value;
 
-				crunchers[n++] = new VoxelPrimitive(x, x, z, z, y, y, faces, c);
+				crunchers.Add(new VoxelPrimitive(x, x, z, z, y, y, faces, c));
 			}
 
 			return new VoxelModel(crunchers);

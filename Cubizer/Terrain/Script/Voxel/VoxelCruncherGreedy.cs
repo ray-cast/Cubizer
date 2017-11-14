@@ -12,7 +12,7 @@ namespace Cubizer
 		private static int[] du = new int[3] { 0, 0, 0 };
 		private static int[] dv = new int[3] { 0, 0, 0 };
 
-		private static VoxelVisiableFaces faces = new VoxelVisiableFaces(false, false, false, false, false, false);
+		private static VoxelVisiableFaces faces = new VoxelVisiableFaces(false);
 
 		public void CalcVoxelCruncher(VoxelMaterial[,,] voxels, Bounds bound, ref List<VoxelPrimitive> crunchers)
 		{
@@ -181,7 +181,7 @@ namespace Cubizer
 			}
 
 			var crunchers = new List<VoxelPrimitive>();
-			var faces = new VoxelVisiableFaces(true, true, true, true, true, true);
+			var faces = new VoxelVisiableFaces();
 
 			Bounds bound = new Bounds();
 			foreach (var it in voxels.GetEnumerator())
@@ -203,13 +203,7 @@ namespace Cubizer
 
 			CalcVoxelCruncher(map, bound, ref crunchers);
 
-			var array = new VoxelPrimitive[crunchers.Count];
-
-			int numbers = 0;
-			foreach (var it in crunchers)
-				array[numbers++] = it;
-
-			return new VoxelModel(array);
+			return new VoxelModel(crunchers);
 		}
 	}
 }
