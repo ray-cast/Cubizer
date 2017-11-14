@@ -2,9 +2,14 @@
 
 namespace Cubizer
 {
+	[RequireComponent(typeof(MeshRenderer))]
 	[AddComponentMenu("Cubizer/LiveCubeBehaviour")]
 	public class LiveCubeBehaviour : LiveBehaviour
 	{
+		public bool isEnableCollider = true;
+
+		private MeshRenderer _renderer;
+
 		private static Vector3[,] _positions = new Vector3[6, 4]
 		{
 			{ new Vector3(-1, -1, -1), new Vector3(-1, -1, +1), new Vector3(-1, +1, -1), new Vector3(-1, +1, +1) },
@@ -55,6 +60,11 @@ namespace Cubizer
 			return faceCount * 6;
 		}
 
+		public void Start()
+		{
+			_renderer = GetComponent<MeshRenderer>();
+		}
+
 		public override bool OnUpdateChunk(ref ChunkPrimer map, System.Byte x, System.Byte y, System.Byte z)
 		{
 			return false;
@@ -93,24 +103,18 @@ namespace Cubizer
 
 		public override void OnBuildComponents(GameObject gameObject, Mesh mesh)
 		{
-			var renderer = this.GetComponent<MeshRenderer>();
-			if (renderer != null)
+			if (_renderer != null)
 			{
-				gameObject.AddComponent<MeshFilter>().mesh = mesh;
 				var clone = gameObject.AddComponent<MeshRenderer>();
-				clone.material = renderer.material;
-				clone.receiveShadows = renderer.receiveShadows;
-				clone.shadowCastingMode = renderer.shadowCastingMode;
-				renderer = clone;
+				clone.material = _renderer.material;
+				clone.receiveShadows = _renderer.receiveShadows;
+				clone.shadowCastingMode = _renderer.shadowCastingMode;
 			}
 
-			var collider = this.GetComponent<Collider>();
-			if (collider != null)
-			{
-				var type = collider.GetType();
-				if (type == typeof(MeshCollider))
-					gameObject.AddComponent<MeshCollider>().sharedMesh = mesh;
-			}
+			gameObject.AddComponent<MeshFilter>().mesh = mesh;
+
+			if (isEnableCollider)
+				gameObject.AddComponent<MeshCollider>().sharedMesh = mesh;
 		}
 	}
 }

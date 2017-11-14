@@ -2,6 +2,7 @@
 
 namespace Cubizer
 {
+	[RequireComponent(typeof(MeshRenderer))]
 	[AddComponentMenu("Cubizer/LiveCubeTileBehaviour")]
 	public class LiveCubeTileBehaviour : LiveBehaviour
 	{
@@ -9,6 +10,8 @@ namespace Cubizer
 		public int tilePadding = 2048;
 
 		public int[] tiles = new int[] { 0, 0, 0, 0, 0, 0 };
+
+		private MeshRenderer _renderer;
 
 		private static Vector3[,] _positions = new Vector3[6, 4]
 		{
@@ -60,6 +63,11 @@ namespace Cubizer
 			return faceCount * 6;
 		}
 
+		public void Start()
+		{
+			_renderer = GetComponent<MeshRenderer>();
+		}
+
 		public override bool OnUpdateChunk(ref ChunkPrimer map, System.Byte x, System.Byte y, System.Byte z)
 		{
 			return false;
@@ -107,37 +115,16 @@ namespace Cubizer
 
 		public override void OnBuildComponents(GameObject gameObject, Mesh mesh)
 		{
-			var renderer = this.GetComponent<MeshRenderer>();
-			if (renderer != null)
+			if (_renderer != null)
 			{
-				gameObject.AddComponent<MeshFilter>().mesh = mesh;
 				var clone = gameObject.AddComponent<MeshRenderer>();
-				clone.material = renderer.material;
-				clone.receiveShadows = renderer.receiveShadows;
-				clone.shadowCastingMode = renderer.shadowCastingMode;
-				renderer = clone;
+				clone.material = _renderer.material;
+				clone.receiveShadows = _renderer.receiveShadows;
+				clone.shadowCastingMode = _renderer.shadowCastingMode;
 			}
 
-			var collider = this.GetComponent<Collider>();
-			if (collider != null)
-			{
-				var type = collider.GetType();
-				if (type == typeof(MeshCollider))
-					gameObject.AddComponent<MeshCollider>().sharedMesh = mesh;
-			}
-
-			var lod = this.GetComponent<LODGroup>();
-			if (lod != null)
-			{
-				var lods = lod.GetLODs();
-				for (int i = 0; i < lods.Length; i++)
-				{
-					if (lods[i].renderers.Length > 0)
-						lods[i].renderers[0] = renderer;
-				}
-
-				gameObject.AddComponent<LODGroup>().SetLODs(lods);
-			}
+			gameObject.AddComponent<MeshFilter>().mesh = mesh;
+			gameObject.AddComponent<MeshCollider>().sharedMesh = mesh;
 		}
 	}
 }

@@ -29,7 +29,7 @@ namespace Cubizer
 						map.position = data.chunk.position;
 
 					data.chunk = map;
-					data.UpdateChunk();
+					data.OnUpdateChunk();
 
 					Debug.Log("Your data of chunk was loaded successfully");
 				}

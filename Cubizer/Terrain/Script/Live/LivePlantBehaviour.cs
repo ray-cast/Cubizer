@@ -2,9 +2,12 @@
 
 namespace Cubizer
 {
+	[RequireComponent(typeof(MeshRenderer))]
 	[AddComponentMenu("Cubizer/LivePlantBehaviour")]
 	public class LivePlantBehaviour : LiveBehaviour
 	{
+		private MeshRenderer _renderer;
+
 		public static Vector3[,] _positions = new Vector3[4, 4]
 		{
 			{ new Vector3( 0, -1, -1), new Vector3( 0, -1, +1), new Vector3( 0, +1, -1), new Vector3( 0, +1, +1)},
@@ -36,6 +39,11 @@ namespace Cubizer
 			{0, 3, 2, 0, 1, 3},
 			{0, 3, 1, 0, 2, 3}
 		};
+
+		public void Start()
+		{
+			_renderer = GetComponent<MeshRenderer>();
+		}
 
 		public override int GetVerticesCount(int faceCount)
 		{
@@ -85,36 +93,29 @@ namespace Cubizer
 
 		public override void OnBuildComponents(GameObject gameObject, Mesh mesh)
 		{
-			var renderer = this.GetComponent<MeshRenderer>();
-			if (renderer != null)
+			gameObject.AddComponent<MeshFilter>().mesh = mesh;
+
+			if (_renderer != null)
 			{
-				gameObject.AddComponent<MeshFilter>().mesh = mesh;
 				var clone = gameObject.AddComponent<MeshRenderer>();
-				clone.material = renderer.material;
-				clone.receiveShadows = renderer.receiveShadows;
-				clone.shadowCastingMode = renderer.shadowCastingMode;
-				renderer = clone;
-			}
+				clone.material = _renderer.material;
+				clone.receiveShadows = _renderer.receiveShadows;
+				clone.shadowCastingMode = _renderer.shadowCastingMode;
 
-			var collider = this.GetComponent<Collider>();
-			if (collider != null)
-			{
-				var type = collider.GetType();
-				if (type == typeof(MeshCollider))
-					gameObject.AddComponent<MeshCollider>().sharedMesh = mesh;
-			}
+				_renderer = clone;
 
-			var lod = this.GetComponent<LODGroup>();
-			if (lod != null)
-			{
-				var lods = lod.GetLODs();
-				for (int i = 0; i < lods.Length; i++)
+				var lod = this.GetComponent<LODGroup>();
+				if (lod != null)
 				{
-					if (lods[i].renderers.Length > 0)
-						lods[i].renderers[0] = renderer;
-				}
+					var lods = lod.GetLODs();
+					for (int i = 0; i < lods.Length; i++)
+					{
+						if (lods[i].renderers.Length > 0)
+							lods[i].renderers[0] = _renderer;
+					}
 
-				gameObject.AddComponent<LODGroup>().SetLODs(lods);
+					gameObject.AddComponent<LODGroup>().SetLODs(lods);
+				}
 			}
 		}
 	}

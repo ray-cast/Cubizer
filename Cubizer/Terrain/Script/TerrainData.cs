@@ -22,12 +22,12 @@ namespace Cubizer
 				if (_chunk != value)
 				{
 					if (_chunk != null)
-						_chunk.onChunkChange -= UpdateChunk;
+						_chunk.onChunkChange -= OnUpdateChunk;
 
 					_chunk = value;
 
 					if (_chunk != null)
-						_chunk.onChunkChange += UpdateChunk;
+						_chunk.onChunkChange += OnUpdateChunk;
 				}
 			}
 			get
@@ -36,7 +36,56 @@ namespace Cubizer
 			}
 		}
 
-		public void UpdateChunk()
+		public void Awake()
+		{
+			_chunkEntitiesDynamic = new Dictionary<LiveBehaviour, List<Math.Vector3<System.Byte>>>();
+		}
+
+		public void Start()
+		{
+			Debug.Assert(transform.parent != null);
+
+			if (_chunk != null)
+			{
+				var terrain = transform.parent.GetComponent<Terrain>();
+				if (terrain != null)
+					terrain.chunks.Set(chunk.position, chunk);
+
+				if (_chunk.voxels.count > 0)
+					this.OnUpdateChunk();
+			}
+		}
+
+		public void OnDestroy()
+		{
+			if (transform.parent != null)
+			{
+				var terrain = transform.parent.GetComponent<Terrain>();
+				if (terrain != null)
+					terrain.chunks.Set(chunk.position, null);
+			}
+		}
+
+		public void OnDrawGizmos()
+		{
+			if (chunk == null)
+				return;
+
+			if (chunk.voxels == null || chunk.voxels.count == 0)
+				return;
+
+			var bound = chunk.voxels.bound;
+
+			Vector3 pos = transform.position;
+			pos.x += (bound.x - 1) * 0.5f;
+			pos.y += (bound.y - 1) * 0.5f;
+			pos.z += (bound.z - 1) * 0.5f;
+
+			Gizmos.color = Color.black;
+			Gizmos.DrawWireCube(pos, new Vector3(bound.x, bound.y, bound.z));
+		}
+
+		public void OnUpdateChunk()
 		{
 			for (int i = 0; i < transform.childCount; i++)
 				Destroy(transform.GetChild(i).gameObject);
@@ -68,11 +117,8 @@ namespace Cubizer
 					continue;
 
 				var numVertices = controller.GetVerticesCount(entity.Value);
-				if (numVertices == 0)
-					continue;
-
 				var numIndices = controller.GetIndicesCount(entity.Value);
-				if (numIndices == 0)
+				if (numVertices == 0 || numIndices == 0)
 					continue;
 
 				var data = new TerrainMesh();
@@ -134,61 +180,9 @@ namespace Cubizer
 				}
 
 				if (needUpdate)
-					this.UpdateChunk();
-				else
-					StartCoroutine("OnUpdateEntities");
-			}
-		}
+					this.OnUpdateChunk();
 
-		public void Awake()
-		{
-			_chunkEntitiesDynamic = new Dictionary<LiveBehaviour, List<Math.Vector3<System.Byte>>>();
-		}
-
-		public void Start()
-		{
-			Debug.Assert(transform.parent != null);
-
-			if (_chunk != null)
-			{
-				var terrain = transform.parent.GetComponent<Terrain>();
-				if (terrain != null)
-					terrain.chunks.Set(chunk.position, chunk);
-
-				if (_chunk.voxels.count > 0)
-					this.UpdateChunk();
-			}
-		}
-
-		public void OnDestroy()
-		{
-			if (transform.parent != null)
-			{
-				var terrain = transform.parent.GetComponent<Terrain>();
-				if (terrain != null)
-					terrain.chunks.Set(chunk.position, null);
-			}
-		}
-
-		public void OnDrawGizmos()
-		{
-			if (chunk == null)
-				return;
-
-			if (chunk.position.y == 0)
-			{
-				if (chunk.voxels == null)
-					return;
-
-				var bound = chunk.voxels.bound;
-
-				Vector3 pos = transform.position;
-				pos.x += (bound.x - 1) * 0.5f;
-				pos.y += (bound.y - 1) * 0.5f;
-				pos.z += (bound.z - 1) * 0.5f;
-
-				Gizmos.color = Color.black;
-				Gizmos.DrawWireCube(pos, new Vector3(bound.x, bound.y, bound.z));
+				StartCoroutine("OnUpdateEntities");
 			}
 		}
 	}

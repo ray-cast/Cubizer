@@ -2,19 +2,30 @@
 
 namespace Cubizer
 {
+	[RequireComponent(typeof(MeshRenderer))]
 	[AddComponentMenu("Cubizer/LiveMeshBehaviour")]
 	public class LiveMeshBehaviour : LiveBehaviour
 	{
 		public Mesh _mesh;
 
+		private MeshRenderer _renderer;
+
+		public void Start()
+		{
+			if (_mesh == null)
+				UnityEngine.Debug.LogError("Please drag a Mesh into Hierarchy View.");
+
+			_renderer = GetComponent<MeshRenderer>();
+		}
+
 		public override int GetVerticesCount(int faceCount)
 		{
-			return (int)((faceCount / 6) * _mesh.vertexCount);
+			return (faceCount / 6) * _mesh.vertexCount;
 		}
 
 		public override int GetIndicesCount(int faceCount)
 		{
-			return (int)((faceCount / 6) * _mesh.triangles.Length);
+			return (faceCount / 6) * _mesh.triangles.Length;
 		}
 
 		public override bool OnUpdateChunk(ref ChunkPrimer map, System.Byte x, System.Byte y, System.Byte z)
@@ -52,30 +63,16 @@ namespace Cubizer
 
 		public override void OnBuildComponents(GameObject gameObject, Mesh mesh)
 		{
-			var renderer = this.GetComponent<MeshRenderer>();
-			if (renderer != null)
+			if (_renderer != null)
 			{
-				gameObject.AddComponent<MeshFilter>().mesh = mesh;
 				var clone = gameObject.AddComponent<MeshRenderer>();
-				clone.material = renderer.material;
-				clone.receiveShadows = renderer.receiveShadows;
-				clone.shadowCastingMode = renderer.shadowCastingMode;
-				renderer = clone;
+				clone.material = _renderer.material;
+				clone.receiveShadows = _renderer.receiveShadows;
+				clone.shadowCastingMode = _renderer.shadowCastingMode;
 			}
 
-			var collider = this.GetComponent<Collider>();
-			if (collider != null)
-			{
-				var type = collider.GetType();
-				if (type == typeof(MeshCollider))
-					gameObject.AddComponent<MeshCollider>().sharedMesh = mesh;
-			}
-		}
-
-		public void Start()
-		{
-			if (_mesh == null)
-				UnityEngine.Debug.LogError("Please drag a Mesh into Hierarchy View.");
+			gameObject.AddComponent<MeshFilter>().mesh = mesh;
+			gameObject.AddComponent<MeshCollider>().sharedMesh = mesh;
 		}
 	}
 }
