@@ -49,7 +49,7 @@ namespace Cubizer
 			{
 				var terrain = transform.parent.GetComponent<Terrain>();
 				if (terrain != null)
-					terrain.chunks.Set(chunk.position, chunk);
+					terrain.chunks.Set(chunk.position.x, chunk.position.y, chunk.position.z, chunk);
 
 				if (_chunk.voxels.count > 0)
 					this.OnUpdateChunk();
@@ -62,7 +62,7 @@ namespace Cubizer
 			{
 				var terrain = transform.parent.GetComponent<Terrain>();
 				if (terrain != null)
-					terrain.chunks.Set(chunk.position, null);
+					terrain.chunks.Set(chunk.position.x, chunk.position.y, chunk.position.z, null);
 			}
 		}
 

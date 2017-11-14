@@ -118,12 +118,6 @@ MonoBehaviour:
     type: 2}
   m_PrefabInternal: {fileID: 492807875}
   m_Script: {fileID: 11500000, guid: d32c3eef146c5484a8356389d0bd88a4, type: 3}
---- !u!114 &435245528 stripped
-MonoBehaviour:
-  m_PrefabParentObject: {fileID: 114512193498992342, guid: 20faae71164380d4aa45d9dfbc779289,
-    type: 2}
-  m_PrefabInternal: {fileID: 492807875}
-  m_Script: {fileID: 11500000, guid: 88ea3f1b09a3ab54eb342aa4279c0f74, type: 3}
 --- !u!1001 &450352846
 Prefab:
   m_ObjectHideFlags: 0
@@ -229,8 +223,7 @@ Prefab:
       propertyPath: m_RootOrder
       value: 4
       objectReference: {fileID: 0}
-    - target: {fileID: 114512193498992342, guid: 20faae71164380d4aa45d9dfbc779289,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: _terrain
       value: 
       objectReference: {fileID: 626552213}
@@ -239,7 +232,30 @@ Prefab:
       propertyPath: titlePadding
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 114095443122430640, guid: 20faae71164380d4aa45d9dfbc779289,
+        type: 2}
+      propertyPath: isEnableCollider
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114095443122430640, guid: 20faae71164380d4aa45d9dfbc779289,
+        type: 2}
+      propertyPath: collider
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114095443122430640, guid: 20faae71164380d4aa45d9dfbc779289,
+        type: 2}
+      propertyPath: collide
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 64065633306971096, guid: 20faae71164380d4aa45d9dfbc779289, type: 2}
+    - {fileID: 64401034813276288, guid: 20faae71164380d4aa45d9dfbc779289, type: 2}
+    - {fileID: 64756397004541620, guid: 20faae71164380d4aa45d9dfbc779289, type: 2}
+    - {fileID: 64580502853063376, guid: 20faae71164380d4aa45d9dfbc779289, type: 2}
+    - {fileID: 64797820737174970, guid: 20faae71164380d4aa45d9dfbc779289, type: 2}
+    - {fileID: 64861231575634272, guid: 20faae71164380d4aa45d9dfbc779289, type: 2}
+    - {fileID: 64927905106490282, guid: 20faae71164380d4aa45d9dfbc779289, type: 2}
+    - {fileID: 0}
   m_ParentPrefab: {fileID: 100100000, guid: 20faae71164380d4aa45d9dfbc779289, type: 2}
   m_IsPrefabParent: 0
 --- !u!114 &626552213 stripped
@@ -404,12 +420,12 @@ Prefab:
     - target: {fileID: 224431451281944538, guid: 52eb078de896190488e6c13e15635297,
         type: 2}
       propertyPath: m_LocalPosition.x
-      value: 598
+      value: 599.5
       objectReference: {fileID: 0}
     - target: {fileID: 224431451281944538, guid: 52eb078de896190488e6c13e15635297,
         type: 2}
       propertyPath: m_LocalPosition.y
-      value: 380.5
+      value: 382
       objectReference: {fileID: 0}
     - target: {fileID: 224431451281944538, guid: 52eb078de896190488e6c13e15635297,
         type: 2}
@@ -588,6 +604,11 @@ Prefab:
       propertyPath: _terrain
       value: 
       objectReference: {fileID: 626552213}
+    - target: {fileID: 114724446993730084, guid: b7b1ee2e79ee9354f893414a9c9319a1,
+        type: 2}
+      propertyPath: _isGenPlaneOnly
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: b7b1ee2e79ee9354f893414a9c9319a1, type: 2}
   m_IsPrefabParent: 0
@@ -678,7 +699,7 @@ Prefab:
         type: 2}
       propertyPath: _liveResources
       value: 
-      objectReference: {fileID: 435245528}
+      objectReference: {fileID: 0}
     - target: {fileID: 114182709234928260, guid: b3fded3676e64ac488eaf66a03dce323,
         type: 2}
       propertyPath: _biomeManager

@@ -15,7 +15,7 @@ namespace Cubizer
 
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return (IEnumerator)GetEnumerator();
+			return GetEnumerator();
 		}
 
 		public VoxelDataNodeEnum<_Tx, _Ty> GetEnumerator()

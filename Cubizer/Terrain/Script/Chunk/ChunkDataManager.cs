@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Collections;
 using System.Runtime.Serialization.Formatters.Binary;
 
 using Cubizer.Math;
@@ -7,17 +8,17 @@ using Cubizer.Math;
 namespace Cubizer
 {
 	[Serializable]
-	public class ChunkDataManager
+	public class ChunkDataManager : IChunkDataManager
 	{
 		private int _count;
 		private int _allocSize;
 		private int _chunkSize;
-		private ChunkDataNode<Vector3<System.Int16>, ChunkPrimer>[] _data;
+		private ChunkDataNode<Vector3<int>, ChunkPrimer>[] _data;
 
 		public int count { get { return _count; } }
 		public int chunkSize { get { return _chunkSize; } }
 
-		public ChunkDataNode<Vector3<System.Int16>, ChunkPrimer>[] data
+		public ChunkDataNode<Vector3<int>, ChunkPrimer>[] data
 		{
 			get { return _data; }
 		}
@@ -44,10 +45,10 @@ namespace Cubizer
 
 			_count = 0;
 			_allocSize = usage;
-			_data = new ChunkDataNode<Vector3<System.Int16>, ChunkPrimer>[_allocSize + 1];
+			_data = new ChunkDataNode<Vector3<int>, ChunkPrimer>[_allocSize + 1];
 		}
 
-		public bool Set(System.Int16 x, System.Int16 y, System.Int16 z, ChunkPrimer value)
+		public bool Set(int x, int y, int z, ChunkPrimer value)
 		{
 			if (_allocSize == 0)
 				this.Create(0xFF);
@@ -75,7 +76,7 @@ namespace Cubizer
 
 			if (value != null)
 			{
-				_data[index] = new ChunkDataNode<Vector3<System.Int16>, ChunkPrimer>(new Vector3<System.Int16>(x, y, z), value);
+				_data[index] = new ChunkDataNode<Vector3<int>, ChunkPrimer>(new Vector3<int>(x, y, z), value);
 				_count++;
 
 				if (_count >= _allocSize)
@@ -87,15 +88,18 @@ namespace Cubizer
 			return false;
 		}
 
-		public bool Set(Vector3<System.Int16> pos, ChunkPrimer value)
+		public bool Set(Vector3<int> pos, ChunkPrimer value)
 		{
 			return Set(pos.x, pos.y, pos.z, value);
 		}
 
-		public bool Get(int x, int y, int z, ref ChunkPrimer chunk)
+		public bool Get(int x, int y, int z, out ChunkPrimer chunk)
 		{
 			if (_allocSize == 0)
+			{
+				chunk = null;
 				return false;
+			}
 
 			var index = HashInt(x, y, z) & _allocSize;
 			var entry = _data[index];
@@ -117,15 +121,15 @@ namespace Cubizer
 			return false;
 		}
 
-		public bool Get(Vector3<System.Int16> pos, ref ChunkPrimer instanceID)
+		public bool Get(Vector3<int> pos, out ChunkPrimer instanceID)
 		{
-			return this.Get(pos.x, pos.y, pos.z, ref instanceID);
+			return this.Get(pos.x, pos.y, pos.z, out instanceID);
 		}
 
 		public bool Exists(int x, int y, int z)
 		{
-			ChunkPrimer instanceID = null;
-			return this.Get(x, y, z, ref instanceID);
+			ChunkPrimer instanceID;
+			return this.Get(x, y, z, out instanceID);
 		}
 
 		public bool Empty()
@@ -138,32 +142,39 @@ namespace Cubizer
 			return _count;
 		}
 
-		public ChunkDataNodeEnumerable<Vector3<System.Int16>, ChunkPrimer> GetEnumerator()
+		public IEnumerable GetEnumerator()
 		{
-			return new ChunkDataNodeEnumerable<Vector3<System.Int16>, ChunkPrimer>(_data);
+			return new ChunkDataNodeEnumerable<Vector3<int>, ChunkPrimer>(_data);
 		}
 
-		public static bool Save(string path, ChunkDataManager _self)
+		public bool Save(string path)
 		{
 			using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write))
 			{
 				var serializer = new BinaryFormatter();
-				serializer.Serialize(stream, _self);
+				serializer.Serialize(stream, this);
 
 				return true;
 			}
 		}
 
-		public static ChunkDataManager Load(string path)
+		public bool Load(string path)
 		{
 			using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
 			{
 				var serializer = new BinaryFormatter();
-				return serializer.Deserialize(stream) as ChunkDataManager;
+				var _new =  serializer.Deserialize(stream) as ChunkDataManager;
+
+				this._count = _new._count;
+				this._chunkSize = _new.chunkSize;
+				this._allocSize = _new._allocSize;
+				this._data = _new.data;
+
+				return true;
 			}
 		}
 
-		private bool Grow(ChunkDataNode<Vector3<System.Int16>, ChunkPrimer> data)
+		private bool Grow(ChunkDataNode<Vector3<int>, ChunkPrimer> data)
 		{
 			var pos = data.position;
 			var index = HashInt(pos.x, pos.y, pos.z) & _allocSize;
@@ -190,7 +201,7 @@ namespace Cubizer
 		{
 			var map = new ChunkDataManager(_chunkSize, _allocSize << 1 | 1);
 
-			foreach (var it in GetEnumerator())
+			foreach (ChunkDataNode<Vector3<int>, ChunkPrimer> it in GetEnumerator())
 				map.Grow(it);
 
 			_count = map._count;
