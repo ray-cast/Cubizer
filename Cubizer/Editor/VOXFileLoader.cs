@@ -61,13 +61,13 @@ public class VOXFileLoader : EditorWindow
 				CreateVoxelPrefabsFromSelection();
 
 			if (GUILayout.Button("Create Prefab LOD from .vox file"))
-				CreateVoxelPrefabsFromSelection();
+				CreateVoxelPrefabsFromSelection(3);
 
 			if (GUILayout.Button("Create GameObject from .vox file"))
 				CreateVoxelGameObjectFromSelection();
 
 			if (GUILayout.Button("Create GameObject LOD from .vox file"))
-				CreateVoxelGameObjectFromSelection();
+				CreateVoxelGameObjectFromSelection(3);
 		}
 
 		this._isSelectCreateAssetbundle = EditorGUILayout.Foldout(this._isSelectCreateAssetbundle, "Create AssetBundle");
@@ -81,7 +81,7 @@ public class VOXFileLoader : EditorWindow
 		}
 	}
 
-	private static bool CreateVoxelPrefabsFromSelection()
+	private static bool CreateVoxelPrefabsFromSelection(int lodLevel = 0)
 	{
 		var SelectedAsset = Selection.GetFiltered(typeof(UnityEngine.Object), SelectionMode.DeepAssets);
 		if (SelectedAsset.Length == 0)
@@ -100,13 +100,18 @@ public class VOXFileLoader : EditorWindow
 			}
 
 			if (path.Remove(0, path.LastIndexOf('.')) == ".vox")
-				VoxFileImport.LoadVoxelFileAsPrefab(path);
+			{
+				if (lodLevel == 0)
+					VoxFileImport.LoadVoxelFileAsPrefab(path);
+				else
+					VoxFileImport.LoadVoxelFileAsPrefab(path, "Assets/", lodLevel);
+			}
 		}
 
 		return true;
 	}
 
-	private static bool CreateVoxelGameObjectFromSelection()
+	private static bool CreateVoxelGameObjectFromSelection(int lodLevel = 0)
 	{
 		var SelectedAsset = Selection.GetFiltered(typeof(UnityEngine.Object), SelectionMode.DeepAssets);
 		if (SelectedAsset.Length == 0)
@@ -126,7 +131,10 @@ public class VOXFileLoader : EditorWindow
 
 			if (path.Remove(0, path.LastIndexOf('.')) == ".vox")
 			{
-				VoxFileImport.LoadVoxelFileAsGameObject(path);
+				if (lodLevel == 0)
+					VoxFileImport.LoadVoxelFileAsGameObject(path);
+				else
+					VoxFileImport.LoadVoxelFileAsGameObjectLOD(path, lodLevel);
 			}
 		}
 

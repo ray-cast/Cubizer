@@ -39,18 +39,18 @@ namespace Cubizer
 
 		public class VOXCruncher
 		{
-			public byte begin_x;
-			public byte begin_y;
-			public byte begin_z;
+			public int begin_x;
+			public int begin_y;
+			public int begin_z;
 
-			public byte end_x;
-			public byte end_y;
-			public byte end_z;
+			public int end_x;
+			public int end_y;
+			public int end_z;
 
 			public VOXMaterial material;
 			public VOXVisiableFaces faces;
 
-			public VOXCruncher(byte begin_x, byte end_x, byte begin_y, byte end_y, byte begin_z, byte end_z, VOXMaterial _material)
+			public VOXCruncher(int begin_x, int end_x, int begin_y, int end_y, int begin_z, int end_z, VOXMaterial _material)
 			{
 				this.begin_x = begin_x;
 				this.begin_y = begin_y;
@@ -69,7 +69,7 @@ namespace Cubizer
 				faces.back = true;
 			}
 
-			public VOXCruncher(byte begin_x, byte end_x, byte begin_y, byte end_y, byte begin_z, byte end_z, VOXVisiableFaces _faces, VOXMaterial _material)
+			public VOXCruncher(int begin_x, int end_x, int begin_y, int end_y, int begin_z, int end_z, VOXVisiableFaces _faces, VOXMaterial _material)
 			{
 				this.begin_x = begin_x;
 				this.begin_y = begin_y;
@@ -86,24 +86,29 @@ namespace Cubizer
 
 		public interface IVOXCruncherStrategy
 		{
-			VOXModel CalcVoxelCruncher(VoxFileChunkChild chunk, Color32[] palette);
+			VOXModel CalcVoxelCruncher(VoxData chunk, Color32[] palette);
 		}
 
 		public class VOXCruncherStupid : IVOXCruncherStrategy
 		{
-			public VOXModel CalcVoxelCruncher(VoxFileChunkChild chunk, Color32[] palette)
+			public VOXModel CalcVoxelCruncher(VoxData chunk, Color32[] palette)
 			{
-				var crunchers = new VOXCruncher[chunk.xyzi.voxels.Length / 4];
+				var crunchers = new VOXCruncher[chunk.count];
 				var faces = new VOXVisiableFaces(true, true, true, true, true, true);
 
-				for (int i = 0, n = 0; i < chunk.xyzi.voxels.Length; i += 4, n++)
-				{
-					var x = chunk.xyzi.voxels[i];
-					var y = chunk.xyzi.voxels[i + 1];
-					var z = chunk.xyzi.voxels[i + 2];
-					var c = chunk.xyzi.voxels[i + 3];
+				int n = 0;
 
-					crunchers[n] = new VOXCruncher(x, x, z, z, y, y, faces, c);
+				for (int i = 0; i < chunk.x; ++i)
+				{
+					for (int j = 0; j < chunk.y; ++j)
+					{
+						for (int k = 0; k < chunk.z; ++k)
+						{
+							var m = chunk.voxels[i, j, k];
+							if (m != int.MaxValue)
+								crunchers[n++] = new VOXCruncher(i, i, j, j, k, k, faces, m);
+						}
+					}
 				}
 
 				return new VOXModel(crunchers);
@@ -160,42 +165,28 @@ namespace Cubizer
 				return faces.left | faces.right | faces.bottom | faces.top | faces.front | faces.back;
 			}
 
-			public VOXModel CalcVoxelCruncher(VoxFileChunkChild chunk, Color32[] palette)
+			public VOXModel CalcVoxelCruncher(VoxData chunk, Color32[] palette)
 			{
-				var map = new VOXMaterial[chunk.size.x, chunk.size.z, chunk.size.y];
-
-				for (int i = 0; i < chunk.size.x; ++i)
-				{
-					for (int j = 0; j < chunk.size.y; ++j)
-						for (int k = 0; k < chunk.size.z; ++k)
-							map[i, k, j] = VOXMaterial.MaxValue;
-				}
-
-				for (int j = 0; j < chunk.xyzi.voxels.Length; j += 4)
-				{
-					var x = chunk.xyzi.voxels[j];
-					var y = chunk.xyzi.voxels[j + 1];
-					var z = chunk.xyzi.voxels[j + 2];
-					var c = chunk.xyzi.voxels[j + 3];
-
-					map[x, z, y] = c;
-				}
-
 				var crunchers = new List<VOXCruncher>();
-				var bound = new Vector3Int(chunk.size.x, chunk.size.z, chunk.size.y);
+				var bound = new Vector3Int(chunk.x, chunk.y, chunk.z);
 
-				for (int j = 0; j < chunk.xyzi.voxels.Length; j += 4)
+				for (int i = 0; i < chunk.x; ++i)
 				{
-					var x = chunk.xyzi.voxels[j];
-					var y = chunk.xyzi.voxels[j + 1];
-					var z = chunk.xyzi.voxels[j + 2];
-					var c = chunk.xyzi.voxels[j + 3];
+					for (int j = 0; j < chunk.y; ++j)
+					{
+						for (int k = 0; k < chunk.z; ++k)
+						{
+							var c = chunk.voxels[i, j, k];
+							if (c != int.MaxValue)
+							{
+								VOXVisiableFaces faces;
+								if (!GetVisiableFaces(chunk.voxels, bound, i, j, k, c, palette, out faces))
+									continue;
 
-					VOXVisiableFaces faces;
-					if (!GetVisiableFaces(map, bound, x, z, y, c, palette, out faces))
-						continue;
-
-					crunchers.Add(new VOXCruncher(x, x, z, z, y, y, faces, c));
+								crunchers.Add(new VOXCruncher((byte)i, (byte)i, (byte)j, (byte)j, (byte)k, (byte)k, faces, c));
+							}
+						}
+					}
 				}
 
 				var array = new VOXCruncher[crunchers.Count];
@@ -210,32 +201,14 @@ namespace Cubizer
 
 		public class VOXCruncherGreedy : IVOXCruncherStrategy
 		{
-			public VOXModel CalcVoxelCruncher(VoxFileChunkChild chunk, Color32[] palette)
+			public VOXModel CalcVoxelCruncher(VoxData chunk, Color32[] palette)
 			{
-				var map = new VOXMaterial[chunk.size.x, chunk.size.z, chunk.size.y];
-
-				for (int i = 0; i < chunk.size.x; ++i)
-				{
-					for (int j = 0; j < chunk.size.y; ++j)
-						for (int k = 0; k < chunk.size.z; ++k)
-							map[i, k, j] = VOXMaterial.MaxValue;
-				}
-
-				for (int j = 0; j < chunk.xyzi.voxels.Length; j += 4)
-				{
-					var x = chunk.xyzi.voxels[j];
-					var y = chunk.xyzi.voxels[j + 1];
-					var z = chunk.xyzi.voxels[j + 2];
-					var c = chunk.xyzi.voxels[j + 3];
-
-					map[x, z, y] = c;
-				}
-
 				var crunchers = new List<VOXCruncher>();
-				var dims = new int[] { chunk.size.x, chunk.size.z, chunk.size.y };
+				var dims = new int[] { chunk.x, chunk.y, chunk.z };
 
 				var alloc = System.Math.Max(dims[0], System.Math.Max(dims[1], dims[2]));
 				var mask = new int[alloc * alloc];
+				var map = chunk.voxels;
 
 				for (var d = 0; d < 3; ++d)
 				{
@@ -373,7 +346,7 @@ namespace Cubizer
 
 		public class VOXPolygonCruncher
 		{
-			public static VOXModel CalcVoxelCruncher(VoxFileChunkChild chunk, Color32[] palette, VOXCruncherMode mode)
+			public static VOXModel CalcVoxelCruncher(VoxData chunk, Color32[] palette, VOXCruncherMode mode)
 			{
 				switch (mode)
 				{
