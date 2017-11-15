@@ -14,15 +14,15 @@ Install:
 * Double-click a Demo/level1.unity file
 * Import standard assets with character package
 
+Requirements:
+------------
+* Unity 2017.2.0 or later versions.
+
 Features :
 ------------
 * Cube-based infinite terrain generation
 * Voxel file import for [MagicalVoxel](http://voxel.codeplex.com/)
 * Mesh Optimization
-
-Requirements:
-------------
-* Unity 2017.2.0
 
 Contact :
 ------------
