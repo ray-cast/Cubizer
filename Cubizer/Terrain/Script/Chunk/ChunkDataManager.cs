@@ -142,6 +142,18 @@ namespace Cubizer
 			return _count;
 		}
 
+		public void GC()
+		{
+			var map = new ChunkDataManager(_chunkSize, _allocSize);
+
+			foreach (ChunkDataNode<Vector3<int>, ChunkPrimer> it in GetEnumerator())
+				map.Grow(it);
+
+			_count = map._count;
+			_allocSize = map._allocSize;
+			_data = map._data;
+		}
+
 		public IEnumerable GetEnumerator()
 		{
 			return new ChunkDataNodeEnumerable<Vector3<int>, ChunkPrimer>(_data);

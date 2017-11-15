@@ -15,7 +15,7 @@ namespace Cubizer
 
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return (IEnumerator)GetEnumerator();
+			return GetEnumerator();
 		}
 
 		public BiomeDataNodeEnum<_Tx, _Ty> GetEnumerator()

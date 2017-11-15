@@ -13,7 +13,7 @@ namespace Cubizer
 		private ChunkPrimer _chunk;
 
 		private float _repeatRateUpdate = 2.0f;
-		private Dictionary<LiveBehaviour, List<Math.Vector3<System.Byte>>> _chunkEntitiesDynamic;
+		private Dictionary<LiveBehaviour, List<Math.Vector3<byte>>> _chunkEntitiesDynamic;
 
 		public ChunkPrimer chunk
 		{
@@ -38,7 +38,7 @@ namespace Cubizer
 
 		public void Awake()
 		{
-			_chunkEntitiesDynamic = new Dictionary<LiveBehaviour, List<Math.Vector3<System.Byte>>>();
+			_chunkEntitiesDynamic = new Dictionary<LiveBehaviour, List<Math.Vector3<byte>>>();
 		}
 
 		public void Start()

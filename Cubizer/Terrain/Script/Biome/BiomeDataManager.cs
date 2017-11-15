@@ -123,6 +123,18 @@ namespace Cubizer
 			return _count == 0;
 		}
 
+		public void GC()
+		{
+			var map = new BiomeDataManager(_allocSize);
+
+			foreach (var it in GetEnumerator())
+				map.Grow(it);
+
+			_count = map._count;
+			_allocSize = map._allocSize;
+			_data = map._data;
+		}
+
 		public BiomeDataNodeEnumerable<Vector3<int>, IBiomeData> GetEnumerator()
 		{
 			return new BiomeDataNodeEnumerable<Vector3<int>, IBiomeData>(_data);

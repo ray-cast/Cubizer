@@ -348,7 +348,11 @@ namespace Cubizer
 		public void UpdateChunkForCreate(Camera camera, Vector2Int[] radius)
 		{
 			if (_chunks.Count() > _chunkNumLimits)
+			{
+				_chunks.GC();
+				_biomeManager.biomes.GC();
 				return;
+			}
 
 			Vector3Int position;
 			if (!GetEmptryChunkPos(camera.transform.position, GeometryUtility.CalculateFrustumPlanes(camera), radius, out position))

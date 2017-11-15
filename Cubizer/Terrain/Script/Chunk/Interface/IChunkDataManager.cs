@@ -12,6 +12,8 @@ namespace Cubizer
 
 		int Count();
 
+		void GC();
+
 		IEnumerable GetEnumerator();
 	}
 }
