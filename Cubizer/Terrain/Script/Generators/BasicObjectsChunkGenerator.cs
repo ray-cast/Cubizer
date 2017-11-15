@@ -49,6 +49,49 @@ namespace Cubizer
 			return map;
 		}
 
+		public void buildTree(ChunkPrimer map, byte ix, byte iz, byte h)
+		{
+			for (int iy = h + 3; iy < h + 8; iy++)
+			{
+				for (int ox = -3; ox <= 3; ox++)
+				{
+					for (int oz = -3; oz <= 3; oz++)
+					{
+						int d = (ox * ox) + (oz * oz) + (iy - (h + 4)) * (iy - (h + 4));
+						if (d < 11)
+							map.voxels.Set((byte)(ix + ox), (byte)iy, (byte)(iz + oz), _materials.treeLeaf);
+					}
+				}
+			}
+
+			for (byte iy = h; iy < h + 7; iy++)
+				map.voxels.Set(ix, iy, iz, _materials.tree);
+		}
+
+		public void BuildGrass(ChunkPrimer map, byte ix, byte iz, int dx, int dz, VoxelMaterial main, out float f, out byte h)
+		{
+			f = Noise.simplex2(_params.grass.loopX * dx, _params.grass.loopY * dz, _params.grass.octaves, _params.grass.persistence, _params.grass.lacunarity);
+			f = (f * (f * _params.floorHeightLismit + _params.floorBase));
+
+			h = System.Math.Max((byte)1, (byte)f);
+
+			if (_params.isGenGrass || _params.isGenSand)
+			{
+				if (_params.isGenGrass && _params.isGenSand)
+				{
+					UnityEngine.Random.InitState(ix ^ iz * h);
+
+					for (byte iy = 0; iy < h; iy++)
+						map.voxels.Set(ix, iy, iz, UnityEngine.Random.value > _params.thresholdSand ? _materials.grass : _materials.sand);
+				}
+				else
+				{
+					for (byte iy = 0; iy < h; iy++)
+						map.voxels.Set(ix, iy, iz, main);
+				}
+			}
+		}
+
 		public ChunkPrimer Buildland(Terrain terrain, short x, short y, short z, VoxelMaterial main)
 		{
 			var map = new ChunkPrimer(terrain.chunkSize, terrain.chunkSize, terrain.chunkSize, x, y, z, terrain.chunkSize * terrain.chunkSize * _params.floorBase);
@@ -63,26 +106,8 @@ namespace Cubizer
 					int dx = offsetX + ix;
 					int dz = offsetZ + iz;
 
-					float f = Noise.simplex2(dx * 0.01f, dz * 0.01f, 4, 0.4f, 2);
-
-					byte h = (byte)(f * (f * _params.floorHeightLismit + _params.floorBase));
-					h = System.Math.Max((byte)1, h);
-
-					if (_params.isGenGrass || _params.isGenSand)
-					{
-						if (_params.isGenGrass && _params.isGenSand)
-						{
-							UnityEngine.Random.InitState(ix ^ iz * h);
-
-							for (byte iy = 0; iy < h; iy++)
-								map.voxels.Set(ix, iy, iz, UnityEngine.Random.value > _params.thresholdSand ? _materials.grass : _materials.sand);
-						}
-						else
-						{
-							for (byte iy = 0; iy < h; iy++)
-								map.voxels.Set(ix, iy, iz, main);
-						}
-					}
+					float f; byte h;
+					this.BuildGrass(map, ix, iz, dx, dz, main, out f, out h);
 
 					var waterHeight = _params.floorBase - _params.floorHeightLismit * 0.2f;
 					if (_params.isGenWater && h < waterHeight)
@@ -92,11 +117,8 @@ namespace Cubizer
 					}
 					else
 					{
-						if (h == waterHeight)
-						{
-							if (f > 0.34 && f < 0.365)
-								map.voxels.Set(ix, (byte)(h - 1), iz, _materials.sand);
-						}
+						if (f > waterHeight && f < (waterHeight + 0.1))
+							map.voxels.Set(ix, (byte)(h - 1), iz, _materials.sand);
 
 						if (_params.isGenWeed && Noise.simplex2(-dx * 0.1f, dz * 0.1f, 4, 0.8f, 2) > 0.7)
 							map.voxels.Set(ix, h, iz, _materials.weed);
@@ -106,23 +128,14 @@ namespace Cubizer
 						{
 							if (ix > 3 && ix < map.voxels.bound.y - 3 && iz > 3 && iz < map.voxels.bound.y - 3)
 							{
-								if (Noise.simplex2(dx, dz, 6, 0.5f, 2) > _params.thresholdTree)
+								if (Noise.simplex2(
+									_params.tree.loopX * dx,
+									_params.tree.loopY * dz,
+									_params.tree.octaves,
+									_params.tree.persistence,
+									_params.tree.lacunarity) > _params.tree.threshold)
 								{
-									for (int iy = h + 3; iy < h + 8; iy++)
-									{
-										for (int ox = -3; ox <= 3; ox++)
-										{
-											for (int oz = -3; oz <= 3; oz++)
-											{
-												int d = (ox * ox) + (oz * oz) + (iy - (h + 4)) * (iy - (h + 4));
-												if (d < 11)
-													map.voxels.Set((byte)(ix + ox), (byte)iy, (byte)(iz + oz), _materials.treeLeaf);
-											}
-										}
-									}
-
-									for (byte iy = h; iy < h + 7; iy++)
-										map.voxels.Set(ix, iy, iz, _materials.tree);
+									this.buildTree(map, ix, iz, h);
 								}
 							}
 						}

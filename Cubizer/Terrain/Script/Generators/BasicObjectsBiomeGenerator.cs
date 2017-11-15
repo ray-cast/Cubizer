@@ -39,7 +39,7 @@ namespace Cubizer
 			{ "Sea", new BasicObjectsParams { layer = BasicObjectBiomeType.Sea } },
 			{ "Grassland", new BasicObjectsParams { layer = BasicObjectBiomeType.Grassland } },
 			{ "Sandland", new BasicObjectsParams { layer = BasicObjectBiomeType.Sandyland, isGenSand = true, isGenFlower = false,  isGenTree = false } },
-			{ "Forest", new BasicObjectsParams { layer = BasicObjectBiomeType.Forest, thresholdTree = 0.7f } }
+			{ "Forest", new BasicObjectsParams { layer = BasicObjectBiomeType.Forest } }
 		};
 
 		public void Start()
@@ -79,7 +79,17 @@ namespace Cubizer
 
 		public BiomeData buildForest(float noise)
 		{
-			var parameters = new BasicObjectsParams { layer = BasicObjectBiomeType.Forest, thresholdTree = 0.87f - (0.52f - noise) * 10.0f };
+			var noiseParams = new NoiseParams() 
+			{
+				octaves = 6,
+				loopX = 1.0f,
+				loopY = 1.0f,
+				persistence = 0.5f,
+				lacunarity = 2.0f,
+				threshold = 0.87f - (0.52f - noise) * 10.0f,
+			};
+
+			var parameters = new BasicObjectsParams { layer = BasicObjectBiomeType.Forest, tree = noiseParams };
 			return new BiomeData(new BasicObjectsChunkGenerator(parameters, _materials));
 		}
 
