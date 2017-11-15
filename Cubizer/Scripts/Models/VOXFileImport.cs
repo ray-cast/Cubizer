@@ -346,10 +346,8 @@ namespace Cubizer
 
 							voxel.palette.values = new uint[voxel.palette.chunkContent / 4];
 
-							for (int i = 0; i < bytePalette.Length; i += 4)
-							{
-								voxel.palette.values[i / 4] = BitConverter.ToUInt32(bytePalette, i);
-							}
+							for (int i = 4; i < bytePalette.Length; i += 4)
+								voxel.palette.values[i / 4] = BitConverter.ToUInt32(bytePalette, i - 4);
 						}
 						else
 						{

@@ -5,7 +5,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 namespace Cubizer
 {
 	[Serializable]
-	public sealed class VoxelMaterial : ICloneable
+	public class VoxelMaterial : ICloneable
 	{
 		private int _instanceID;
 

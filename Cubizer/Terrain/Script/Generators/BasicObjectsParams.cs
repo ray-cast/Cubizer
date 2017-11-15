@@ -25,12 +25,12 @@
 		public bool isGenSand = false;
 
 		public int floorBase = 5;
-		public int floorHeightLismit = 10;
+		public int floorHeightLismit = 15;
 
 		public float thresholdSand = 0.5f;
 		public float thresholdCloud = 0.75f;
 
-		public NoiseParams grass = new NoiseParams { octaves = 4, loopX = 0.01f, loopY = 0.01f, lacunarity = 0.2f, persistence = 0.4f, threshold = 0.84f };
+		public NoiseParams grass = new NoiseParams { octaves = 4, loopX = 0.01f, loopY = 0.01f, lacunarity = 0.2f, persistence = 0.3f, threshold = 0.84f };
 		public NoiseParams tree = new NoiseParams { octaves = 6, loopX = 1.0f, loopY = 1.0f, lacunarity = 2.0f, persistence = 0.5f, threshold = 0.84f };
 	}
 }
