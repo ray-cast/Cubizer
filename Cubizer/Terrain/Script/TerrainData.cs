@@ -106,7 +106,7 @@ namespace Cubizer
 			if (model == null)
 				return;
 
-			var entities = new Dictionary<string, int>();
+			var entities = new Dictionary<int, int>();
 			if (model.CalcFaceCountAsAllocate(ref entities) == 0)
 				return;
 
@@ -130,7 +130,7 @@ namespace Cubizer
 				var writeCount = 0;
 				foreach (VoxelPrimitive it in model.GetEnumerator())
 				{	
-					if (it.material.name != entity.Key)
+					if (it.material.GetInstanceID() != entity.Key)
 						continue;
 
 					Vector3 pos, scale;
@@ -146,7 +146,7 @@ namespace Cubizer
 					mesh.uv = data.uv;
 					mesh.triangles = data.triangles;
 
-					var gameObject = new GameObject(entity.Key);
+					var gameObject = new GameObject(controller.name);
 					gameObject.isStatic = controller.gameObject.isStatic;
 					gameObject.layer = controller.gameObject.layer;
 					gameObject.transform.parent = this.transform;

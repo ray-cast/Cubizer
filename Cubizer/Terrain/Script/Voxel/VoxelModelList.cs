@@ -12,18 +12,18 @@ namespace Cubizer
 			voxels = array;
 		}
 
-		public int CalcFaceCountAsAllocate(ref Dictionary<string, int> entities)
+		public int CalcFaceCountAsAllocate(ref Dictionary<int, int> entities)
 		{
 			foreach (var it in voxels)
 			{
 				int facesCount = it.faces.count;
 				if (facesCount > 0)
 				{
-					var name = it.material.name;
-					if (!entities.ContainsKey(name))
-						entities.Add(name, facesCount);
+					var id = it.material.GetInstanceID();
+					if (!entities.ContainsKey(id))
+						entities.Add(id, facesCount);
 					else
-						entities[name] += facesCount;
+						entities[id] += facesCount;
 				}
 			}
 

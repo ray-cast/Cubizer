@@ -9,7 +9,7 @@ namespace Cubizer
 {
 	[DisallowMultipleComponent]
 	[AddComponentMenu("Cubizer/BasicObjectsBiomeGenerator")]
-	public class BasicObjectsBiomeGenerator : MonoBehaviour, IBiomeGenerator
+	public class BasicObjectsBiomeGenerator : BiomeGenerator
 	{
 		public LiveBehaviour _materialGrass;
 		public LiveBehaviour _materialSand;
@@ -111,7 +111,7 @@ namespace Cubizer
 			}
 		}
 
-		public IBiomeData OnBuildBiome(short x, short y, short z)
+		public override IBiomeData OnBuildBiome(short x, short y, short z)
 		{
 			if (_isGenPlaneOnly)
 			{

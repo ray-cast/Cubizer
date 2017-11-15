@@ -5,7 +5,7 @@ namespace Cubizer
 {
 	public interface IVoxelModel
 	{
-		int CalcFaceCountAsAllocate(ref Dictionary<string, int> entities);
+		int CalcFaceCountAsAllocate(ref Dictionary<int, int> entities);
 
 		IEnumerable GetEnumerator();
 	}
