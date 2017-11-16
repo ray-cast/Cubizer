@@ -111,10 +111,8 @@ namespace Cubizer
 		{
 			public VOXModel CalcVoxelCruncher(VoxData chunk, Color32[] palette)
 			{
-				var crunchers = new VOXCruncher[chunk.count];
+				var crunchers = new List<VOXCruncher>();
 				var faces = new VOXVisiableFaces(true, true, true, true, true, true);
-
-				int n = 0;
 
 				for (int i = 0; i < chunk.x; ++i)
 				{
@@ -124,7 +122,7 @@ namespace Cubizer
 						{
 							var m = chunk.voxels[i, j, k];
 							if (m != int.MaxValue)
-								crunchers[n++] = new VOXCruncher(i, i, j, j, k, k, faces, m);
+								crunchers.Add(new VOXCruncher(i, i, j, j, k, k, faces, m));
 						}
 					}
 				}
@@ -207,13 +205,7 @@ namespace Cubizer
 					}
 				}
 
-				var array = new VOXCruncher[crunchers.Count];
-
-				int numbers = 0;
-				foreach (var it in crunchers)
-					array[numbers++] = it;
-
-				return new VOXModel(array);
+				return new VOXModel(crunchers);
 			}
 		}
 
@@ -352,13 +344,7 @@ namespace Cubizer
 					}
 				}
 
-				var array = new VOXCruncher[crunchers.Count];
-
-				int numbers = 0;
-				foreach (var it in crunchers)
-					array[numbers++] = it;
-
-				return new VOXModel(array);
+				return new VOXModel(crunchers);
 			}
 		}
 

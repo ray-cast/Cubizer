@@ -140,9 +140,9 @@ namespace Cubizer
 
 			public int GetMajorityColorIndex(int xx, int yy, int zz, int lodLevel)
 			{
-				xx = Mathf.Min(xx, x - 2);
-				yy = Mathf.Min(yy, y - 2);
-				zz = Mathf.Min(zz, z - 2);
+				xx = Mathf.Min(xx * lodLevel, x - 2);
+				yy = Mathf.Min(yy * lodLevel, y - 2);
+				zz = Mathf.Min(zz * lodLevel, z - 2);
 
 				int[] samples = new int[lodLevel * lodLevel * lodLevel];
 
@@ -212,7 +212,7 @@ namespace Cubizer
 					{
 						for (int z = 0; z < data.z; z++)
 						{
-							data.voxels[x, y, z] = this.GetMajorityColorIndex(x * level, y * level, z * level, level);
+							data.voxels[x, y, z] = this.GetMajorityColorIndex(x, y, z, level);
 						}
 					}
 				}
@@ -320,7 +320,7 @@ namespace Cubizer
 							chunk.xyzi.chunkContent = reader.ReadInt32();
 							chunk.xyzi.chunkNums = reader.ReadInt32();
 							if (chunk.xyzi.chunkNums != 0)
-								throw new System.Exception("Bad Token: chunk nums is " + chunk.xyzi.chunkNums + ",i t should be 0.");
+								throw new System.Exception("Bad Token: chunk nums is " + chunk.xyzi.chunkNums + ", it should be 0.");
 
 							var voxelNums = reader.ReadInt32();
 							var voxels = new byte[voxelNums * 4];
@@ -351,7 +351,7 @@ namespace Cubizer
 						}
 						else
 						{
-							voxel.palette.values = new uint[256];
+							voxel.palette.values = new uint[_paletteDefault.Length];
 							_paletteDefault.CopyTo(voxel.palette.values, 0);
 						}
 
