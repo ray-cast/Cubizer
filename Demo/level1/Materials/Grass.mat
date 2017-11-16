@@ -7,7 +7,7 @@ Material:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: Grass
-  m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
+  m_Shader: {fileID: 4800000, guid: b1c99cd74d7694c45b14ee20957ef47b, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -75,10 +75,13 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
+    - _Threshold: 15
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 0.19170898, g: 0.5294118, b: 0, a: 1}
+    - _Color1: {r: 0.08771718, g: 0.553, b: 0, a: 1}
+    - _Color2: {r: 0.7440163, g: 0.8235294, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GridColor: {r: 1, g: 1, b: 1, a: 0}
     - _LineColor: {r: 1, g: 1, b: 1, a: 1}

@@ -885,7 +885,7 @@ LODGroup:
     fadeTransitionWidth: 0
     renderers:
     - renderer: {fileID: 1105990752}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!1001 &1129331753
 Prefab:
   m_ObjectHideFlags: 0
@@ -896,12 +896,12 @@ Prefab:
     - target: {fileID: 224431451281944538, guid: 52eb078de896190488e6c13e15635297,
         type: 2}
       propertyPath: m_LocalPosition.x
-      value: 599.5
+      value: 720
       objectReference: {fileID: 0}
     - target: {fileID: 224431451281944538, guid: 52eb078de896190488e6c13e15635297,
         type: 2}
       propertyPath: m_LocalPosition.y
-      value: 383
+      value: 320.5
       objectReference: {fileID: 0}
     - target: {fileID: 224431451281944538, guid: 52eb078de896190488e6c13e15635297,
         type: 2}
@@ -1457,7 +1457,7 @@ LODGroup:
     fadeTransitionWidth: 0
     renderers:
     - renderer: {fileID: 1431532697}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!23 &1431532697
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1587,6 +1587,7 @@ GameObject:
   - component: {fileID: 1843283065}
   - component: {fileID: 1843283064}
   - component: {fileID: 1843283061}
+  - component: {fileID: 1843283062}
   m_Layer: 0
   m_Name: Camera
   m_TagString: MainCamera
@@ -1615,6 +1616,29 @@ MonoBehaviour:
   _foward: {x: 0, y: -0.3, z: 1}
   _isEnableCursorLock: 1
   _isCursorLocked: 0
+--- !u!114 &1843283062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1843283060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b200ceda39a40af43bbb16a879f0791f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _noiseFilterTolerance: 0
+  _blurTolerance: -4.6
+  _upsampleTolerance: -12
+  _thicknessModifier: 1
+  _intensity: 0.3
+  _debug: 0
+  _ambientOnly: 1
+  _downsample1Compute: {fileID: 7200000, guid: 659dc93a3764e164e8dafb2061ff317b, type: 3}
+  _downsample2Compute: {fileID: 7200000, guid: dc4dd2f3a1157884e95a081b25b5731d, type: 3}
+  _renderCompute: {fileID: 7200000, guid: e49d5d8e57b0515469bb1ef4bf07b8dd, type: 3}
+  _upsampleCompute: {fileID: 7200000, guid: 2c3e5f47f9b262047ae010f239705186, type: 3}
+  _blitShader: {fileID: 4800000, guid: 532f9473ecfa16148a1ecdb3b72a44e8, type: 3}
 --- !u!20 &1843283064
 Camera:
   m_ObjectHideFlags: 0
@@ -1781,7 +1805,7 @@ LODGroup:
     fadeTransitionWidth: 0
     renderers:
     - renderer: {fileID: 1854283726}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!1 &1922618361
 GameObject:
   m_ObjectHideFlags: 0
