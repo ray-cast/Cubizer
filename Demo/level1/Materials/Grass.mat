@@ -81,7 +81,7 @@ Material:
     m_Colors:
     - _Color: {r: 0.19170898, g: 0.5294118, b: 0, a: 1}
     - _Color1: {r: 0.08771718, g: 0.553, b: 0, a: 1}
-    - _Color2: {r: 0.7440163, g: 0.8235294, b: 0, a: 1}
+    - _Color2: {r: 0.6835983, g: 0.8235294, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GridColor: {r: 1, g: 1, b: 1, a: 0}
     - _LineColor: {r: 1, g: 1, b: 1, a: 1}

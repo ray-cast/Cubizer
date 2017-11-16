@@ -123,7 +123,7 @@ namespace Cubizer
 						if (_params.isGenWeed && Noise.simplex2(-dx * 0.1f, dz * 0.1f, 4, 0.8f, 2) > 0.7)
 						{
 							UnityEngine.Random.InitState(ix * iz);
-							map.voxels.Set(ix, h, iz, _materials.weed[(int)System.Math.Round(UnityEngine.Random.value * (_materials.weed.Length - 1) - 0.4)]);
+							map.voxels.Set(ix, h, iz, _materials.weed[(int)System.Math.Round(UnityEngine.Random.value * (_materials.weed.Length - 1))]);
 						}
 						else if (_params.isGenFlower && Noise.simplex2(dx * 0.05f, -dz * 0.05f, 4, 0.8f, 2) > 0.75)
 						{
