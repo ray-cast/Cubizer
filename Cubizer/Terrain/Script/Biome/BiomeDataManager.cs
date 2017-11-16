@@ -82,10 +82,13 @@ namespace Cubizer
 			return Set(pos.x, pos.y, pos.z, value);
 		}
 
-		public bool Get(int x, int y, int z, ref IBiomeData chunk)
+		public bool Get(int x, int y, int z, out IBiomeData chunk)
 		{
 			if (_allocSize == 0)
+			{
+				chunk = null;
 				return false;
+			}
 
 			var index = HashInt(x, y, z) & _allocSize;
 			var entry = _data[index];
@@ -107,15 +110,15 @@ namespace Cubizer
 			return false;
 		}
 
-		public bool Get(Vector3<int> pos, ref IBiomeData instanceID)
+		public bool Get(Vector3<int> pos, out IBiomeData instanceID)
 		{
-			return this.Get(pos.x, pos.y, pos.z, ref instanceID);
+			return this.Get(pos.x, pos.y, pos.z, out instanceID);
 		}
 
 		public bool Exists(int x, int y, int z)
 		{
 			IBiomeData instanceID = null;
-			return this.Get(x, y, z, ref instanceID);
+			return this.Get(x, y, z, out instanceID);
 		}
 
 		public bool Empty()

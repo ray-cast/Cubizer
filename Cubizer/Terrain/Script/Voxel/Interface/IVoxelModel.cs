@@ -8,5 +8,7 @@ namespace Cubizer
 		int CalcFaceCountAsAllocate(ref Dictionary<int, int> entities);
 
 		IEnumerable GetEnumerator();
+
+		IEnumerable GetEnumerator(int instanceID);
 	}
 }

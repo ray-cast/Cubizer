@@ -76,16 +76,16 @@ namespace Cubizer
 				_terrain = GetComponent<Terrain>();
 
 			if (_terrain == null)
-				UnityEngine.Debug.LogError("Please assign a terrain on the inspector");
+				Debug.LogError("Please assign a terrain on the inspector");
 
 			if (_player == null)
-				UnityEngine.Debug.LogError("Please assign a camera on the inspector.");
+				Debug.LogError("Please assign a camera on the inspector.");
 
 			if (_drawPickMesh == null)
-				UnityEngine.Debug.LogError("Please assign a material on the inspector");
+				Debug.LogError("Please assign a material on the inspector");
 
 			if (_drawPickMaterial == null)
-				UnityEngine.Debug.LogError("Please assign a mesh on the inspector");
+				Debug.LogError("Please assign a mesh on the inspector");
 		}
 
 		private void Reset()
@@ -113,7 +113,7 @@ namespace Cubizer
 
 		private void UpdateChunkForHit(Mesh mesh, Material material)
 		{
-			if (_isHitTestEnable)
+			if (_isHitTestEnable && Cursor.lockState == CursorLockMode.Locked)
 			{
 				if (Input.GetMouseButton(0))
 					StartCoroutine("RemoveEnitiyByScreenPosWithCoroutine");
@@ -124,14 +124,14 @@ namespace Cubizer
 			if (_isHitTestWireframe)
 			{
 				byte x, y, z;
-				ChunkPrimer chunk = null;
+				ChunkPrimer chunk;
 
 				if (_terrain != null)
 				{
 					var ray = _player.ScreenPointToRay(Input.mousePosition);
 					ray.origin = _player.transform.position;
 
-					if (_terrain.HitTestByRay(ray, _hitTestDistance, ref chunk, out x, out y, out z))
+					if (_terrain.HitTestByRay(ray, _hitTestDistance, out chunk, out x, out y, out z))
 					{
 						var position = new Vector3(chunk.position.x, chunk.position.y, chunk.position.z) * _terrain.chunkSize + new Vector3(x, y, z);
 						Graphics.DrawMesh(mesh, position, Quaternion.identity, material, gameObject.layer, _player);

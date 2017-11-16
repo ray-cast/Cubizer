@@ -37,5 +37,13 @@ namespace Cubizer
 
 			return new VoxelModelListEnumerable(voxels);
 		}
+
+		public IEnumerable GetEnumerator(int instanceID)
+		{
+			if (voxels == null)
+				throw new System.ApplicationException("GetEnumerator: Empty data");
+
+			return new VoxelModelListIDEnumerable(voxels, instanceID);
+		}
 	}
 }

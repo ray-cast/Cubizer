@@ -2,9 +2,8 @@
 
 namespace Cubizer
 {
-	[ExecuteInEditMode]
 	[DisallowMultipleComponent]
-	public abstract class LiveBehaviour : MonoBehaviour
+	public abstract class LiveBehaviour : MonoBehaviour, ILiveBehaviour
 	{
 		[SerializeField] private bool _dynamic = false;
 		[SerializeField] private bool _transparent = false;
@@ -41,14 +40,6 @@ namespace Cubizer
 			this.RegisterDefaultMaterial();
 		}
 
-		public abstract int GetVerticesCount(int faceCount);
-
-		public abstract int GetIndicesCount(int faceCount);
-
-		public abstract void OnBuildBlock(ref TerrainMesh mesh, ref int index, Vector3 translate, Vector3 scale, VoxelVisiableFaces faces);
-
-		public abstract void OnBuildComponents(GameObject gameObject, Mesh mesh);
-
-		public abstract bool OnUpdateChunk(ref ChunkPrimer map, System.Byte x, System.Byte y, System.Byte z);
+		public abstract void OnBuildChunkObject(GameObject parent, IVoxelModel model, int faceCount);
 	}
 }

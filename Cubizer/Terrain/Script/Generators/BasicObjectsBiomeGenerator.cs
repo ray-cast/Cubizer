@@ -16,7 +16,7 @@ namespace Cubizer
 		public LiveBehaviour _materialTree;
 		public LiveBehaviour _materialTreeLeaf;
 		public LiveBehaviour _materialFlower;
-		public LiveBehaviour _materialWeed;
+		public LiveBehaviour[] _materialWeed;
 		public LiveBehaviour _materialObsidian;
 		public LiveBehaviour _materialWater;
 		public LiveBehaviour _materialCloud;
@@ -55,8 +55,11 @@ namespace Cubizer
 				_materials.treeLeaf = _materialTreeLeaf.material;
 			if (_materialFlower != null)
 				_materials.flower = _materialFlower.material;
-			if (_materialWeed != null)
-				_materials.weed = _materialWeed.material;
+
+			_materials.weed = new VoxelMaterial[_materialWeed.Length];
+			for (int i = 0; i < _materialWeed.Length; i++)
+				_materials.weed[i] = _materialWeed[i].material;
+
 			if (_materialObsidian != null)
 				_materials.obsidian = _materialObsidian.material;
 			if (_materialWater != null)
@@ -79,7 +82,7 @@ namespace Cubizer
 
 		public BiomeData buildForest(float noise)
 		{
-			var noiseParams = new NoiseParams() 
+			var noiseParams = new NoiseParams()
 			{
 				octaves = 6,
 				loopX = 1.0f,

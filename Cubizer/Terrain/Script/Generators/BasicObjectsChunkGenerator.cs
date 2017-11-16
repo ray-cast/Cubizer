@@ -35,7 +35,7 @@ namespace Cubizer
 
 		public ChunkPrimer BuildPlaneOnly(Terrain terrain, short x, short y, short z)
 		{
-			var map = new ChunkPrimer(terrain.chunkSize, terrain.chunkSize, terrain.chunkSize, x, y, z, terrain.chunkSize * terrain.chunkSize * _params.floorBase);
+			var map = new ChunkPrimer(terrain.chunkSize, x, y, z, terrain.chunkSize * terrain.chunkSize * _params.floorBase);
 
 			for (byte ix = 0; ix < map.voxels.bound.x; ix++)
 			{
@@ -94,7 +94,7 @@ namespace Cubizer
 
 		public ChunkPrimer Buildland(Terrain terrain, short x, short y, short z, VoxelMaterial main)
 		{
-			var map = new ChunkPrimer(terrain.chunkSize, terrain.chunkSize, terrain.chunkSize, x, y, z, terrain.chunkSize * terrain.chunkSize * _params.floorBase);
+			var map = new ChunkPrimer(terrain.chunkSize, x, y, z, terrain.chunkSize * terrain.chunkSize * _params.floorBase);
 
 			int offsetX = x * map.voxels.bound.x;
 			int offsetZ = z * map.voxels.bound.z;
@@ -121,7 +121,10 @@ namespace Cubizer
 							map.voxels.Set(ix, (byte)(h - 1), iz, _materials.sand);
 
 						if (_params.isGenWeed && Noise.simplex2(-dx * 0.1f, dz * 0.1f, 4, 0.8f, 2) > 0.7)
-							map.voxels.Set(ix, h, iz, _materials.weed);
+						{
+							UnityEngine.Random.InitState(ix * iz);
+							map.voxels.Set(ix, h, iz, _materials.weed[(int)System.Math.Round(UnityEngine.Random.value * (_materials.weed.Length - 1) - 0.4)]);
+						}
 						else if (_params.isGenFlower && Noise.simplex2(dx * 0.05f, -dz * 0.05f, 4, 0.8f, 2) > 0.75)
 							map.voxels.Set(ix, h, iz, _materials.flower);
 						else if (_params.isGenTree && h < map.voxels.bound.y - 8)
@@ -148,7 +151,7 @@ namespace Cubizer
 
 		public ChunkPrimer BuildClouds(Terrain terrain, short x, short y, short z)
 		{
-			var map = new ChunkPrimer(terrain.chunkSize, terrain.chunkSize, terrain.chunkSize, x, y, z);
+			var map = new ChunkPrimer(terrain.chunkSize, x, y, z);
 
 			int offsetX = x * map.voxels.bound.x;
 			int offsetY = y * map.voxels.bound.y;
@@ -176,7 +179,7 @@ namespace Cubizer
 
 		public ChunkPrimer buildObsidian(Terrain terrain, short x, short y, short z)
 		{
-			var map = new ChunkPrimer(terrain.chunkSize, terrain.chunkSize, terrain.chunkSize, x, y, z, terrain.chunkSize * terrain.chunkSize * 8);
+			var map = new ChunkPrimer(terrain.chunkSize, x, y, z, terrain.chunkSize * terrain.chunkSize * 8);
 
 			for (byte ix = 0; ix < map.voxels.bound.x; ix++)
 			{

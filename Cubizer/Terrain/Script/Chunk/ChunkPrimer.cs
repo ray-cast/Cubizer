@@ -76,6 +76,12 @@ namespace Cubizer
 			_voxels = new VoxelData<VoxelMaterial>(bound, cout);
 		}
 
+		public ChunkPrimer(System.Int32 bound, System.Int16 x, System.Int16 y, System.Int16 z, int cout = 0)
+		{
+			_position = new Vector3<System.Int16>(x, y, z);
+			_voxels = new VoxelData<VoxelMaterial>(bound, bound, bound, cout);
+		}
+
 		public ChunkPrimer(System.Int32 bound_x, System.Int32 bound_y, System.Int32 bound_z, System.Int16 x, System.Int16 y, System.Int16 z, int cout = 0)
 		{
 			_position = new Vector3<System.Int16>(x, y, z);

@@ -7,6 +7,7 @@ namespace Cubizer
 	public class LiveCubeBehaviour : LiveBehaviour
 	{
 		public bool collide = true;
+		public PhysicMaterial physicMaterial;
 
 		private MeshRenderer _renderer;
 
@@ -50,27 +51,42 @@ namespace Cubizer
 			{ 0, 3, 1, 0, 2, 3 }
 		};
 
-		public override int GetVerticesCount(int faceCount)
-		{
-			return faceCount * 4;
-		}
-
-		public override int GetIndicesCount(int faceCount)
-		{
-			return faceCount * 6;
-		}
-
 		public void Start()
 		{
 			_renderer = GetComponent<MeshRenderer>();
 		}
 
-		public override bool OnUpdateChunk(ref ChunkPrimer map, System.Byte x, System.Byte y, System.Byte z)
+		public override void OnBuildChunkObject(GameObject parent, IVoxelModel model, int faceCount)
 		{
-			return false;
+			var writeCount = 0;
+			var data = new TerrainMesh(faceCount * 4, faceCount * 6);
+
+			foreach (VoxelPrimitive it in model.GetEnumerator(this.material.GetInstanceID()))
+			{
+				Vector3 pos, scale;
+				it.GetTranslateScale(out pos, out scale);
+				OnBuildBlock(ref data, ref writeCount, pos, scale, it.faces);
+			}
+
+			if (data.triangles.Length > 0)
+			{
+				Mesh mesh = new Mesh();
+				mesh.vertices = data.vertices;
+				mesh.normals = data.normals;
+				mesh.uv = data.uv;
+				mesh.triangles = data.triangles;
+
+				var actors = new GameObject(this.name);
+				actors.isStatic = parent.isStatic;
+				actors.layer = parent.layer;
+				actors.transform.parent = parent.transform;
+				actors.transform.position = parent.transform.position;
+
+				OnBuildComponents(actors, mesh);
+			}
 		}
 
-		public override void OnBuildBlock(ref TerrainMesh mesh, ref int index, Vector3 translate, Vector3 scale, VoxelVisiableFaces faces)
+		public void OnBuildBlock(ref TerrainMesh mesh, ref int index, Vector3 translate, Vector3 scale, VoxelVisiableFaces faces)
 		{
 			bool[] visiable = new bool[] { faces.left, faces.right, faces.top, faces.bottom, faces.front, faces.back };
 
@@ -101,7 +117,7 @@ namespace Cubizer
 			}
 		}
 
-		public override void OnBuildComponents(GameObject gameObject, Mesh mesh)
+		public void OnBuildComponents(GameObject gameObject, Mesh mesh)
 		{
 			if (_renderer != null)
 			{
@@ -114,7 +130,11 @@ namespace Cubizer
 			gameObject.AddComponent<MeshFilter>().mesh = mesh;
 
 			if (collide)
-				gameObject.AddComponent<MeshCollider>().sharedMesh = mesh;
+			{
+				var meshCollider = gameObject.AddComponent<MeshCollider>();
+				meshCollider.sharedMesh = mesh;
+				meshCollider.material = physicMaterial;
+			}
 		}
 	}
 }

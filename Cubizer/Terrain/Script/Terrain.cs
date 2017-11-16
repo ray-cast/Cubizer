@@ -167,7 +167,7 @@ namespace Cubizer
 			return block != null;
 		}
 
-		public bool HitTestByRay(Ray ray, int hitDistance, ref ChunkPrimer chunk, out byte outX, out byte outY, out byte outZ)
+		public bool HitTestByRay(Ray ray, int hitDistance, out ChunkPrimer chunk, out byte outX, out byte outY, out byte outZ)
 		{
 			byte lx, ly, lz;
 			ChunkPrimer chunkLast = null;
@@ -175,18 +175,18 @@ namespace Cubizer
 			return this.HitTestByRay(ray, hitDistance, out chunk, out outX, out outY, out outZ, out chunkLast, out lx, out ly, out lz);
 		}
 
-		public bool HitTestByScreenPos(Vector3 pos, int hitDistance, ref ChunkPrimer chunk, out byte outX, out byte outY, out byte outZ, ref ChunkPrimer lastChunk, out byte lastX, out byte lastY, out byte lastZ)
+		public bool HitTestByScreenPos(Vector3 pos, int hitDistance, out ChunkPrimer chunk, out byte outX, out byte outY, out byte outZ, ref ChunkPrimer lastChunk, out byte lastX, out byte lastY, out byte lastZ)
 		{
 			var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			ray.origin = Camera.main.transform.position;
 			return this.HitTestByRay(ray, hitDistance, out chunk, out outX, out outY, out outZ, out lastChunk, out lastX, out lastY, out lastZ);
 		}
 
-		public bool HitTestByScreenPos(Vector3 pos, int hitDistance, ref ChunkPrimer chunk, out byte outX, out byte outY, out byte outZ)
+		public bool HitTestByScreenPos(Vector3 pos, int hitDistance, out ChunkPrimer chunk, out byte outX, out byte outY, out byte outZ)
 		{
 			var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			ray.origin = Camera.main.transform.position;
-			return this.HitTestByRay(ray, hitDistance, ref chunk, out outX, out outY, out outZ);
+			return this.HitTestByRay(ray, hitDistance, out chunk, out outX, out outY, out outZ);
 		}
 
 		public bool AddBlockByRay(Ray ray, int hitDistance, VoxelMaterial block)
@@ -219,9 +219,9 @@ namespace Cubizer
 		public bool RemoveBlockByRay(Ray ray, int hitDistance)
 		{
 			byte x, y, z;
-			ChunkPrimer chunk = null;
+			ChunkPrimer chunk;
 
-			if (HitTestByRay(ray, hitDistance, ref chunk, out x, out y, out z))
+			if (HitTestByRay(ray, hitDistance, out chunk, out x, out y, out z))
 			{
 				chunk.voxels.Set(x, y, z, null);
 				chunk.OnChunkChange();
@@ -265,7 +265,7 @@ namespace Cubizer
 						if (dy < _chunkHeightLimitLow || dy > _chunkHeightLimitHigh)
 							continue;
 
-						ChunkPrimer chunk ;
+						ChunkPrimer chunk;
 						var hit = _chunks.Get((short)dx, (short)dy, (short)dz, out chunk);
 						if (hit)
 							continue;

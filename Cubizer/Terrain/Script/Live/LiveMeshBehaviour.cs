@@ -2,33 +2,57 @@
 
 namespace Cubizer
 {
+	[RequireComponent(typeof(MeshFilter))]
 	[RequireComponent(typeof(MeshRenderer))]
 	[AddComponentMenu("Cubizer/LiveMeshBehaviour")]
 	public class LiveMeshBehaviour : LiveBehaviour
 	{
-		public Mesh _mesh;
+		private Mesh _mesh;
+		private MeshRenderer _meshRenderer;
 
-		private MeshRenderer _renderer;
+		public bool collide = true;
+		public PhysicMaterial physicMaterial;
 
 		public void Start()
 		{
-			if (_mesh == null)
-				UnityEngine.Debug.LogError("Please drag a Mesh into Hierarchy View.");
-
-			_renderer = GetComponent<MeshRenderer>();
+			_mesh = GetComponent<MeshFilter>().sharedMesh;
+			_meshRenderer = GetComponent<MeshRenderer>();
 		}
 
-		public override int GetVerticesCount(int faceCount)
+		public override void OnBuildChunkObject(GameObject parent, IVoxelModel model, int faceCount)
 		{
-			return (faceCount / 6) * _mesh.vertexCount;
+			foreach (VoxelPrimitive it in model.GetEnumerator(this.material.GetInstanceID()))
+			{
+				Vector3 pos, scale;
+				it.GetTranslateScale(out pos, out scale);
+
+				var actors = new GameObject(this.name);
+				actors.isStatic = parent.isStatic;
+				actors.layer = parent.layer;
+				actors.transform.parent = parent.transform;
+				actors.transform.position = parent.transform.position + pos + transform.localPosition;
+				actors.transform.localScale = transform.localScale;
+
+				actors.AddComponent<MeshFilter>().sharedMesh = _mesh;
+
+				if (_meshRenderer != null)
+				{
+					var clone = actors.AddComponent<MeshRenderer>();
+					clone.material = _meshRenderer.material;
+					clone.receiveShadows = _meshRenderer.receiveShadows;
+					clone.shadowCastingMode = _meshRenderer.shadowCastingMode;
+				}
+
+				if (collide)
+				{
+					var meshCollider = actors.AddComponent<MeshCollider>();
+					meshCollider.sharedMesh = _mesh;
+					meshCollider.material = physicMaterial;
+				}
+			}
 		}
 
-		public override int GetIndicesCount(int faceCount)
-		{
-			return (faceCount / 6) * _mesh.triangles.Length;
-		}
-
-		public override void OnBuildBlock(ref TerrainMesh mesh, ref int index, Vector3 pos, Vector3 scale, VoxelVisiableFaces faces)
+		public void OnBuildBlock(ref TerrainMesh mesh, ref int index, Vector3 pos, Vector3 scale, VoxelVisiableFaces faces)
 		{
 			var startVertices = _mesh.vertexCount * index;
 			var startIndices = _mesh.triangles.Length * index;
@@ -54,25 +78,6 @@ namespace Cubizer
 			}
 
 			index++;
-		}
-
-		public override void OnBuildComponents(GameObject gameObject, Mesh mesh)
-		{
-			if (_renderer != null)
-			{
-				var clone = gameObject.AddComponent<MeshRenderer>();
-				clone.material = _renderer.material;
-				clone.receiveShadows = _renderer.receiveShadows;
-				clone.shadowCastingMode = _renderer.shadowCastingMode;
-			}
-
-			gameObject.AddComponent<MeshFilter>().mesh = mesh;
-			gameObject.AddComponent<MeshCollider>().sharedMesh = mesh;
-		}
-
-		public override bool OnUpdateChunk(ref ChunkPrimer map, System.Byte x, System.Byte y, System.Byte z)
-		{
-			return false;
 		}
 	}
 }

@@ -49,8 +49,8 @@ namespace Cubizer
 
 		public ChunkPrimer buildChunk(short x, short y, short z)
 		{
-			IBiomeData biomeData = null;
-			if (!_biomes.Get(x, y, z, ref biomeData))
+			IBiomeData biomeData;
+			if (!_biomes.Get(x, y, z, out biomeData))
 				biomeData = this.buildBiome(x, y, z);
 
 			var chunk = biomeData.OnBuildChunk(_terrain, x, y, z);

@@ -72,7 +72,7 @@ namespace Cubizer
 
 		private void CreateFile(string archive, ChunkPrimer data)
 		{
-			UnityEngine.Debug.Assert(data != null);
+			Debug.Assert(data != null);
 
 			using (var stream = new FileStream(rootPath + username + archive, FileMode.Create, FileAccess.Write))
 			{

@@ -93,71 +93,31 @@ namespace Cubizer
 			if (_chunk == null || _chunk.voxels.count == 0)
 				return;
 
-			if (_chunkEntitiesDynamic != null)
+			if (_chunkEntitiesDynamic != null && _chunkEntitiesDynamic.Count > 0)
 			{
-				if (_chunkEntitiesDynamic.Count > 0)
-				{
-					StopCoroutine("OnUpdateEntities");
-					_chunkEntitiesDynamic.Clear();
-				}
+				StopCoroutine("OnUpdateEntities");
+				_chunkEntitiesDynamic.Clear();
 			}
 
 			var model = _chunk.CreateVoxelModel(VoxelCullMode.Culled);
-			if (model == null)
-				return;
-
-			var entities = new Dictionary<int, int>();
-			if (model.CalcFaceCountAsAllocate(ref entities) == 0)
-				return;
-
-			foreach (var entity in entities)
+			if (model != null)
 			{
-				var controller = VoxelMaterialManager.GetInstance().GetMaterial(entity.Key).userdata as LiveBehaviour;
-				if (controller == null)
-					continue;
+				var entities = new Dictionary<int, int>();
+				if (model.CalcFaceCountAsAllocate(ref entities) == 0)
+					return;
 
-				var numVertices = controller.GetVerticesCount(entity.Value);
-				var numIndices = controller.GetIndicesCount(entity.Value);
-				if (numVertices == 0 || numIndices == 0)
-					continue;
-
-				var data = new TerrainMesh();
-				data.vertices = new Vector3[numVertices];
-				data.normals = new Vector3[numVertices];
-				data.uv = new Vector2[numVertices];
-				data.triangles = new int[numIndices];
-
-				var writeCount = 0;
-				foreach (VoxelPrimitive it in model.GetEnumerator())
-				{	
-					if (it.material.GetInstanceID() != entity.Key)
+				foreach (var it in entities)
+				{
+					var controller = VoxelMaterialManager.GetInstance().GetMaterial(it.Key).userdata as ILiveBehaviour;
+					if (controller == null)
 						continue;
 
-					Vector3 pos, scale;
-					it.GetTranslateScale(out pos, out scale);
-					controller.OnBuildBlock(ref data, ref writeCount, pos, scale, it.faces);
+					controller.OnBuildChunkObject(gameObject, model, it.Value);
 				}
 
-				if (data.triangles.Length > 0)
-				{
-					Mesh mesh = new Mesh();
-					mesh.vertices = data.vertices;
-					mesh.normals = data.normals;
-					mesh.uv = data.uv;
-					mesh.triangles = data.triangles;
-
-					var gameObject = new GameObject(controller.name);
-					gameObject.isStatic = controller.gameObject.isStatic;
-					gameObject.layer = controller.gameObject.layer;
-					gameObject.transform.parent = this.transform;
-					gameObject.transform.position = this.transform.position;
-
-					controller.OnBuildComponents(gameObject, mesh);
-				}
+				if (_chunkEntitiesDynamic.Count > 0)
+					StartCoroutine("OnUpdateEntities");
 			}
-
-			if (_chunkEntitiesDynamic.Count > 0)
-				StartCoroutine("OnUpdateEntities");
 		}
 
 		public IEnumerator OnUpdateEntities()
@@ -166,16 +126,6 @@ namespace Cubizer
 
 			if (_chunkEntitiesDynamic != null)
 			{
-				bool needUpdate = false;
-				foreach (var it in _chunkEntitiesDynamic)
-				{
-					foreach (var pos in it.Value)
-						needUpdate |= it.Key.OnUpdateChunk(ref _chunk, pos.x, pos.y, pos.z);
-				}
-
-				if (needUpdate)
-					this.OnUpdateChunk();
-
 				StartCoroutine("OnUpdateEntities");
 			}
 		}
