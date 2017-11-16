@@ -15,12 +15,13 @@ namespace Cubizer
 		public LiveBehaviour _materialSand;
 		public LiveBehaviour _materialTree;
 		public LiveBehaviour _materialTreeLeaf;
-		public LiveBehaviour _materialFlower;
-		public LiveBehaviour[] _materialWeed;
 		public LiveBehaviour _materialObsidian;
 		public LiveBehaviour _materialWater;
 		public LiveBehaviour _materialCloud;
 		public LiveBehaviour _materialSoil;
+
+		public LiveBehaviour[] _materialFlower;
+		public LiveBehaviour[] _materialWeed;
 
 		public int layerGrass = 0;
 		public int layerCloud = 3;
@@ -53,13 +54,6 @@ namespace Cubizer
 				_materials.tree = _materialTree.material;
 			if (_materialTreeLeaf != null)
 				_materials.treeLeaf = _materialTreeLeaf.material;
-			if (_materialFlower != null)
-				_materials.flower = _materialFlower.material;
-
-			_materials.weed = new VoxelMaterial[_materialWeed.Length];
-			for (int i = 0; i < _materialWeed.Length; i++)
-				_materials.weed[i] = _materialWeed[i].material;
-
 			if (_materialObsidian != null)
 				_materials.obsidian = _materialObsidian.material;
 			if (_materialWater != null)
@@ -68,6 +62,14 @@ namespace Cubizer
 				_materials.cloud = _materialCloud.material;
 			if (_materialCloud != null)
 				_materials.soil = _materialSoil.material;
+
+			_materials.flower = new VoxelMaterial[_materialFlower.Length];
+			for (int i = 0; i < _materialFlower.Length; i++)
+				_materials.flower[i] = _materialFlower[i].material;
+
+			_materials.weed = new VoxelMaterial[_materialWeed.Length];
+			for (int i = 0; i < _materialWeed.Length; i++)
+				_materials.weed[i] = _materialWeed[i].material;
 
 			_biomeDatas = new BiomeData[biomeParams.Count];
 

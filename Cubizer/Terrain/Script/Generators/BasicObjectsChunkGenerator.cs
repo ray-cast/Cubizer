@@ -126,7 +126,10 @@ namespace Cubizer
 							map.voxels.Set(ix, h, iz, _materials.weed[(int)System.Math.Round(UnityEngine.Random.value * (_materials.weed.Length - 1) - 0.4)]);
 						}
 						else if (_params.isGenFlower && Noise.simplex2(dx * 0.05f, -dz * 0.05f, 4, 0.8f, 2) > 0.75)
-							map.voxels.Set(ix, h, iz, _materials.flower);
+						{
+							UnityEngine.Random.InitState(ix * iz);
+							map.voxels.Set(ix, h, iz, _materials.flower[(int)System.Math.Round(UnityEngine.Random.value * (_materials.flower.Length - 1) - 0.4)]);
+						}
 						else if (_params.isGenTree && h < map.voxels.bound.y - 8)
 						{
 							if (ix > 3 && ix < map.voxels.bound.y - 3 && iz > 3 && iz < map.voxels.bound.y - 3)
