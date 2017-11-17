@@ -2,7 +2,6 @@
 
 namespace Cubizer
 {
-	[ExecuteInEditMode]
 	[DisallowMultipleComponent]
 	public abstract class LiveBehaviour : MonoBehaviour, ILiveBehaviour
 	{

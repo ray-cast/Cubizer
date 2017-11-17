@@ -11,18 +11,18 @@ namespace Cubizer
 	[AddComponentMenu("Cubizer/BasicObjectsBiomeGenerator")]
 	public class BasicObjectsBiomeGenerator : BiomeGenerator
 	{
-		public LiveBehaviour _materialDirt;
-		public LiveBehaviour _materialGrass;
-		public LiveBehaviour _materialSand;
-		public LiveBehaviour _materialTree;
-		public LiveBehaviour _materialTreeLeaf;
-		public LiveBehaviour _materialObsidian;
-		public LiveBehaviour _materialWater;
-		public LiveBehaviour _materialCloud;
-		public LiveBehaviour _materialSoil;
+		public GameObject _materialDirt;
+		public GameObject _materialGrass;
+		public GameObject _materialSand;
+		public GameObject _materialTree;
+		public GameObject _materialTreeLeaf;
+		public GameObject _materialObsidian;
+		public GameObject _materialWater;
+		public GameObject _materialCloud;
+		public GameObject _materialSoil;
 
-		public LiveBehaviour[] _materialFlower;
-		public LiveBehaviour[] _materialWeed;
+		public GameObject[] _materialFlower;
+		public GameObject[] _materialWeed;
 
 		public int layerGrass = 0;
 		public int layerCloud = 3;
@@ -48,31 +48,31 @@ namespace Cubizer
 		{
 			_materials = new BasicObjectsMaterials();
 			if (_materialDirt != null)
-				_materials.dirt = _materialDirt.material;
+				_materials.dirt = _materialDirt.GetComponent<LiveBehaviour>().material;
 			if (_materialGrass != null)
-				_materials.grass = _materialGrass.material;
+				_materials.grass = _materialGrass.GetComponent<LiveBehaviour>().material;
 			if (_materialSand != null)
-				_materials.sand = _materialSand.material;
+				_materials.sand = _materialSand.GetComponent<LiveBehaviour>().material;
 			if (_materialTree != null)
-				_materials.tree = _materialTree.material;
+				_materials.tree = _materialTree.GetComponent<LiveBehaviour>().material;
 			if (_materialTreeLeaf != null)
-				_materials.treeLeaf = _materialTreeLeaf.material;
+				_materials.treeLeaf = _materialTreeLeaf.GetComponent<LiveBehaviour>().material;
 			if (_materialObsidian != null)
-				_materials.obsidian = _materialObsidian.material;
+				_materials.obsidian = _materialObsidian.GetComponent<LiveBehaviour>().material;
 			if (_materialWater != null)
-				_materials.water = _materialWater.material;
+				_materials.water = _materialWater.GetComponent<LiveBehaviour>().material;
 			if (_materialCloud != null)
-				_materials.cloud = _materialCloud.material;
+				_materials.cloud = _materialCloud.GetComponent<LiveBehaviour>().material;
 			if (_materialCloud != null)
-				_materials.soil = _materialSoil.material;
+				_materials.soil = _materialSoil.GetComponent<LiveBehaviour>().material;
 
 			_materials.flower = new VoxelMaterial[_materialFlower.Length];
 			for (int i = 0; i < _materialFlower.Length; i++)
-				_materials.flower[i] = _materialFlower[i].material;
+				_materials.flower[i] = _materialFlower[i].GetComponent<LiveBehaviour>().material;
 
 			_materials.weed = new VoxelMaterial[_materialWeed.Length];
 			for (int i = 0; i < _materialWeed.Length; i++)
-				_materials.weed[i] = _materialWeed[i].material;
+				_materials.weed[i] = _materialWeed[i].GetComponent<LiveBehaviour>().material;
 
 			_biomeDatas = new BiomeData[biomeParams.Count];
 

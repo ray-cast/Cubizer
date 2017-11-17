@@ -2,24 +2,45 @@
 
 namespace Cubizer
 {
-	[RequireComponent(typeof(MeshRenderer))]
-	[AddComponentMenu("Cubizer/LiveMeshBehaviour")]
+	[AddComponentMenu("Cubizer/LiveVoxelBehaviour")]
 	public class LiveVoxelBehaviour : LiveBehaviour
 	{
 		private MeshFilter _meshFilter;
 		private MeshRenderer _meshRenderer;
 		private MeshCollider _meshCollider;
-
 		private LODGroup _lodGroup;
 
-		public object _object;
+		public int _LOD = 0;
+		public TextAsset _asset;
 
 		public void Start()
 		{
-			_lodGroup = GetComponent<LODGroup>();
-			_meshFilter = GetComponent<MeshFilter>();
-			_meshRenderer = GetComponent<MeshRenderer>();
-			_meshCollider = GetComponent<MeshCollider>();
+			try
+			{
+				if (_asset == null)
+					Debug.LogError("Please assign a .vox file on the inspector");
+
+				var vox = Model.VoxFileImport.Load(_asset.bytes);
+				if (vox != null)
+					Model.VoxFileImport.LoadVoxelFileAsGameObject(gameObject, vox, _LOD);
+
+				if (transform.childCount > 0)
+				{
+					var model = transform.GetChild(0);
+					if (model)
+					{
+						_meshCollider = GetComponent<MeshCollider>();
+
+						_lodGroup = model.GetComponent<LODGroup>();
+						_meshFilter = model.GetComponent<MeshFilter>();
+						_meshRenderer = model.GetComponent<MeshRenderer>();
+					}
+				}
+			}
+			catch (System.Exception e)
+			{
+				Debug.LogError(e.Message);
+			}
 		}
 
 		public override void OnBuildChunk(GameObject parent, IVoxelModel model, int faceCount)
