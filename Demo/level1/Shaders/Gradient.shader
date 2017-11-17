@@ -4,7 +4,7 @@ Shader "Custom/Gradient"
 	{
 		_Color1("Color", Color) = (1,1,1,1)
 		_Color2("Color", Color) = (1,1,1,1)
-		_Threshold("Threshold", Range(1,256)) = 128
+		_Threshold("Threshold", Range(1,256)) = 64
 		_MainTex("Albedo (RGB)", 2D) = "white" {}
 		_Glossiness("Smoothness", Range(0,1)) = 0.5
 		_Metallic("Metallic", Range(0,1)) = 0.0
@@ -26,6 +26,7 @@ Shader "Custom/Gradient"
 			{
 				float2 uv_MainTex;
 				float3 vertColor;
+				float occlusion;
 			};
 
 			half _Glossiness;
@@ -42,6 +43,7 @@ Shader "Custom/Gradient"
 			{
 				o.uv_MainTex = v.texcoord;
 				o.vertColor = lerp(_Color1, _Color2, v.vertex.y / _Threshold);
+				o.occlusion = (dot(v.normal, float3(0,1,0)) * 0.25 + 0.75);
 			}
 
 			void surf(Input IN, inout SurfaceOutputStandard o)
@@ -49,7 +51,7 @@ Shader "Custom/Gradient"
 				o.Albedo = IN.vertColor;
 				o.Metallic = _Metallic;
 				o.Smoothness = _Glossiness;
-				o.Occlusion = 1;
+				o.Occlusion = IN.occlusion;
 				o.Alpha = 1;
 			}
 			ENDCG

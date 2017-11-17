@@ -11,6 +11,7 @@ namespace Cubizer
 	[AddComponentMenu("Cubizer/BasicObjectsBiomeGenerator")]
 	public class BasicObjectsBiomeGenerator : BiomeGenerator
 	{
+		public LiveBehaviour _materialDirt;
 		public LiveBehaviour _materialGrass;
 		public LiveBehaviour _materialSand;
 		public LiveBehaviour _materialTree;
@@ -46,6 +47,8 @@ namespace Cubizer
 		public void Start()
 		{
 			_materials = new BasicObjectsMaterials();
+			if (_materialDirt != null)
+				_materials.dirt = _materialDirt.material;
 			if (_materialGrass != null)
 				_materials.grass = _materialGrass.material;
 			if (_materialSand != null)
@@ -88,7 +91,7 @@ namespace Cubizer
 			{
 				octaves = 6,
 				loopX = 1.0f,
-				loopY = 1.0f,
+				loopZ = 1.0f,
 				persistence = 0.5f,
 				lacunarity = 2.0f,
 				threshold = 0.87f - (0.52f - noise) * 10.0f,

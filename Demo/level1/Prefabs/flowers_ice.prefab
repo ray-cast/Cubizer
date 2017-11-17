@@ -37,7 +37,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4020872362450774}
   m_Layer: 0
-  m_Name: flower_ice
+  m_Name: flowers_ice
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

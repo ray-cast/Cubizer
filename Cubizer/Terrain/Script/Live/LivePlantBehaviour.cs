@@ -6,9 +6,11 @@ namespace Cubizer
 	[AddComponentMenu("Cubizer/LivePlantBehaviour")]
 	public class LivePlantBehaviour : LiveBehaviour
 	{
+		private LODGroup _lodGroup;
 		private MeshRenderer _renderer;
+		private MeshCollider _meshCollider;
 
-		public static Vector3[,] _positions = new Vector3[4, 4]
+		public static Vector3[,] _vertices = new Vector3[4, 4]
 		{
 			{ new Vector3( 0.0f, -0.5f, -0.5f), new Vector3( 0.0f, -0.5f, +0.5f), new Vector3( 0.0f, +0.5f, -0.5f), new Vector3( 0.0f, +0.5f, +0.5f)},
 			{ new Vector3( 0.0f, -0.5f, -0.5f), new Vector3( 0.0f, -0.5f, +0.5f), new Vector3( 0.0f, +0.5f, -0.5f), new Vector3( 0.0f, +0.5f, +0.5f)},
@@ -42,49 +44,15 @@ namespace Cubizer
 
 		public void Start()
 		{
+			_lodGroup = GetComponent<LODGroup>();
+			_meshCollider = GetComponent<MeshCollider>();
 			_renderer = GetComponent<MeshRenderer>();
 		}
 
-		public int GetVerticesCount(int faceCount)
-		{
-			return (faceCount / 6) * 16;
-		}
-
-		public int GetIndicesCount(int faceCount)
-		{
-			return (faceCount / 6) * 24;
-		}
-
-		public static void CreatePlantMesh(ref Vector3[] vertices, ref Vector3[] normals, ref Vector2[] uv, ref int[] triangles, ref int index, Vector3 translate, Vector3 scale)
-		{
-			for (int i = 0; i < 4; i++)
-			{
-				for (int n = index * 4, k = 0; k < 4; k++, n++)
-				{
-					Vector3 v = _positions[i, k];
-					v.x *= scale.x;
-					v.y *= scale.y;
-					v.z *= scale.z;
-					v.x += translate.x;
-					v.y += translate.y;
-					v.z += translate.z;
-
-					vertices[n] = v;
-					normals[n] = _normals[i];
-					uv[n] = _uvs[i, k];
-				}
-
-				for (int j = index * 6, k = 0; k < 6; k++, j++)
-					triangles[j] = index * 4 + _indices[i, k];
-
-				index++;
-			}
-		}
-
-		public override void OnBuildChunkObject(GameObject parent, IVoxelModel model, int faceCount)
+		public override void OnBuildChunk(GameObject parent, IVoxelModel model, int faceCount)
 		{
 			var writeCount = 0;
-			var data = new TerrainMesh(GetVerticesCount(faceCount), GetIndicesCount(faceCount));
+			var data = new TerrainMesh((faceCount / 6) * 16, (faceCount / 6) * 24);
 
 			foreach (VoxelPrimitive it in model.GetEnumerator(this.material.GetInstanceID()))
 			{
@@ -93,13 +61,13 @@ namespace Cubizer
 				OnBuildBlock(ref data, ref writeCount, pos, scale, it.faces);
 			}
 
-			if (data.triangles.Length > 0)
+			if (data.indices.Length > 0)
 			{
 				Mesh mesh = new Mesh();
 				mesh.vertices = data.vertices;
 				mesh.normals = data.normals;
 				mesh.uv = data.uv;
-				mesh.triangles = data.triangles;
+				mesh.triangles = data.indices;
 
 				var actors = new GameObject(this.name);
 				actors.isStatic = parent.isStatic;
@@ -107,40 +75,62 @@ namespace Cubizer
 				actors.transform.parent = parent.transform;
 				actors.transform.position = parent.transform.position;
 
-				OnBuildComponents(actors, mesh);
+				actors.AddComponent<MeshFilter>().mesh = mesh;
+
+				if (_renderer != null)
+				{
+					var clone = actors.AddComponent<MeshRenderer>();
+					clone.material = _renderer.material;
+					clone.receiveShadows = _renderer.receiveShadows;
+					clone.shadowCastingMode = _renderer.shadowCastingMode;
+
+					_renderer = clone;
+
+					if (_lodGroup != null)
+					{
+						var lods = _lodGroup.GetLODs();
+						for (int i = 0; i < lods.Length; i++)
+						{
+							if (lods[i].renderers.Length > 0)
+								lods[i].renderers[0] = _renderer;
+						}
+
+						actors.AddComponent<LODGroup>().SetLODs(lods);
+					}
+				}
+
+				if (_meshCollider && _meshCollider.enabled)
+				{
+					var meshCollider = actors.AddComponent<MeshCollider>();
+					meshCollider.sharedMesh = _meshCollider.sharedMesh ? _meshCollider.sharedMesh : mesh;
+					meshCollider.material = _meshCollider.material;
+				}
 			}
 		}
 
 		public void OnBuildBlock(ref TerrainMesh mesh, ref int index, Vector3 pos, Vector3 scale, VoxelVisiableFaces faces)
 		{
-			CreatePlantMesh(ref mesh.vertices, ref mesh.normals, ref mesh.uv, ref mesh.triangles, ref index, pos, scale);
-		}
-
-		public void OnBuildComponents(GameObject gameObject, Mesh mesh)
-		{
-			gameObject.AddComponent<MeshFilter>().mesh = mesh;
-
-			if (_renderer != null)
+			for (int i = 0; i < 4; i++)
 			{
-				var clone = gameObject.AddComponent<MeshRenderer>();
-				clone.material = _renderer.material;
-				clone.receiveShadows = _renderer.receiveShadows;
-				clone.shadowCastingMode = _renderer.shadowCastingMode;
-
-				_renderer = clone;
-
-				var lod = this.GetComponent<LODGroup>();
-				if (lod != null)
+				for (int n = index * 4, k = 0; k < 4; k++, n++)
 				{
-					var lods = lod.GetLODs();
-					for (int i = 0; i < lods.Length; i++)
-					{
-						if (lods[i].renderers.Length > 0)
-							lods[i].renderers[0] = _renderer;
-					}
+					Vector3 v = _vertices[i, k];
+					v.x *= scale.x;
+					v.y *= scale.y;
+					v.z *= scale.z;
+					v.x += pos.x;
+					v.y += pos.y;
+					v.z += pos.z;
 
-					gameObject.AddComponent<LODGroup>().SetLODs(lods);
+					mesh.vertices[n] = v;
+					mesh.normals[n] = _normals[i];
+					mesh.uv[n] = _uvs[i, k];
 				}
+
+				for (int j = index * 6, k = 0; k < 6; k++, j++)
+					mesh.indices[j] = index * 4 + _indices[i, k];
+
+				index++;
 			}
 		}
 	}

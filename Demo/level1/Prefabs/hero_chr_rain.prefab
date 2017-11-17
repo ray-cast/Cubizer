@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 33684598865482166}
   - component: {fileID: 23174863116462312}
   m_Layer: 0
-  m_Name: chr_rain
+  m_Name: hero_chr_rain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

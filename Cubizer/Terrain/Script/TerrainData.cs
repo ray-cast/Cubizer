@@ -112,7 +112,7 @@ namespace Cubizer
 					if (controller == null)
 						continue;
 
-					controller.OnBuildChunkObject(gameObject, model, it.Value);
+					controller.OnBuildChunk(gameObject, model, it.Value);
 				}
 
 				if (_chunkEntitiesDynamic.Count > 0)

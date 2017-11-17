@@ -41,6 +41,6 @@ namespace Cubizer
 			this.RegisterDefaultMaterial();
 		}
 
-		public abstract void OnBuildChunkObject(GameObject parent, IVoxelModel model, int faceCount);
+		public abstract void OnBuildChunk(GameObject parent, IVoxelModel model, int faceCount);
 	}
 }

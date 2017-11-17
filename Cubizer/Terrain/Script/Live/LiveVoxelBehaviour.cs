@@ -2,10 +2,9 @@
 
 namespace Cubizer
 {
-	[RequireComponent(typeof(MeshFilter))]
 	[RequireComponent(typeof(MeshRenderer))]
 	[AddComponentMenu("Cubizer/LiveMeshBehaviour")]
-	public class LiveMeshBehaviour : LiveBehaviour
+	public class LiveVoxelBehaviour : LiveBehaviour
 	{
 		private MeshFilter _meshFilter;
 		private MeshRenderer _meshRenderer;

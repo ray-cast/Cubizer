@@ -4,6 +4,6 @@ namespace Cubizer
 {
 	public interface ILiveBehaviour
 	{
-		void OnBuildChunkObject(GameObject parent, IVoxelModel model, int faceCount);
+		void OnBuildChunk(GameObject parent, IVoxelModel model, int faceCount);
 	}
 }

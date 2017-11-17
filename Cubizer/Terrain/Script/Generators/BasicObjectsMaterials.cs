@@ -2,6 +2,7 @@
 {
 	public class BasicObjectsMaterials
 	{
+		public VoxelMaterial dirt;
 		public VoxelMaterial grass;
 		public VoxelMaterial sand;
 		public VoxelMaterial tree;
