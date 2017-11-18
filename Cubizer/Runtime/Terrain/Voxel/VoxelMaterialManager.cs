@@ -31,8 +31,8 @@ namespace Cubizer
 			if (_liveIndex.ContainsKey(name))
 				return null;
 
-			var material = new VoxelMaterial(name, _lives.Count);
-			_liveIndex.Add(name, _lives.Count);
+			var material = new VoxelMaterial(name, _lives.Count + 1);
+			_liveIndex.Add(name, _lives.Count + 1);
 			_lives.Add(material);
 
 			return material;
@@ -44,12 +44,12 @@ namespace Cubizer
 
 			if (!_liveIndex.ContainsKey(name))
 				return null;
-			return _lives[_liveIndex[name]];
+			return _lives[_liveIndex[name] - 1];
 		}
 
 		public VoxelMaterial GetMaterial(int id)
 		{
-			return _lives.Count <= id ? null : _lives[id];
+			return (id <= 0 && id <= (_lives.Count + 1)) ? null : _lives[id - 1];
 		}
 
 		public VoxelMaterial[] GetMaterials()

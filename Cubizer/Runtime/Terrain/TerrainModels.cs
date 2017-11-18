@@ -41,17 +41,17 @@ namespace Cubizer
 		}
 
 		[SerializeField]
-		private TerrainSettings m_Settings = TerrainSettings.defaultSettings;
+		private TerrainSettings _settings = TerrainSettings.defaultSettings;
 
 		public TerrainSettings settings
 		{
-			get { return m_Settings; }
-			set { m_Settings = value; }
+			get { return _settings; }
+			set { _settings = value; }
 		}
 
 		public override void Reset()
 		{
-			m_Settings = TerrainSettings.defaultSettings;
+			_settings = TerrainSettings.defaultSettings;
 		}
 	}
 }

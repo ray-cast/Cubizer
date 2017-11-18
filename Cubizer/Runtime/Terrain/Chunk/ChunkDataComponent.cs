@@ -8,34 +8,28 @@ using Cubizer.Math;
 namespace Cubizer
 {
 	[Serializable]
-	public class ChunkDataManager : IChunkDataManager
+	public class ChunkDataComponent : CubizerComponent<ChunkDataModels>
 	{
-		private int _count;
-		private int _allocSize;
-		private int _chunkSize;
+		private int _count = 0;
+		private int _allocSize = 0;
 		private ChunkDataNode<Vector3<int>, ChunkPrimer>[] _data;
 
 		public int count { get { return _count; } }
-		public int chunkSize { get { return _chunkSize; } }
+
+		public override bool active
+		{
+			get { return true; }
+		}
 
 		public ChunkDataNode<Vector3<int>, ChunkPrimer>[] data
 		{
 			get { return _data; }
 		}
 
-		public ChunkDataManager(int chunkSize)
+		public override void OnEnable()
 		{
 			_count = 0;
-			_chunkSize = chunkSize;
 			_allocSize = 0;
-		}
-
-		public ChunkDataManager(int chunkSize, int count)
-		{
-			_count = 0;
-			_chunkSize = chunkSize;
-			_allocSize = 0;
-			if (count > 0) this.Create(count);
 		}
 
 		public void Create(int count)
@@ -144,7 +138,9 @@ namespace Cubizer
 
 		public void GC()
 		{
-			var map = new ChunkDataManager(_chunkSize, _allocSize);
+			var map = new ChunkDataComponent();
+			map.Init(context, model);
+			map.Create(this._allocSize);
 
 			foreach (ChunkDataNode<Vector3<int>, ChunkPrimer> it in GetEnumerator())
 				map.Grow(it);
@@ -175,10 +171,9 @@ namespace Cubizer
 			using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
 			{
 				var serializer = new BinaryFormatter();
-				var _new =  serializer.Deserialize(stream) as ChunkDataManager;
+				var _new =  serializer.Deserialize(stream) as ChunkDataComponent;
 
 				this._count = _new._count;
-				this._chunkSize = _new.chunkSize;
 				this._allocSize = _new._allocSize;
 				this._data = _new.data;
 
@@ -211,7 +206,9 @@ namespace Cubizer
 
 		private void Grow()
 		{
-			var map = new ChunkDataManager(_chunkSize, _allocSize << 1 | 1);
+			var map = new ChunkDataComponent();
+			map.Init(context, model);
+			map.Create(this._allocSize << 1 | 1);
 
 			foreach (ChunkDataNode<Vector3<int>, ChunkPrimer> it in GetEnumerator())
 				map.Grow(it);

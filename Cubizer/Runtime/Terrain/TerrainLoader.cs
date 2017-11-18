@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace Cubizer
 {
-	[ExecuteInEditMode]
 	[DisallowMultipleComponent]
 	[RequireComponent(typeof(Terrain))]
 	[AddComponentMenu("Cubizer/TerrainLoader")]

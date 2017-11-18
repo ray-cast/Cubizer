@@ -12,9 +12,31 @@ MonoBehaviour:
   m_Name: Default
   m_EditorClassIdentifier: 
   terrain:
-    m_Settings:
+    _settings:
       chunkSize: 24
       chunkNumLimits: 1024
       chunkHeightLimitLow: -10
       chunkHeightLimitHigh: 20
       seed: 255
+  chunk: {}
+  biome:
+    _settings:
+      biomeGenerators:
+      - {fileID: 114448704350713134, guid: 33e7fd7f6b831a344beddde85fc9d6f8, type: 2}
+  lives:
+    _settings:
+      lives:
+      - {fileID: 114985089927386156, guid: bd46c21763c8a9d49bba1b6f681cef37, type: 2}
+      - {fileID: 114068183917727908, guid: 21238fa863db34c47bc065fdf9fee553, type: 2}
+      - {fileID: 114953490704370046, guid: 9b338e384f6258441bc1c3a882351296, type: 2}
+      - {fileID: 114101155771645688, guid: d0469aa8e774636498d8042c06f8d5bd, type: 2}
+      - {fileID: 114121575633708268, guid: febf3636c1825a248954507bb06fab60, type: 2}
+      - {fileID: 114328574832605986, guid: 13b55ec49476e5143894479b1dddb8e0, type: 2}
+      - {fileID: 114601630312061134, guid: 5edd8a66efa9fa64e9fbb9f83e741cd5, type: 2}
+      - {fileID: 114256094178885820, guid: 110530f672330034ca0aa2902787854c, type: 2}
+      - {fileID: 114984134715657914, guid: d69f19d26e4a7c449bfd78fdcd5d78be, type: 2}
+      - {fileID: 114675070187702980, guid: 2ba0b2a239f6c714e826ca3fb1eeee0f, type: 2}
+      - {fileID: 114292481194765392, guid: c393ef49d1dade243846298d76aa6b1c, type: 2}
+      - {fileID: 114715158111441406, guid: ec7f3189fbc0d144ebf1651094c94da3, type: 2}
+      - {fileID: 114050100067468050, guid: b3a9fc20f9702fe4686a39cf834794f9, type: 2}
+      - {fileID: 114289119105139398, guid: 4e5e0d95cdbbb25448884f10d6cbc936, type: 2}

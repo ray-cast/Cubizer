@@ -5,15 +5,20 @@ namespace Cubizer
 	[DisallowMultipleComponent]
 	public abstract class LiveBehaviour : MonoBehaviour, ILiveBehaviour
 	{
-		[SerializeField] private bool _dynamic = false;
-		[SerializeField] private bool _transparent = false;
-		[SerializeField] private bool _merge = true;
+		[SerializeField]
+		private bool _dynamic = false;
+
+		[SerializeField]
+		private bool _transparent = false;
+
+		[SerializeField]
+		private bool _merge = true;
+
+		private VoxelMaterial _material;
 
 		public bool is_dynamic { set { _dynamic = value; } get { return _dynamic; } }
 		public bool is_transparent { set { _transparent = value; } get { return _transparent; } }
 		public bool is_merge { set { _merge = value; } get { return _merge; } }
-
-		private VoxelMaterial _material;
 
 		public VoxelMaterial material
 		{
@@ -35,7 +40,7 @@ namespace Cubizer
 			}
 		}
 
-		public void Awake()
+		public void OnRegisterMaterial()
 		{
 			this.RegisterDefaultMaterial();
 		}

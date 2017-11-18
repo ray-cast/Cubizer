@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1456458837255400}
+  m_IsPrefabParent: 1
+--- !u!1 &1456458837255400
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4002390354690532}
+  - component: {fileID: 114448704350713134}
+  m_Layer: 0
+  m_Name: BaseObjectsBiome
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4002390354690532
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1456458837255400}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 6.187298, y: 51.208466, z: -9.028137}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114448704350713134
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1456458837255400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c392813e80baa843a9b37ad0065ce6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _materialDirt: {fileID: 1566667827994552, guid: 21238fa863db34c47bc065fdf9fee553,
+    type: 2}
+  _materialGrass: {fileID: 1721859957710144, guid: 110530f672330034ca0aa2902787854c,
+    type: 2}
+  _materialSand: {fileID: 1104362217554100, guid: d69f19d26e4a7c449bfd78fdcd5d78be,
+    type: 2}
+  _materialTree: {fileID: 1401881005781694, guid: c393ef49d1dade243846298d76aa6b1c,
+    type: 2}
+  _materialTreeLeaf: {fileID: 1920694300162760, guid: ec7f3189fbc0d144ebf1651094c94da3,
+    type: 2}
+  _materialObsidian: {fileID: 1721859957710144, guid: 110530f672330034ca0aa2902787854c,
+    type: 2}
+  _materialWater: {fileID: 1107227018470370, guid: b3a9fc20f9702fe4686a39cf834794f9,
+    type: 2}
+  _materialCloud: {fileID: 1415757164892054, guid: bd46c21763c8a9d49bba1b6f681cef37,
+    type: 2}
+  _materialSoil: {fileID: 1810042954317038, guid: 2ba0b2a239f6c714e826ca3fb1eeee0f,
+    type: 2}
+  _materialFlower:
+  - {fileID: 1269023385413740, guid: 9b338e384f6258441bc1c3a882351296, type: 2}
+  - {fileID: 1769751631180458, guid: d0469aa8e774636498d8042c06f8d5bd, type: 2}
+  - {fileID: 1675283688432402, guid: febf3636c1825a248954507bb06fab60, type: 2}
+  - {fileID: 1856026848683312, guid: 13b55ec49476e5143894479b1dddb8e0, type: 2}
+  _materialWeed:
+  - {fileID: 1050541890142654, guid: 4e5e0d95cdbbb25448884f10d6cbc936, type: 2}
+  layerGrass: 0
+  layerCloud: 3
+  layerObsidian: -10
+  _isGenPlaneOnly: 0

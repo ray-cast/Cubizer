@@ -37,7 +37,7 @@ namespace Cubizer
 		{
 			{ "None", new BasicObjectsParams { layer = BasicObjectBiomeType.Space } },
 			{ "Plane", new BasicObjectsParams { layer = BasicObjectBiomeType.Plane } },
-			{ "Cloud", new BasicObjectsParams { layer = BasicObjectBiomeType.Clound } },
+			{ "Cloud", new BasicObjectsParams { layer = BasicObjectBiomeType.Cloud } },
 			{ "Sea", new BasicObjectsParams { layer = BasicObjectBiomeType.Sea } },
 			{ "Grassland", new BasicObjectsParams { layer = BasicObjectBiomeType.Grassland } },
 			{ "Sandland", new BasicObjectsParams { layer = BasicObjectBiomeType.Sandyland, isGenSand = true, isGenFlower = false,  isGenTree = false } },
@@ -48,31 +48,31 @@ namespace Cubizer
 		{
 			_materials = new BasicObjectsMaterials();
 			if (_materialDirt != null)
-				_materials.dirt = _materialDirt.GetComponent<LiveBehaviour>().material;
+				_materials.dirt = VoxelMaterialManager.GetInstance().GetMaterial(_materialDirt.GetComponent<LiveBehaviour>().name);
 			if (_materialGrass != null)
-				_materials.grass = _materialGrass.GetComponent<LiveBehaviour>().material;
+				_materials.grass = VoxelMaterialManager.GetInstance().GetMaterial(_materialGrass.GetComponent<LiveBehaviour>().name);
 			if (_materialSand != null)
-				_materials.sand = _materialSand.GetComponent<LiveBehaviour>().material;
+				_materials.sand = VoxelMaterialManager.GetInstance().GetMaterial(_materialSand.GetComponent<LiveBehaviour>().name);
 			if (_materialTree != null)
-				_materials.tree = _materialTree.GetComponent<LiveBehaviour>().material;
+				_materials.tree = VoxelMaterialManager.GetInstance().GetMaterial(_materialTree.GetComponent<LiveBehaviour>().name);
 			if (_materialTreeLeaf != null)
-				_materials.treeLeaf = _materialTreeLeaf.GetComponent<LiveBehaviour>().material;
+				_materials.treeLeaf = VoxelMaterialManager.GetInstance().GetMaterial(_materialTreeLeaf.GetComponent<LiveBehaviour>().name);
 			if (_materialObsidian != null)
-				_materials.obsidian = _materialObsidian.GetComponent<LiveBehaviour>().material;
+				_materials.obsidian = VoxelMaterialManager.GetInstance().GetMaterial(_materialObsidian.GetComponent<LiveBehaviour>().name);
 			if (_materialWater != null)
-				_materials.water = _materialWater.GetComponent<LiveBehaviour>().material;
+				_materials.water = VoxelMaterialManager.GetInstance().GetMaterial(_materialWater.GetComponent<LiveBehaviour>().name);
 			if (_materialCloud != null)
-				_materials.cloud = _materialCloud.GetComponent<LiveBehaviour>().material;
+				_materials.cloud = VoxelMaterialManager.GetInstance().GetMaterial(_materialCloud.GetComponent<LiveBehaviour>().name);
 			if (_materialCloud != null)
-				_materials.soil = _materialSoil.GetComponent<LiveBehaviour>().material;
+				_materials.soil = VoxelMaterialManager.GetInstance().GetMaterial(_materialSoil.GetComponent<LiveBehaviour>().name);
 
 			_materials.flower = new VoxelMaterial[_materialFlower.Length];
 			for (int i = 0; i < _materialFlower.Length; i++)
-				_materials.flower[i] = _materialFlower[i].GetComponent<LiveBehaviour>().material;
+				_materials.flower[i] = VoxelMaterialManager.GetInstance().GetMaterial(_materialFlower[i].GetComponent<LiveBehaviour>().name);
 
 			_materials.weed = new VoxelMaterial[_materialWeed.Length];
 			for (int i = 0; i < _materialWeed.Length; i++)
-				_materials.weed[i] = _materialWeed[i].GetComponent<LiveBehaviour>().material;
+				_materials.weed[i] = VoxelMaterialManager.GetInstance().GetMaterial(_materialWeed[i].GetComponent<LiveBehaviour>().name);
 
 			_biomeDatas = new BiomeData[biomeParams.Count];
 
@@ -83,6 +83,9 @@ namespace Cubizer
 				var biomeData = new BiomeData(new BasicObjectsChunkGenerator(param.Value, _materials));
 				_biomeDatas[written++] = biomeData;
 			}
+
+			_biomeDatas[(int)BasicObjectBiomeType.Plane] = new BiomeData(new PlaneChunkGenerator(biomeParams["Plane"], _materials));
+			_biomeDatas[(int)BasicObjectBiomeType.Cloud] = new BiomeData(new CloudChunkGenerator(biomeParams["Cloud"], _materials));
 		}
 
 		public BiomeData buildForest(float noise)
@@ -153,7 +156,7 @@ namespace Cubizer
 						return buildGrassland(noise);
 				}
 				else if (y == layerCloud)
-					return _biomeDatas[(int)BasicObjectBiomeType.Clound];
+					return _biomeDatas[(int)BasicObjectBiomeType.Cloud];
 				else
 					return _biomeDatas[(int)BasicObjectBiomeType.Space];
 			}

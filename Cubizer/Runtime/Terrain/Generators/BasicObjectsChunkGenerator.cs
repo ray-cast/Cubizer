@@ -1,5 +1,4 @@
-﻿using Cubizer;
-using Cubizer.Math;
+﻿using Cubizer.Math;
 
 namespace Cubizer
 {
@@ -10,44 +9,29 @@ namespace Cubizer
 
 		public BasicObjectsChunkGenerator(BasicObjectsParams parameters, BasicObjectsMaterials materials)
 		{
+#if DEBUG
+			if (parameters.isGenTree && materials.tree == null)
+				UnityEngine.Debug.LogError("Please drag a Tree into Hierarchy View.");
+			if (parameters.isGenTree && materials.treeLeaf == null)
+				UnityEngine.Debug.LogError("Please drag a TreeLeaf into Hierarchy View.");
+			if (parameters.isGenGrass && materials.sand == null)
+				UnityEngine.Debug.LogError("Please drag a Sand into Hierarchy View.");
+			if (parameters.isGenFlower && materials.flower == null)
+				UnityEngine.Debug.LogError("Please drag a Flower into Hierarchy View.");
+			if (parameters.isGenWeed && materials.weed == null)
+				UnityEngine.Debug.LogError("Please drag a Weed into Hierarchy View.");
+			if (parameters.isGenObsidian && materials.obsidian == null)
+				UnityEngine.Debug.LogError("Please drag a Obsidian into Hierarchy View.");
+			if (parameters.isGenWater && materials.water == null)
+				UnityEngine.Debug.LogError("Please drag a Water into Hierarchy View.");
+			if (parameters.isGenCloud && materials.cloud == null)
+				UnityEngine.Debug.LogError("Please drag a Cloud into Hierarchy View.");
+			if (parameters.isGenSoil && materials.soil == null)
+				UnityEngine.Debug.LogError("Please drag a Soil into Hierarchy View.");
+#endif
+
 			_params = parameters;
 			_materials = materials;
-
-			if (_params.isGenTree && materials.tree == null)
-				UnityEngine.Debug.LogError("Please drag a Tree into Hierarchy View.");
-			if (_params.isGenTree && materials.treeLeaf == null)
-				UnityEngine.Debug.LogError("Please drag a TreeLeaf into Hierarchy View.");
-			if (_params.isGenGrass && materials.sand == null)
-				UnityEngine.Debug.LogError("Please drag a Sand into Hierarchy View.");
-			if (_params.isGenFlower && materials.flower == null)
-				UnityEngine.Debug.LogError("Please drag a Flower into Hierarchy View.");
-			if (_params.isGenWeed && materials.weed == null)
-				UnityEngine.Debug.LogError("Please drag a Weed into Hierarchy View.");
-			if (_params.isGenObsidian && materials.obsidian == null)
-				UnityEngine.Debug.LogError("Please drag a Obsidian into Hierarchy View.");
-			if (_params.isGenWater && materials.water == null)
-				UnityEngine.Debug.LogError("Please drag a Water into Hierarchy View.");
-			if (_params.isGenCloud && materials.cloud == null)
-				UnityEngine.Debug.LogError("Please drag a Cloud into Hierarchy View.");
-			if (_params.isGenSoil && materials.soil == null)
-				UnityEngine.Debug.LogError("Please drag a Soil into Hierarchy View.");
-		}
-
-		public ChunkPrimer BuildPlaneOnly(Terrain terrain, short x, short y, short z)
-		{
-			var size = terrain.profile.terrain.settings.chunkSize;
-			var map = new ChunkPrimer(size, x, y, z, size * size * _params.floorBase);
-
-			for (byte ix = 0; ix < map.voxels.bound.x; ix++)
-			{
-				for (byte iz = 0; iz < map.voxels.bound.z; iz++)
-				{
-					for (byte iy = 0; iy < _params.floorBase; iy++)
-						map.voxels.Set(ix, iy, iz, _materials.grass);
-				}
-			}
-
-			return map;
 		}
 
 		public void buildTree(ChunkPrimer map, byte ix, byte iz, byte h)
@@ -175,34 +159,6 @@ namespace Cubizer
 			return map;
 		}
 
-		public ChunkPrimer BuildClouds(Terrain terrain, short x, short y, short z)
-		{
-			var map = new ChunkPrimer(terrain.profile.terrain.settings.chunkSize, x, y, z);
-
-			int offsetX = x * map.voxels.bound.x;
-			int offsetY = y * map.voxels.bound.y;
-			int offsetZ = z * map.voxels.bound.z;
-
-			for (int ix = 0; ix < map.voxels.bound.x; ix++)
-			{
-				for (int iz = 0; iz < map.voxels.bound.y; iz++)
-				{
-					int dx = offsetX + ix;
-					int dz = offsetZ + iz;
-
-					for (int iy = 0; iy < 8; iy++)
-					{
-						int dy = offsetY + iy;
-
-						if (Noise.simplex3(dx * 0.01f, dy * 0.1f, dz * 0.01f, 8, 0.5f, 2) > _params.thresholdCloud)
-							map.voxels.Set((byte)ix, (byte)iy, (byte)iz, _materials.cloud);
-					}
-				}
-			}
-
-			return map;
-		}
-
 		public ChunkPrimer buildObsidian(Terrain terrain, short x, short y, short z)
 		{
 			var size = terrain.profile.terrain.settings.chunkSize;
@@ -224,12 +180,6 @@ namespace Cubizer
 		{
 			switch (_params.layer)
 			{
-				case BasicObjectBiomeType.Plane:
-					return BuildPlaneOnly(terrain, x, y, z);
-
-				case BasicObjectBiomeType.Clound:
-					return BuildClouds(terrain, x, y, z);
-
 				case BasicObjectBiomeType.Grassland:
 					return Buildland(terrain, x, y, z, _materials.grass);
 

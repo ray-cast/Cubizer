@@ -15,7 +15,7 @@ namespace Cubizer
 		public void InvokeDefaultOnEnable()
 		{
 			if (transform.parent != null)
-				_terrain = transform.parent.GetComponent<BiomeGeneratorManager>().terrain;
+				_terrain = transform.parent.GetComponent<BiomeGeneratorComponent>().context.terrain;
 		}
 
 		public void OnEnable()

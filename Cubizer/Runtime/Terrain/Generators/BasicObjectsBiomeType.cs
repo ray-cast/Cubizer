@@ -4,7 +4,7 @@
 	{
 		Space,
 		Plane,
-		Clound,
+		Cloud,
 		Sea,
 		Grassland,
 		Sandyland,

@@ -2,6 +2,8 @@
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
+using UnityEngine;
+
 namespace Cubizer
 {
 	[Serializable]
@@ -9,10 +11,16 @@ namespace Cubizer
 	{
 		private int _instanceID;
 
-		public bool _dynamic = false;
-		public bool _transparent = false;
-		public bool _merge = false;
+		[SerializeField]
+		private bool _dynamic = false;
 
+		[SerializeField]
+		private bool _transparent = false;
+
+		[SerializeField]
+		private bool _merge = false;
+
+		[SerializeField]
 		private string _name;
 
 		public object userdata;

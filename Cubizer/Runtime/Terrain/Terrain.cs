@@ -1,6 +1,5 @@
-﻿using System;
-using System.IO;
-using System.Threading;
+﻿using System.IO;
+using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
 
 using UnityEngine;
@@ -13,11 +12,13 @@ namespace Cubizer
 	{
 		[SerializeField]
 		private CubizerProfile _profile;
+		private CubizerContext _context;
 
-		[SerializeField]
-		private BiomeGeneratorManager _biomeManager;
+		private List<ICubizerComponent> _components;
 
-		private IChunkDataManager _chunks;
+		private LiveComponent _lives;
+		private ChunkDataComponent _chunks;
+		private BiomeGeneratorComponent _biomeManager;
 
 		private TerrainDelegates _events;
 
@@ -26,14 +27,9 @@ namespace Cubizer
 			get { return _profile; }
 		}
 
-		public BiomeGeneratorManager biomeManager
+		public BiomeGeneratorComponent biomeManager
 		{
 			get { return _biomeManager; }
-		}
-
-		public IChunkDataManager chunks
-		{
-			get { return _chunks; }
 		}
 
 		public TerrainDelegates events
@@ -41,13 +37,15 @@ namespace Cubizer
 			get { return _events; }
 		}
 
+		public ChunkDataComponent chunks
+		{
+			get { return _chunks; }
+		}
+
 		public void Awake()
 		{
 			if (_profile == null)
 				Debug.LogError("Please drag a CubizerProfile into Inspector.");
-
-			if (_biomeManager == null)
-				Debug.LogError("Please drag a TerrainBiome into Inspector.");
 		}
 
 		public void Start()
@@ -56,12 +54,28 @@ namespace Cubizer
 
 			Math.Noise.simplex_seed(_profile.terrain.settings.seed);
 
-			_chunks = new ChunkDataManager(_profile.terrain.settings.chunkSize);
 			_events = new TerrainDelegates();
+			_context = new CubizerContext();
+			_context.profile = _profile;
+			_context.terrain = this;
+
+			_components = new List<ICubizerComponent>();
+
+			_lives = AddComponent(new LiveComponent());
+			_lives.Init(_context, _profile.lives);
+
+			_chunks = AddComponent(new ChunkDataComponent());
+			_chunks.Init(_context, _profile.chunk);
+
+			_biomeManager = AddComponent(new BiomeGeneratorComponent());
+			_biomeManager.Init(_context, _profile.biome);
+
+			this.EnableComponents();
 		}
 
 		public void OnDestroy()
 		{
+			this.DisableComponents();
 			this.DestroyChunks();
 		}
 
@@ -369,6 +383,32 @@ namespace Cubizer
 			}
 
 			return false;
+		}
+
+		void EnableComponents()
+		{
+			foreach (var component in _components)
+			{
+				var model = component.GetModel();
+				if (model != null)
+					component.OnEnable();
+			}
+		}
+
+		void DisableComponents()
+		{
+			foreach (var component in _components)
+			{
+				var model = component.GetModel();
+				if (model != null)
+					component.OnDisable();
+			}
+		}
+
+		T AddComponent<T>(T component)	where T : ICubizerComponent
+		{
+			_components.Add(component);
+			return component;
 		}
 	}
 }
