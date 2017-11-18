@@ -20,7 +20,6 @@ namespace Cubizer
 		[SerializeField]
 		private bool _merge = false;
 
-		[SerializeField]
 		private string _name;
 
 		public object userdata;
@@ -29,7 +28,7 @@ namespace Cubizer
 		public bool is_transparent { set { _transparent = value; } get { return _transparent; } }
 		public bool is_merge { set { _merge = value; } get { return _merge; } }
 
-		public string name { get { return _name; } }
+		public string name { set { _name = value; } get { return _name; } }
 
 		public VoxelMaterial(string name, int instanceID)
 		{

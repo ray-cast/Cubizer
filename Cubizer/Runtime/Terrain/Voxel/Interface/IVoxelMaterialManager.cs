@@ -2,7 +2,7 @@
 {
 	public interface IVoxelMaterialManager
 	{
-		VoxelMaterial CreateMaterial(string name);
+		VoxelMaterial RegisterMaterial(string name, VoxelMaterial material);
 
 		VoxelMaterial GetMaterial(string name);
 

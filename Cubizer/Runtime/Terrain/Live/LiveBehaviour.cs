@@ -6,43 +6,20 @@ namespace Cubizer
 	public abstract class LiveBehaviour : LiveBehaviourBase
 	{
 		[SerializeField]
-		private bool _dynamic = false;
-
-		[SerializeField]
-		private bool _transparent = false;
-
-		[SerializeField]
-		private bool _merge = true;
-
 		private VoxelMaterial _material;
-
-		public bool is_dynamic { set { _dynamic = value; } get { return _dynamic; } }
-		public bool is_transparent { set { _transparent = value; } get { return _transparent; } }
-		public bool is_merge { set { _merge = value; } get { return _merge; } }
 
 		public VoxelMaterial material
 		{
+			set
+			{
+				if (value != null)
+					value.userdata = this;
+				_material = value;
+			}
 			get
 			{
 				return _material;
 			}
-		}
-
-		public void RegisterDefaultMaterial()
-		{
-			_material = VoxelMaterialManager.GetInstance().CreateMaterial(this.name);
-			if (_material != null)
-			{
-				_material.is_transparent = is_transparent;
-				_material.is_dynamic = is_dynamic;
-				_material.is_merge = is_merge;
-				_material.userdata = this;
-			}
-		}
-
-		public void OnRegisterMaterial()
-		{
-			this.RegisterDefaultMaterial();
 		}
 	}
 }

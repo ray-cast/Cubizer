@@ -53,7 +53,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _materialDirt: {fileID: 1566667827994552, guid: 21238fa863db34c47bc065fdf9fee553,
     type: 2}
-  _materialGrass: {fileID: 1721859957710144, guid: 110530f672330034ca0aa2902787854c,
+  _materialGrass: {fileID: 1793809842160366, guid: 5edd8a66efa9fa64e9fbb9f83e741cd5,
     type: 2}
   _materialSand: {fileID: 1104362217554100, guid: d69f19d26e4a7c449bfd78fdcd5d78be,
     type: 2}

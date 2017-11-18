@@ -24,18 +24,22 @@ namespace Cubizer
 			return instance;
 		}
 
-		public VoxelMaterial CreateMaterial(string name)
+		public VoxelMaterial RegisterMaterial(string name, VoxelMaterial material)
 		{
 			Debug.Assert(!System.String.IsNullOrEmpty(name));
 
 			if (_liveIndex.ContainsKey(name))
 				return null;
 
-			var material = new VoxelMaterial(name, _lives.Count + 1);
-			_liveIndex.Add(name, _lives.Count + 1);
-			_lives.Add(material);
+			var newMaterial = new VoxelMaterial(name, _lives.Count + 1);
+			newMaterial.is_dynamic = material.is_dynamic;
+			newMaterial.is_merge = material.is_merge;
+			newMaterial.is_transparent = material.is_transparent;
 
-			return material;
+			_liveIndex.Add(name, _lives.Count + 1);
+			_lives.Add(newMaterial);
+
+			return newMaterial;
 		}
 
 		public VoxelMaterial GetMaterial(string name)
