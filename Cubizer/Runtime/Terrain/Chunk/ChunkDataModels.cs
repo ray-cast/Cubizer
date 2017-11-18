@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 using UnityEngine;
 
@@ -15,14 +14,9 @@ namespace Cubizer
 			{
 				get
 				{
-					return new ChunkDataSettings
-					{
-
-					};
+					return new ChunkDataSettings();
 				}
 			}
-
-
 		}
 
 		[SerializeField]

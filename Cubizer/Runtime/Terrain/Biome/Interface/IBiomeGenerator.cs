@@ -1,7 +1,9 @@
-﻿namespace Cubizer
+﻿using UnityEngine;
+
+namespace Cubizer
 {
-	public interface IBiomeGenerator
+	public abstract class IBiomeGenerator : MonoBehaviour
 	{
-		IBiomeData OnBuildBiome(short x, short y, short z);
+		public abstract IBiomeData OnBuildBiome(short x, short y, short z);
 	}
 }

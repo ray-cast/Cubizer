@@ -1,9 +1,6 @@
-﻿using UnityEngine;
-using System.Collections;
-
-namespace Cubizer
+﻿namespace Cubizer
 {
-	public abstract class BiomeGenerator : MonoBehaviour, IBiomeGenerator
+	public abstract class BiomeGenerator : IBiomeGenerator
 	{
 		private Terrain _terrain;
 
@@ -22,7 +19,5 @@ namespace Cubizer
 		{
 			this.InvokeDefaultOnEnable();
 		}
-
-		public abstract IBiomeData OnBuildBiome(short x, short y, short z);
 	}
 }

@@ -3,7 +3,7 @@
 namespace Cubizer
 {
 	[DisallowMultipleComponent]
-	public abstract class LiveBehaviour : MonoBehaviour, ILiveBehaviour
+	public abstract class LiveBehaviour : LiveBehaviourBase
 	{
 		[SerializeField]
 		private bool _dynamic = false;
@@ -44,7 +44,5 @@ namespace Cubizer
 		{
 			this.RegisterDefaultMaterial();
 		}
-
-		public abstract void OnBuildChunk(GameObject parent, IVoxelModel model, int faceCount);
 	}
 }

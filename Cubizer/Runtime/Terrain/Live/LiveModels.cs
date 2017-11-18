@@ -18,9 +18,7 @@ namespace Cubizer
 			{
 				get
 				{
-					return new LiveSettings
-					{
-					};
+					return new LiveSettings();
 				}
 			}
 		}

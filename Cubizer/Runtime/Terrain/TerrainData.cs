@@ -108,7 +108,7 @@ namespace Cubizer
 
 				foreach (var it in entities)
 				{
-					var controller = VoxelMaterialManager.GetInstance().GetMaterial(it.Key).userdata as ILiveBehaviour;
+					var controller = VoxelMaterialManager.GetInstance().GetMaterial(it.Key).userdata as LiveBehaviourBase;
 					if (controller == null)
 						continue;
 

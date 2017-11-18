@@ -27,14 +27,14 @@ namespace Cubizer
 			get { return _profile; }
 		}
 
-		public BiomeGeneratorComponent biomeManager
-		{
-			get { return _biomeManager; }
-		}
-
 		public TerrainDelegates events
 		{
 			get { return _events; }
+		}
+
+		public BiomeGeneratorComponent biomeManager
+		{
+			get { return _biomeManager; }
 		}
 
 		public ChunkDataComponent chunks
