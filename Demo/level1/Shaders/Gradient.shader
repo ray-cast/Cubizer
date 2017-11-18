@@ -43,7 +43,7 @@ Shader "Custom/Gradient"
 			{
 				o.uv_MainTex = v.texcoord;
 				o.vertColor = lerp(_Color1, _Color2, v.vertex.y / _Threshold);
-				o.occlusion = (dot(v.normal, float3(0,1,0)) * 0.25 + 0.75);
+				o.occlusion = 1;
 			}
 
 			void surf(Input IN, inout SurfaceOutputStandard o)
