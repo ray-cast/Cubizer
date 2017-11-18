@@ -25,7 +25,7 @@ namespace Cubizer
 					var gameObject = GameObject.Instantiate(it.gameObject);
 					gameObject.name = it.name;
 					gameObject.transform.parent = _biomeObject.transform;
-					gameObject.GetComponent<LiveBehaviour>().material = VoxelMaterialManager.GetInstance().RegisterMaterial(it.name, it.material);
+					gameObject.GetComponent<LiveBehaviour>().material = VoxelMaterialManager.GetInstance().CreateMaterial(it.name, it.settings);
 				}
 			}
 		}

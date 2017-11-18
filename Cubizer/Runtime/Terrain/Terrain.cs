@@ -93,7 +93,7 @@ namespace Cubizer
 			lastChunk = null;
 			lastX = lastY = lastZ = outX = outY = outZ = 255;
 
-			if (!_chunks.Get(chunkX, chunkY, chunkZ, out chunk))
+			if (!_chunks.data.Get(chunkX, chunkY, chunkZ, out chunk))
 				return false;
 
 			Vector3 origin = ray.origin;
@@ -127,7 +127,7 @@ namespace Cubizer
 
 				if (isOutOfChunk)
 				{
-					if (!_chunks.Get(chunkX, chunkY, chunkZ, out chunk))
+					if (!_chunks.data.Get(chunkX, chunkY, chunkZ, out chunk))
 						return false;
 				}
 
@@ -242,7 +242,7 @@ namespace Cubizer
 							continue;
 
 						ChunkPrimer chunk;
-						var hit = _chunks.Get((short)dx, (short)dy, (short)dz, out chunk);
+						var hit = _chunks.data.Get((short)dx, (short)dy, (short)dz, out chunk);
 						if (hit)
 							continue;
 
@@ -323,9 +323,9 @@ namespace Cubizer
 
 		public void UpdateChunkForCreate(Camera camera, Vector2Int[] radius)
 		{
-			if (_chunks.Count() > _profile.terrain.settings.chunkNumLimits)
+			if (_chunks.data.Count() > _profile.terrain.settings.chunkNumLimits)
 			{
-				_chunks.GC();
+				_chunks.data.GC();
 				_biomeManager.biomes.GC();
 				return;
 			}
@@ -367,11 +367,11 @@ namespace Cubizer
 		{
 			Debug.Assert(path != null);
 
-			if (_chunks.Load(path))
+			if (_chunks.data.Load(path))
 			{
 				DestroyChunksImmediate(is_save);
 
-				foreach (ChunkPrimer chunk in _chunks.GetEnumerator())
+				foreach (ChunkPrimer chunk in _chunks.data.GetEnumerator())
 				{
 					var gameObject = new GameObject("Chunk");
 					gameObject.transform.parent = transform;

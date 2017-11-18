@@ -6,6 +6,11 @@ namespace Cubizer
 	{
 		private GameObject _biomeObject;
 
+		public int count
+		{
+			get { return _biomeObject != null ? _biomeObject.transform.childCount : 0; }
+		}
+
 		public override bool active
 		{
 			get { return true; }
@@ -13,7 +18,7 @@ namespace Cubizer
 
 		public IBiomeDataManager biomes
 		{
-			get { return model.settings.biomes; }
+			get { return model.settings.biomeManager; }
 		}
 
 		public override void OnEnable()
@@ -41,19 +46,19 @@ namespace Cubizer
 				var biome = transform.GetChild(i).GetComponent<IBiomeGenerator>().OnBuildBiome(x, y, z);
 				if (biome != null)
 				{
-					model.settings.biomes.Set(x, y, z, biome);
+					model.settings.biomeManager.Set(x, y, z, biome);
 					return biome;
 				}
 			}
 
-			model.settings.biomes.Set(x, y, z, model.settings.biomeNull);
+			model.settings.biomeManager.Set(x, y, z, model.settings.biomeNull);
 			return model.settings.biomeNull;
 		}
 
 		public ChunkPrimer buildChunk(short x, short y, short z)
 		{
 			IBiomeData biomeData;
-			if (!model.settings.biomes.Get(x, y, z, out biomeData))
+			if (!model.settings.biomeManager.Get(x, y, z, out biomeData))
 				biomeData = this.buildBiome(x, y, z);
 
 			var chunk = biomeData.OnBuildChunk(context.terrain, x, y, z);

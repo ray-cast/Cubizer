@@ -6,6 +6,8 @@ namespace Cubizer
 	public abstract class LiveBehaviour : LiveBehaviourBase
 	{
 		[SerializeField]
+		public VoxelMaterialParams settings;
+
 		private VoxelMaterial _material;
 
 		public VoxelMaterial material

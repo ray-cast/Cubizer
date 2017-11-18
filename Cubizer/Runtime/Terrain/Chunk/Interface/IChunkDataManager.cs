@@ -2,7 +2,7 @@
 
 namespace Cubizer
 {
-	interface IChunkDataManager
+	public interface IChunkDataManager
 	{
 		bool Load(string path);
 		bool Save(string path);

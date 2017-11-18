@@ -24,7 +24,7 @@ namespace Cubizer
 			return instance;
 		}
 
-		public VoxelMaterial RegisterMaterial(string name, VoxelMaterial material)
+		public VoxelMaterial CreateMaterial(string name, VoxelMaterialParams setting)
 		{
 			Debug.Assert(!System.String.IsNullOrEmpty(name));
 
@@ -32,9 +32,9 @@ namespace Cubizer
 				return null;
 
 			var newMaterial = new VoxelMaterial(name, _lives.Count + 1);
-			newMaterial.is_dynamic = material.is_dynamic;
-			newMaterial.is_merge = material.is_merge;
-			newMaterial.is_transparent = material.is_transparent;
+			newMaterial.is_dynamic = setting.dynamic;
+			newMaterial.is_merge = setting.merge;
+			newMaterial.is_transparent = setting.transparent;
 
 			_liveIndex.Add(name, _lives.Count + 1);
 			_lives.Add(newMaterial);

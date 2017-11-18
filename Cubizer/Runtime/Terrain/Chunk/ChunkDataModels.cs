@@ -10,11 +10,16 @@ namespace Cubizer
 		[Serializable]
 		public struct ChunkDataSettings
 		{
+			public IChunkDataManager chunkManager;
+
 			public static ChunkDataSettings defaultSettings
 			{
 				get
 				{
-					return new ChunkDataSettings();
+					return new ChunkDataSettings
+					{
+						chunkManager = new ChunkDataManager()
+					};
 				}
 			}
 		}
