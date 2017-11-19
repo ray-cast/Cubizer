@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Cubizer
 {
 	[DisallowMultipleComponent]
-	[AddComponentMenu("Cubizer/Terrain")]
+	[AddComponentMenu("Cubizer/CubizerBehaviour")]
 	public class CubizerBehaviour : MonoBehaviour
 	{
 		[SerializeField]
@@ -19,6 +19,16 @@ namespace Cubizer
 		private List<ICubizerComponent> _components;
 
 		private TerrainDelegates _events;
+
+		public class TerrainDelegates
+		{
+			public delegate void OnSaveData(GameObject chunk);
+
+			public delegate bool OnLoadData(int x, int y, int z, out ChunkPrimer chunk);
+
+			public OnSaveData onSaveChunkData;
+			public OnLoadData onLoadChunkData;
+		}
 
 		public CubizerProfile profile
 		{
@@ -44,6 +54,8 @@ namespace Cubizer
 		{
 			if (_profile == null)
 				Debug.LogError("Please drag a CubizerProfile into Inspector.");
+
+			_events = new TerrainDelegates();
 		}
 
 		public void Start()
@@ -51,8 +63,7 @@ namespace Cubizer
 			Debug.Assert(_profile.chunk.settings.chunkSize > 0);
 
 			Math.Noise.simplex_seed(_profile.terrain.settings.seed);
-
-			_events = new TerrainDelegates();
+			
 			_context = new CubizerContext();
 			_context.profile = _profile;
 			_context.behaviour = this;

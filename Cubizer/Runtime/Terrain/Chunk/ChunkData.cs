@@ -77,7 +77,7 @@ namespace Cubizer
 					if (material == null)
 						continue;
 
-					var controller = material.userdata as LiveBehaviourBase;
+					var controller = material.userdata as ILiveBehaviour;
 					if (controller == null)
 						continue;
 

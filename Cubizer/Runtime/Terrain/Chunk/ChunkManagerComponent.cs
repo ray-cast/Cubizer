@@ -9,7 +9,17 @@ namespace Cubizer
 	{
 		private GameObject _chunkObject;
 
-		private TerrainDelegates _events;
+		private ChunkDelegates _events;
+
+		public class ChunkDelegates
+		{
+			public delegate void OnSaveData(GameObject chunk);
+
+			public delegate bool OnLoadData(int x, int y, int z, out ChunkPrimer chunk);
+
+			public OnSaveData onSaveChunkData;
+			public OnLoadData onLoadChunkData;
+		}
 
 		public int count
 		{
@@ -21,7 +31,7 @@ namespace Cubizer
 			get { return true; }
 		}
 
-		public TerrainDelegates events
+		public ChunkDelegates events
 		{
 			get { return _events; }
 		}
@@ -35,7 +45,7 @@ namespace Cubizer
 		{
 			Debug.Assert(model.settings.chunkManager != null);
 
-			_events = new TerrainDelegates();
+			_events = new ChunkDelegates();
 			_chunkObject = new GameObject("TerrainChunks");
 		}
 

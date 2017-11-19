@@ -3,7 +3,7 @@
 namespace Cubizer
 {
 	[DisallowMultipleComponent]
-	public abstract class LiveBehaviour : LiveBehaviourBase
+	public abstract class LiveBehaviour : ILiveBehaviour
 	{
 		[SerializeField]
 		private VoxelMaterialParams _settings;

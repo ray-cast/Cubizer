@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Cubizer
 {
@@ -60,7 +58,7 @@ namespace Cubizer
 		public override void OnBuildChunk(GameObject parent, IVoxelModel model, int faceCount)
 		{
 			var writeCount = 0;
-			var data = new TerrainMesh(faceCount * 4, faceCount * 6);
+			var data = new LiveMesh(faceCount * 4, faceCount * 6);
 
 			foreach (VoxelPrimitive it in model.GetEnumerator(this.material.GetInstanceID()))
 			{
@@ -102,7 +100,7 @@ namespace Cubizer
 			}
 		}
 
-		public void OnBuildBlock(ref TerrainMesh mesh, ref int index, Vector3 translate, Vector3 scale, VoxelVisiableFaces faces)
+		public void OnBuildBlock(ref LiveMesh mesh, ref int index, Vector3 translate, Vector3 scale, VoxelVisiableFaces faces)
 		{
 			bool[] visiable = new bool[] { faces.left, faces.right, faces.top, faces.bottom, faces.front, faces.back };
 

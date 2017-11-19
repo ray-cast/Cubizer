@@ -2,7 +2,7 @@
 
 namespace Cubizer
 {
-	[AddComponentMenu("Cubizer/MeshFilter")]
+	[AddComponentMenu("Cubizer/CubizerMeshFilter")]
 	public sealed class CubizerMeshFilter : MonoBehaviour
 	{
 		public int _LOD = 0;

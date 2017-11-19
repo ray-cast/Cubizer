@@ -52,7 +52,7 @@ namespace Cubizer
 		public override void OnBuildChunk(GameObject parent, IVoxelModel model, int faceCount)
 		{
 			var writeCount = 0;
-			var data = new TerrainMesh((faceCount / 6) * 16, (faceCount / 6) * 24);
+			var data = new LiveMesh((faceCount / 6) * 16, (faceCount / 6) * 24);
 
 			foreach (VoxelPrimitive it in model.GetEnumerator(this.material.GetInstanceID()))
 			{
@@ -108,7 +108,7 @@ namespace Cubizer
 			}
 		}
 
-		public void OnBuildBlock(ref TerrainMesh mesh, ref int index, Vector3 pos, Vector3 scale, VoxelVisiableFaces faces)
+		public void OnBuildBlock(ref LiveMesh mesh, ref int index, Vector3 pos, Vector3 scale, VoxelVisiableFaces faces)
 		{
 			for (int i = 0; i < 4; i++)
 			{
