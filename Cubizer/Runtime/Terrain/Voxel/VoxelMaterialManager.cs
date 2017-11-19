@@ -32,7 +32,6 @@ namespace Cubizer
 				return null;
 
 			var newMaterial = new VoxelMaterial(name, _lives.Count + 1);
-			newMaterial.is_dynamic = setting.dynamic;
 			newMaterial.is_merge = setting.merge;
 			newMaterial.is_transparent = setting.transparent;
 

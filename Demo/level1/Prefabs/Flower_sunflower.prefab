@@ -51,10 +51,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf2a401e9ebc97a46953c677e03b23f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  settings:
-    dynamic: 0
+  _settings:
+    merge: 0
     transparent: 1
-    merge: 1
   _LOD: 0
   _shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
   _asset: {fileID: 4900000, guid: 63fecabfa86711e43b73289c7d3b667d, type: 3}

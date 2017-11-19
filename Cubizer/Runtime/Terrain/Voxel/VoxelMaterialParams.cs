@@ -1,19 +1,17 @@
 ﻿using System;
 
-using UnityEngine;
-
 namespace Cubizer
 {
 	[Serializable]
-	public class VoxelMaterialParams
+	public struct VoxelMaterialParams
 	{
-		[SerializeField]
-		public bool dynamic = false;
+		public bool merge;
+		public bool transparent;
 
-		[SerializeField]
-		public bool transparent = false;
-
-		[SerializeField]
-		public bool merge = true;
+		public void Reset()
+		{
+			merge = true;
+			transparent = false;
+		}
 	}
 }

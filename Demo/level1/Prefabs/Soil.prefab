@@ -86,7 +86,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d32c3eef146c5484a8356389d0bd88a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  settings:
-    dynamic: 0
-    transparent: 0
+  _settings:
     merge: 1
+    transparent: 0

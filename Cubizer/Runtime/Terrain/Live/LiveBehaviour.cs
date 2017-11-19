@@ -6,9 +6,27 @@ namespace Cubizer
 	public abstract class LiveBehaviour : LiveBehaviourBase
 	{
 		[SerializeField]
-		public VoxelMaterialParams settings;
+		private VoxelMaterialParams _settings;
 
 		private VoxelMaterial _material;
+
+		public VoxelMaterialParams settings
+		{
+			set
+			{
+				_settings = value;
+
+				if (_material != null)
+				{
+					_material.is_merge = value.merge;
+					_material.is_transparent = value.transparent;
+				}
+			}
+			get
+			{
+				return _settings;
+			}
+		}
 
 		public VoxelMaterial material
 		{
@@ -22,6 +40,11 @@ namespace Cubizer
 			{
 				return _material;
 			}
+		}
+
+		public void Reset()
+		{
+			_settings.Reset();
 		}
 	}
 }
