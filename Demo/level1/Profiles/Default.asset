@@ -13,12 +13,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   terrain:
     _settings:
+      seed: 255
+  chunk:
+    _settings:
       chunkSize: 24
-      chunkNumLimits: 1024
       chunkHeightLimitLow: -10
       chunkHeightLimitHigh: 20
-      seed: 255
-  chunk: {}
+      chunkNumLimits: 1024
   biome:
     _settings:
       biomeGenerators:
