@@ -5,11 +5,14 @@ using UnityEngine;
 namespace Cubizer
 {
 	[Serializable]
-	public class ChunkDataModels : CubizerModel
+	public class ChunkManagerModels : CubizerModel
 	{
 		[Serializable]
 		public struct ChunkDataSettings
 		{
+			[SerializeField, Range(256, 2048)]
+			public int chunkNumLimits;
+
 			public IChunkDataManager chunkManager;
 
 			public static ChunkDataSettings defaultSettings
@@ -18,7 +21,8 @@ namespace Cubizer
 				{
 					return new ChunkDataSettings
 					{
-						chunkManager = new ChunkDataManager()
+						chunkManager = new ChunkDataManager(0xFF),
+						chunkNumLimits = 1024,
 					};
 				}
 			}

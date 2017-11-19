@@ -12,7 +12,7 @@
 		public void InvokeDefaultOnEnable()
 		{
 			if (transform.parent != null)
-				_terrain = transform.parent.GetComponent<BiomeGeneratorComponent>().context.terrain;
+				_terrain = transform.parent.GetComponent<BiomeManagerComponent>().context.terrain;
 		}
 
 		public void OnEnable()

@@ -88,5 +88,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   settings:
     dynamic: 0
-    transparent: 0
+    transparent: 1
     merge: 1

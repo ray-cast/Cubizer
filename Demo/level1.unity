@@ -334,6 +334,16 @@ Prefab:
       value: 
       objectReference: {fileID: 11400000, guid: 4a5cdb163e113e4418f05f6d37b0f920,
         type: 2}
+    - target: {fileID: 114967170758387038, guid: a9b3b82065454b540a5c121de26b1240,
+        type: 2}
+      propertyPath: _chunkRadiusGC
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 114967170758387038, guid: a9b3b82065454b540a5c121de26b1240,
+        type: 2}
+      propertyPath: _repeatRateUpdate
+      value: 0.1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: a9b3b82065454b540a5c121de26b1240, type: 2}
   m_IsPrefabParent: 0

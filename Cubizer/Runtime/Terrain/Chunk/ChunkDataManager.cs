@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections;
+using System.Diagnostics;
 using System.Runtime.Serialization.Formatters.Binary;
 
 using Cubizer.Math;
@@ -21,6 +22,19 @@ namespace Cubizer
 			get { return _data; }
 		}
 
+		public ChunkDataManager()
+		{
+			_count = 0;
+			_allocSize = 0;
+		}
+
+		public ChunkDataManager(int count)
+		{
+			_count = 0;
+			_allocSize = 0;
+			this.Create(count);
+		}
+
 		public void Create(int count)
 		{
 			int usage = 1;
@@ -31,7 +45,7 @@ namespace Cubizer
 			_data = new ChunkDataNode<Vector3<int>, ChunkPrimer>[_allocSize + 1];
 		}
 
-		public bool Set(int x, int y, int z, ChunkPrimer value)
+		public void Set(int x, int y, int z, ChunkPrimer value)
 		{
 			if (_allocSize == 0)
 				this.Create(0xFF);
@@ -49,8 +63,6 @@ namespace Cubizer
 						element.OnChunkDestroy();
 
 					_data[index].value = value;
-
-					return true;
 				}
 
 				index = (index + 1) & _allocSize;
@@ -64,25 +76,17 @@ namespace Cubizer
 
 				if (_count >= _allocSize)
 					this.Grow();
-
-				return true;
 			}
-
-			return false;
 		}
 
-		public bool Set(Vector3<int> pos, ChunkPrimer value)
+		public void Set(Vector3<int> pos, ChunkPrimer value)
 		{
-			return Set(pos.x, pos.y, pos.z, value);
+			Set(pos.x, pos.y, pos.z, value);
 		}
 
 		public bool Get(int x, int y, int z, out ChunkPrimer chunk)
 		{
-			if (_allocSize == 0)
-			{
-				chunk = null;
-				return false;
-			}
+			Debug.Assert(_allocSize > 0);
 
 			var index = HashInt(x, y, z) & _allocSize;
 			var entry = _data[index];

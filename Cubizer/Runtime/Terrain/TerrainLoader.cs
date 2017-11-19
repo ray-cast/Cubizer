@@ -41,9 +41,9 @@ namespace Cubizer
 			}
 		}
 
-		private bool OnLoadData(Vector3Int position, out ChunkPrimer chunk)
+		private bool OnLoadData(int x, int y, int z, out ChunkPrimer chunk)
 		{
-			var archive = "chunk" + "_" + position.x + "_" + position.y + "_" + position.z;
+			var archive = "chunk" + "_" + x + "_" + y + "_" + z;
 			if (IsFileExists(archive))
 				chunk = Load(archive);
 			else

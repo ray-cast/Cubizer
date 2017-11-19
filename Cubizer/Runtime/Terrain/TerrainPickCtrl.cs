@@ -131,7 +131,7 @@ namespace Cubizer
 					var ray = _player.ScreenPointToRay(Input.mousePosition);
 					ray.origin = _player.transform.position;
 
-					if (_terrain.HitTestByRay(ray, _hitTestDistance, out chunk, out x, out y, out z))
+					if (_terrain.chunkManager.HitTestByRay(ray, _hitTestDistance, out chunk, out x, out y, out z))
 					{
 						var position = new Vector3(chunk.position.x, chunk.position.y, chunk.position.z) * _terrain.profile.terrain.settings.chunkSize + new Vector3(x, y, z);
 						Graphics.DrawMesh(mesh, position, Quaternion.identity, material, gameObject.layer, _player);
@@ -148,7 +148,7 @@ namespace Cubizer
 			_isHitTesting = true;
 
 			if (_terrain != null && _block != null)
-				_terrain.AddBlockByScreenPos(Input.mousePosition, _hitTestDistance, _block.material);
+				_terrain.chunkManager.AddBlockByScreenPos(Input.mousePosition, _hitTestDistance, _block.material);
 
 			yield return new WaitWhile(() => Input.GetMouseButton(1));
 
@@ -163,7 +163,7 @@ namespace Cubizer
 			_isHitTesting = true;
 
 			if (_terrain != null)
-				_terrain.RemoveBlockByScreenPos(Input.mousePosition, _hitTestDistance);
+				_terrain.chunkManager.RemoveBlockByScreenPos(Input.mousePosition, _hitTestDistance);
 
 			yield return new WaitWhile(() => Input.GetMouseButton(0));
 

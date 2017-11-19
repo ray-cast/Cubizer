@@ -23,12 +23,12 @@ namespace Cubizer
 			get; set;
 		}
 
-		public CubizerContext context
+		public virtual CubizerContext context
 		{
 			get; internal set;
 		}
 
-		public T model
+		public virtual T model
 		{
 			get; internal set;
 		}
@@ -42,7 +42,7 @@ namespace Cubizer
 			context = _context;
 		}
 
-		public CubizerModel GetModel()
+		public virtual CubizerModel GetModel()
 		{
 			return model;
 		}

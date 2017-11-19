@@ -2,7 +2,7 @@
 
 namespace Cubizer
 {
-	public class BiomeGeneratorComponent : CubizerComponent<BiomeGeneratorModels>
+	public class BiomeManagerComponent : CubizerComponent<BiomeGeneratorModels>
 	{
 		private GameObject _biomeObject;
 
@@ -36,14 +36,18 @@ namespace Cubizer
 			}
 		}
 
-		public IBiomeData buildBiome(short x, short y, short z)
+		public IBiomeData buildBiomeIfNotExist(int x, int y, int z)
 		{
+			IBiomeData biomeData = null;
+			if (this.biomes.Get(x, y, z, out biomeData))
+				return biomeData;
+
 			var transform = _biomeObject.transform;
 			var transformCount = transform.childCount;
 
 			for (int i = 0; i < transformCount; i++)
 			{
-				var biome = transform.GetChild(i).GetComponent<IBiomeGenerator>().OnBuildBiome(x, y, z);
+				var biome = transform.GetChild(i).GetComponent<IBiomeGenerator>().OnBuildBiome((short)x, (short)y, (short)z);
 				if (biome != null)
 				{
 					model.settings.biomeManager.Set(x, y, z, biome);
@@ -53,19 +57,6 @@ namespace Cubizer
 
 			model.settings.biomeManager.Set(x, y, z, model.settings.biomeNull);
 			return model.settings.biomeNull;
-		}
-
-		public ChunkPrimer buildChunk(short x, short y, short z)
-		{
-			IBiomeData biomeData;
-			if (!model.settings.biomeManager.Get(x, y, z, out biomeData))
-				biomeData = this.buildBiome(x, y, z);
-
-			var chunk = biomeData.OnBuildChunk(context.terrain, x, y, z);
-			if (chunk == null)
-				chunk = new ChunkPrimer(context.profile.terrain.settings.chunkSize, x, y, z);
-
-			return chunk;
 		}
 	}
 }

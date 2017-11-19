@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace Cubier
 {
 	[CustomEditor(typeof(Cubizer.Terrain))]
-	public class TerrainInspector : Editor
+	public class TerrainChunkInspector : Editor
 	{
 		private Cubizer.Terrain terrain;
 
@@ -21,7 +21,7 @@ namespace Cubier
 				if (SelectedPath.Length == 0)
 					return;
 
-				if (terrain.Load(SelectedPath))
+				if (terrain.chunkManager.Load(SelectedPath))
 					Debug.Log("Your data of terrain was loaded successfully");
 				else
 					Debug.Log("load Failed");
@@ -33,7 +33,7 @@ namespace Cubier
 				if (SelectedPath.Length == 0)
 					return;
 
-				if (terrain.Save(SelectedPath))
+				if (terrain.chunkManager.Save(SelectedPath))
 					Debug.Log("Your data of terrain was saved successfully");
 				else
 					Debug.Log("Save Failed");

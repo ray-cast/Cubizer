@@ -47,22 +47,8 @@ namespace Cubizer
 
 			if (_chunk != null)
 			{
-				var terrain = transform.parent.GetComponent<Terrain>();
-				if (terrain != null)
-					terrain.chunks.data.Set(chunk.position.x, chunk.position.y, chunk.position.z, chunk);
-
 				if (_chunk.voxels.count > 0)
 					this.OnUpdateChunk();
-			}
-		}
-
-		public void OnDestroy()
-		{
-			if (transform.parent != null)
-			{
-				var terrain = transform.parent.GetComponent<Terrain>();
-				if (terrain != null)
-					terrain.chunks.data.Set(chunk.position.x, chunk.position.y, chunk.position.z, null);
 			}
 		}
 

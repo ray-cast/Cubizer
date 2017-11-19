@@ -105,8 +105,8 @@ namespace Cubizer
 			{
 				if (_player)
 				{
-					_terrain.UpdateChunkForDestroy(_player, _chunkRadiusGC);
-					_terrain.UpdateChunkForCreate(_player, new Vector2Int[] { _chunkRadiusGenX, _chunkRadiusGenY, _chunkRadiusGenZ });
+					_terrain.chunkManager.DestroyChunk(_player.transform.position, _chunkRadiusGC);
+					_terrain.chunkManager.CreateChunk(_player, new Vector2Int[] { _chunkRadiusGenX, _chunkRadiusGenY, _chunkRadiusGenZ });
 				}
 			}
 
