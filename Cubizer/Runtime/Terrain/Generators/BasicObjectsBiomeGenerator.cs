@@ -47,32 +47,34 @@ namespace Cubizer
 		public void Start()
 		{
 			_materials = new BasicObjectsMaterials();
+
+			var materialFactor = VoxelMaterialManager.GetInstance();
 			if (_materialDirt != null)
-				_materials.dirt = VoxelMaterialManager.GetInstance().GetMaterial(_materialDirt.GetComponent<LiveBehaviour>().name);
+				_materials.dirt = materialFactor.GetMaterial(_materialDirt.GetComponent<LiveBehaviour>().name);
 			if (_materialGrass != null)
-				_materials.grass = VoxelMaterialManager.GetInstance().GetMaterial(_materialGrass.GetComponent<LiveBehaviour>().name);
+				_materials.grass = materialFactor.GetMaterial(_materialGrass.GetComponent<LiveBehaviour>().name);
 			if (_materialSand != null)
-				_materials.sand = VoxelMaterialManager.GetInstance().GetMaterial(_materialSand.GetComponent<LiveBehaviour>().name);
+				_materials.sand = materialFactor.GetMaterial(_materialSand.GetComponent<LiveBehaviour>().name);
 			if (_materialTree != null)
-				_materials.tree = VoxelMaterialManager.GetInstance().GetMaterial(_materialTree.GetComponent<LiveBehaviour>().name);
+				_materials.tree = materialFactor.GetMaterial(_materialTree.GetComponent<LiveBehaviour>().name);
 			if (_materialTreeLeaf != null)
-				_materials.treeLeaf = VoxelMaterialManager.GetInstance().GetMaterial(_materialTreeLeaf.GetComponent<LiveBehaviour>().name);
+				_materials.treeLeaf = materialFactor.GetMaterial(_materialTreeLeaf.GetComponent<LiveBehaviour>().name);
 			if (_materialObsidian != null)
-				_materials.obsidian = VoxelMaterialManager.GetInstance().GetMaterial(_materialObsidian.GetComponent<LiveBehaviour>().name);
+				_materials.obsidian = materialFactor.GetMaterial(_materialObsidian.GetComponent<LiveBehaviour>().name);
 			if (_materialWater != null)
-				_materials.water = VoxelMaterialManager.GetInstance().GetMaterial(_materialWater.GetComponent<LiveBehaviour>().name);
+				_materials.water = materialFactor.GetMaterial(_materialWater.GetComponent<LiveBehaviour>().name);
 			if (_materialCloud != null)
-				_materials.cloud = VoxelMaterialManager.GetInstance().GetMaterial(_materialCloud.GetComponent<LiveBehaviour>().name);
+				_materials.cloud = materialFactor.GetMaterial(_materialCloud.GetComponent<LiveBehaviour>().name);
 			if (_materialCloud != null)
-				_materials.soil = VoxelMaterialManager.GetInstance().GetMaterial(_materialSoil.GetComponent<LiveBehaviour>().name);
+				_materials.soil = materialFactor.GetMaterial(_materialSoil.GetComponent<LiveBehaviour>().name);
 
 			_materials.flower = new VoxelMaterial[_materialFlower.Length];
 			for (int i = 0; i < _materialFlower.Length; i++)
-				_materials.flower[i] = VoxelMaterialManager.GetInstance().GetMaterial(_materialFlower[i].GetComponent<LiveBehaviour>().name);
+				_materials.flower[i] = materialFactor.GetMaterial(_materialFlower[i].GetComponent<LiveBehaviour>().name);
 
 			_materials.weed = new VoxelMaterial[_materialWeed.Length];
 			for (int i = 0; i < _materialWeed.Length; i++)
-				_materials.weed[i] = VoxelMaterialManager.GetInstance().GetMaterial(_materialWeed[i].GetComponent<LiveBehaviour>().name);
+				_materials.weed[i] = materialFactor.GetMaterial(_materialWeed[i].GetComponent<LiveBehaviour>().name);
 
 			_biomeDatas = new BiomeData[biomeParams.Count];
 

@@ -33,7 +33,7 @@ namespace Cubizer
 
 		private void OnSaveData(GameObject chunk)
 		{
-			var data = chunk.GetComponent<TerrainData>();
+			var data = chunk.GetComponent<ChunkData>();
 			if (data != null)
 			{
 				var archive = "chunk" + "_" + data.chunk.position.x + "_" + data.chunk.position.y + "_" + data.chunk.position.z;

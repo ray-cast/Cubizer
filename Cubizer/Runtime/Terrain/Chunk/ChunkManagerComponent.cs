@@ -77,7 +77,7 @@ namespace Cubizer
 				var gameObject = new GameObject("Chunk");
 				gameObject.transform.parent = _chunkObject.transform;
 				gameObject.transform.position = new Vector3(x, y, z) * context.profile.terrain.settings.chunkSize;
-				gameObject.AddComponent<TerrainData>().chunk = chunk;
+				gameObject.AddComponent<ChunkData>().chunk = chunk;
 
 				this.data.Set(x, y, z, chunk);
 			}
@@ -373,7 +373,7 @@ namespace Cubizer
 					var gameObject = new GameObject("Chunk");
 					gameObject.transform.parent = _chunkObject.transform;
 					gameObject.transform.position = new Vector3(chunk.position.x, chunk.position.y, chunk.position.z) * context.profile.terrain.settings.chunkSize;
-					gameObject.AddComponent<TerrainData>().chunk = chunk;
+					gameObject.AddComponent<ChunkData>().chunk = chunk;
 				}
 
 				return true;

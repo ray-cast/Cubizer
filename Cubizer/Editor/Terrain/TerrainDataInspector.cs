@@ -5,12 +5,12 @@ using UnityEditor;
 
 namespace Cubizer
 {
-	[CustomEditor(typeof(TerrainData))]
+	[CustomEditor(typeof(ChunkData))]
 	public class TerrainDataInspector : Editor
 	{
 		public override void OnInspectorGUI()
 		{
-			TerrainData data = (TerrainData)target;
+			ChunkData data = (ChunkData)target;
 
 			base.DrawDefaultInspector();
 
