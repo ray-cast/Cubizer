@@ -86,7 +86,10 @@ namespace Cubizer
 				var gameObject = new GameObject("Chunk");
 				gameObject.transform.parent = _chunkObject.transform;
 				gameObject.transform.position = new Vector3(x, y, z) * model.settings.chunkSize;
-				gameObject.AddComponent<ChunkData>().chunk = chunk;
+
+				var chunkData = gameObject.AddComponent<ChunkData>();
+				chunkData.chunk = chunk;
+				chunkData.chunkManager = data;
 
 				this.data.Set(x, y, z, chunk);
 			}

@@ -23,7 +23,7 @@ namespace Cubizer
 			_meshCollider = GetComponent<MeshCollider>();
 		}
 
-		public override void OnBuildChunk(GameObject parent, IVoxelModel model, int faceCount)
+		public override void OnBuildChunk(IChunkData parent, IVoxelModel model, int faceCount)
 		{
 			foreach (VoxelPrimitive it in model.GetEnumerator(this.material.GetInstanceID()))
 			{

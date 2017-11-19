@@ -7,6 +7,19 @@ namespace Cubizer
 	public class ChunkData : IChunkData
 	{
 		private ChunkPrimer _chunk;
+		private IChunkDataManager _chunkManager;
+
+		public override IChunkDataManager chunkManager
+		{
+			internal set
+			{
+				_chunkManager = value;
+			}
+			get
+			{
+				return _chunkManager;
+			}
+		}
 
 		public override ChunkPrimer chunk
 		{
@@ -15,12 +28,12 @@ namespace Cubizer
 				Debug.Assert(_chunk != value);
 				
 				if (_chunk != null)
-					_chunk.onChunkChange -= OnUpdateChunk;
+					_chunk.onChunkChange -= OnBuildChunk;
 
 				_chunk = value;
 
 				if (_chunk != null)
-					_chunk.onChunkChange += OnUpdateChunk;				
+					_chunk.onChunkChange += OnBuildChunk;				
 			}
 			get
 			{
@@ -30,11 +43,7 @@ namespace Cubizer
 
 		public void Start()
 		{
-			if (_chunk != null)
-			{
-				if (_chunk.voxels.count > 0)
-					this.OnUpdateChunk();
-			}
+			this.OnBuildChunk();
 		}
 
 		public void OnDrawGizmos()
@@ -56,7 +65,7 @@ namespace Cubizer
 			}
 		}
 
-		public override void OnUpdateChunk()
+		public override void OnBuildChunk()
 		{
 			for (int i = 0; i < transform.childCount; i++)
 				Destroy(transform.GetChild(i).gameObject);
@@ -81,7 +90,7 @@ namespace Cubizer
 					if (controller == null)
 						continue;
 
-					controller.OnBuildChunk(this.gameObject, model, it.Value);
+					controller.OnBuildChunk(this, model, it.Value);
 				}
 			}
 		}

@@ -55,7 +55,7 @@ namespace Cubizer
 			_meshCollider = GetComponent<MeshCollider>();
 		}
 
-		public override void OnBuildChunk(GameObject parent, IVoxelModel model, int faceCount)
+		public override void OnBuildChunk(IChunkData parent, IVoxelModel model, int faceCount)
 		{
 			var writeCount = 0;
 			var data = new LiveMesh(faceCount * 4, faceCount * 6);
@@ -76,8 +76,8 @@ namespace Cubizer
 				mesh.triangles = data.indices;
 
 				var actors = new GameObject(this.name);
-				actors.isStatic = parent.isStatic;
-				actors.layer = parent.layer;
+				actors.isStatic = this.gameObject.isStatic;
+				actors.layer = this.gameObject.layer;
 				actors.transform.parent = parent.transform;
 				actors.transform.position = parent.transform.position;
 
