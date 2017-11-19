@@ -3,7 +3,6 @@
 	public class CubizerContext
 	{
 		public CubizerProfile profile;
-
-		public Terrain terrain;
+		public CubizerBehaviour behaviour;
 	}
 }

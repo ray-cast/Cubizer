@@ -88,9 +88,9 @@ namespace Cubizer
 			}
 		}
 
-		public ChunkPrimer Buildland(Terrain terrain, short x, short y, short z, VoxelMaterial main)
+		public ChunkPrimer Buildland(CubizerBehaviour terrain, short x, short y, short z, VoxelMaterial main)
 		{
-			var size = terrain.profile.terrain.settings.chunkSize;
+			var size = terrain.profile.chunk.settings.chunkSize;
 			var map = new ChunkPrimer(size, x, y, z, size * size * _params.floorBase);
 
 			int offsetX = x * map.voxels.bound.x;
@@ -159,9 +159,9 @@ namespace Cubizer
 			return map;
 		}
 
-		public ChunkPrimer buildObsidian(Terrain terrain, short x, short y, short z)
+		public ChunkPrimer buildObsidian(CubizerBehaviour terrain, short x, short y, short z)
 		{
-			var size = terrain.profile.terrain.settings.chunkSize;
+			var size = terrain.profile.chunk.settings.chunkSize;
 			var map = new ChunkPrimer(size, x, y, z, size * size * 8);
 
 			for (byte ix = 0; ix < map.voxels.bound.x; ix++)
@@ -176,7 +176,7 @@ namespace Cubizer
 			return map;
 		}
 
-		public ChunkPrimer OnCreateChunk(Terrain terrain, short x, short y, short z)
+		public ChunkPrimer OnCreateChunk(CubizerBehaviour terrain, short x, short y, short z)
 		{
 			switch (_params.layer)
 			{

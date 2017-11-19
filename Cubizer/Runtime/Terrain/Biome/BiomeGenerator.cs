@@ -2,9 +2,9 @@
 {
 	public abstract class BiomeGenerator : IBiomeGenerator
 	{
-		private Terrain _terrain;
+		private CubizerBehaviour _terrain;
 
-		public Terrain terrain
+		public CubizerBehaviour terrain
 		{
 			get { return _terrain; }
 		}
@@ -12,7 +12,7 @@
 		public void InvokeDefaultOnEnable()
 		{
 			if (transform.parent != null)
-				_terrain = transform.parent.GetComponent<BiomeManagerComponent>().context.terrain;
+				_terrain = transform.parent.GetComponent<BiomeManagerComponent>().context.behaviour;
 		}
 
 		public void OnEnable()

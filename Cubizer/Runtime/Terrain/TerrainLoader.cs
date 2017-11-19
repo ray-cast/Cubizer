@@ -6,18 +6,18 @@ using UnityEngine;
 namespace Cubizer
 {
 	[DisallowMultipleComponent]
-	[RequireComponent(typeof(Terrain))]
+	[RequireComponent(typeof(CubizerBehaviour))]
 	[AddComponentMenu("Cubizer/TerrainLoader")]
 	public class TerrainLoader : MonoBehaviour
 	{
 		public string rootPath;
 		public string username = "/SaveData/";
 
-		private Terrain _terrain;
+		private CubizerBehaviour _terrain;
 
 		private void Start()
 		{
-			_terrain = GetComponent<Terrain>();
+			_terrain = GetComponent<CubizerBehaviour>();
 			_terrain.events.onSaveChunkData += this.OnSaveData;
 			_terrain.events.onLoadChunkData += this.OnLoadData;
 

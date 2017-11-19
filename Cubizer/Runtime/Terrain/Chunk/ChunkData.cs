@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace Cubizer
 {
-	[AddComponentMenu("Cubizer/ChunkData")]
 	public class ChunkData : IChunkData
 	{
 		private ChunkPrimer _chunk;
@@ -13,16 +12,15 @@ namespace Cubizer
 		{
 			set
 			{
-				if (_chunk != value)
-				{
-					if (_chunk != null)
-						_chunk.onChunkChange -= OnUpdateChunk;
+				Debug.Assert(_chunk != value);
+				
+				if (_chunk != null)
+					_chunk.onChunkChange -= OnUpdateChunk;
 
-					_chunk = value;
+				_chunk = value;
 
-					if (_chunk != null)
-						_chunk.onChunkChange += OnUpdateChunk;
-				}
+				if (_chunk != null)
+					_chunk.onChunkChange += OnUpdateChunk;				
 			}
 			get
 			{
@@ -32,8 +30,6 @@ namespace Cubizer
 
 		public void Start()
 		{
-			Debug.Assert(transform.parent != null);
-
 			if (_chunk != null)
 			{
 				if (_chunk.voxels.count > 0)
@@ -85,7 +81,7 @@ namespace Cubizer
 					if (controller == null)
 						continue;
 
-					controller.OnBuildChunk(gameObject, model, it.Value);
+					controller.OnBuildChunk(this.gameObject, model, it.Value);
 				}
 			}
 		}

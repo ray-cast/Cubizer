@@ -4,14 +4,14 @@ using System.Collections.Generic;
 
 namespace Cubier
 {
-	[CustomEditor(typeof(Cubizer.Terrain))]
+	[CustomEditor(typeof(Cubizer.CubizerBehaviour))]
 	public class TerrainChunkInspector : Editor
 	{
-		private Cubizer.Terrain terrain;
+		private Cubizer.CubizerBehaviour terrain;
 
 		public override void OnInspectorGUI()
 		{
-			terrain = target as Cubizer.Terrain;
+			terrain = target as Cubizer.CubizerBehaviour;
 
 			base.DrawDefaultInspector();
 

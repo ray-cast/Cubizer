@@ -11,7 +11,7 @@ namespace Cubizer
 		private Camera _player;
 
 		[SerializeField]
-		private Terrain _terrain;
+		private CubizerBehaviour _terrain;
 
 		[SerializeField]
 		private LiveBehaviour _block;
@@ -28,7 +28,7 @@ namespace Cubizer
 
 		[SerializeField] private int _hitTestDistance = 8;
 
-		public Terrain terrain
+		public CubizerBehaviour terrain
 		{
 			set { _terrain = value; }
 			get { return _terrain; }
@@ -73,7 +73,7 @@ namespace Cubizer
 		private void Start()
 		{
 			if (_terrain == null)
-				_terrain = GetComponent<Terrain>();
+				_terrain = GetComponent<CubizerBehaviour>();
 
 			if (_terrain == null)
 				Debug.LogError("Please assign a terrain on the inspector");
@@ -133,7 +133,7 @@ namespace Cubizer
 
 					if (_terrain.chunkManager.HitTestByRay(ray, _hitTestDistance, out chunk, out x, out y, out z))
 					{
-						var position = new Vector3(chunk.position.x, chunk.position.y, chunk.position.z) * _terrain.profile.terrain.settings.chunkSize + new Vector3(x, y, z);
+						var position = new Vector3(chunk.position.x, chunk.position.y, chunk.position.z) * _terrain.profile.chunk.settings.chunkSize + new Vector3(x, y, z);
 						Graphics.DrawMesh(mesh, position, Quaternion.identity, material, gameObject.layer, _player);
 					}
 				}

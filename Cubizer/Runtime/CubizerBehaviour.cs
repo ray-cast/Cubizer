@@ -6,7 +6,7 @@ namespace Cubizer
 {
 	[DisallowMultipleComponent]
 	[AddComponentMenu("Cubizer/Terrain")]
-	public class Terrain : MonoBehaviour
+	public class CubizerBehaviour : MonoBehaviour
 	{
 		[SerializeField]
 		private CubizerProfile _profile;
@@ -48,14 +48,14 @@ namespace Cubizer
 
 		public void Start()
 		{
-			Debug.Assert(_profile.terrain.settings.chunkSize > 0);
+			Debug.Assert(_profile.chunk.settings.chunkSize > 0);
 
 			Math.Noise.simplex_seed(_profile.terrain.settings.seed);
 
 			_events = new TerrainDelegates();
 			_context = new CubizerContext();
 			_context.profile = _profile;
-			_context.terrain = this;
+			_context.behaviour = this;
 
 			_components = new List<ICubizerComponent>();
 

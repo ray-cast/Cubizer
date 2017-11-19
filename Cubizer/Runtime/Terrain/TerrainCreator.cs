@@ -12,7 +12,7 @@ namespace Cubizer
 		private Camera _player;
 
 		[SerializeField]
-		private Terrain _terrain;
+		private CubizerBehaviour _terrain;
 
 		[SerializeField]
 		private int _chunkRadiusGC = 8;
@@ -29,7 +29,7 @@ namespace Cubizer
 			get { return _player; }
 		}
 
-		public Terrain terrain
+		public CubizerBehaviour terrain
 		{
 			set { _terrain = value; }
 			get { return _terrain; }
@@ -71,7 +71,7 @@ namespace Cubizer
 				Debug.LogError("Please assign a camera on the inspector.");
 
 			if (_terrain == null)
-				_terrain = GetComponent<Terrain>();
+				_terrain = GetComponent<CubizerBehaviour>();
 
 			if (_terrain == null)
 				Debug.LogError("Please assign a terrain on the inspector.");

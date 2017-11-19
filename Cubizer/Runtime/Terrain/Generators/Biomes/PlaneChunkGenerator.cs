@@ -11,9 +11,9 @@
 			_materials = materials;
 		}
 
-		public ChunkPrimer OnCreateChunk(Terrain terrain, short x, short y, short z)
+		public ChunkPrimer OnCreateChunk(CubizerBehaviour terrain, short x, short y, short z)
 		{
-			var size = terrain.profile.terrain.settings.chunkSize;
+			var size = terrain.profile.chunk.settings.chunkSize;
 			var map = new ChunkPrimer(size, x, y, z, size * size * _params.floorBase);
 
 			for (byte ix = 0; ix < map.voxels.bound.x; ix++)

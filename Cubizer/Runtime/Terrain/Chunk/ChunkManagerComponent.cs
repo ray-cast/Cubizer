@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
 
 using UnityEngine;
@@ -55,7 +54,7 @@ namespace Cubizer
 			if (this.data.Count() > model.settings.chunkNumLimits)
 			{
 				this.data.GC();
-				context.terrain.biomeManager.biomes.GC();
+				context.behaviour.biomeManager.biomes.GC();
 			}
 
 			if (_events.onLoadChunkData != null)
@@ -63,12 +62,12 @@ namespace Cubizer
 
 			if (chunk == null)
 			{
-				IBiomeData biomeData = context.terrain.biomeManager.buildBiomeIfNotExist(x, y, z);
+				IBiomeData biomeData = context.behaviour.biomeManager.buildBiomeIfNotExist(x, y, z);
 				if (biomeData != null)
 				{
-					chunk = biomeData.OnBuildChunk(context.terrain, (short)x, (short)y, (short)z);
+					chunk = biomeData.OnBuildChunk(context.behaviour, (short)x, (short)y, (short)z);
 					if (chunk == null)
-						chunk = new ChunkPrimer(context.profile.terrain.settings.chunkSize, (short)x, (short)y, (short)z);
+						chunk = new ChunkPrimer(model.settings.chunkSize, (short)x, (short)y, (short)z);
 				}
 			}
 
@@ -76,7 +75,7 @@ namespace Cubizer
 			{
 				var gameObject = new GameObject("Chunk");
 				gameObject.transform.parent = _chunkObject.transform;
-				gameObject.transform.position = new Vector3(x, y, z) * context.profile.terrain.settings.chunkSize;
+				gameObject.transform.position = new Vector3(x, y, z) * model.settings.chunkSize;
 				gameObject.AddComponent<ChunkData>().chunk = chunk;
 
 				this.data.Set(x, y, z, chunk);
@@ -141,7 +140,7 @@ namespace Cubizer
 			Debug.Assert(_chunkObject != null);
 
 			var transform = _chunkObject.transform;
-			var maxRadius = radius * context.profile.terrain.settings.chunkSize;
+			var maxRadius = radius * model.settings.chunkSize;
 
 			for (int i = 0; i < transform.childCount; i++)
 			{
@@ -161,7 +160,7 @@ namespace Cubizer
 
 		public short CalculateChunkPosByWorld(float x)
 		{
-			return (short)Mathf.FloorToInt(x / context.profile.terrain.settings.chunkSize);
+			return (short)Mathf.FloorToInt(x / model.settings.chunkSize);
 		}
 
 		public bool HitTestByRay(Ray ray, int hitDistance, out ChunkPrimer chunk, out byte outX, out byte outY, out byte outZ, out ChunkPrimer lastChunk, out byte lastX, out byte lastY, out byte lastZ)
@@ -177,9 +176,9 @@ namespace Cubizer
 				return false;
 
 			Vector3 origin = ray.origin;
-			origin.x -= chunk.position.x * context.profile.terrain.settings.chunkSize;
-			origin.y -= chunk.position.y * context.profile.terrain.settings.chunkSize;
-			origin.z -= chunk.position.z * context.profile.terrain.settings.chunkSize;
+			origin.x -= chunk.position.x * model.settings.chunkSize;
+			origin.y -= chunk.position.y * model.settings.chunkSize;
+			origin.z -= chunk.position.z * model.settings.chunkSize;
 
 			VoxelMaterial block = null;
 
@@ -193,12 +192,12 @@ namespace Cubizer
 					continue;
 
 				bool isOutOfChunk = false;
-				if (ix < 0) { ix = ix + context.profile.terrain.settings.chunkSize; origin.x += context.profile.terrain.settings.chunkSize; chunkX--; isOutOfChunk = true; }
-				if (iy < 0) { iy = iy + context.profile.terrain.settings.chunkSize; origin.y += context.profile.terrain.settings.chunkSize; chunkY--; isOutOfChunk = true; }
-				if (iz < 0) { iz = iz + context.profile.terrain.settings.chunkSize; origin.z += context.profile.terrain.settings.chunkSize; chunkZ--; isOutOfChunk = true; }
-				if (ix + 1 > context.profile.terrain.settings.chunkSize) { ix = ix - context.profile.terrain.settings.chunkSize; origin.x -= context.profile.terrain.settings.chunkSize; chunkX++; isOutOfChunk = true; }
-				if (iy + 1 > context.profile.terrain.settings.chunkSize) { iy = iy - context.profile.terrain.settings.chunkSize; origin.y -= context.profile.terrain.settings.chunkSize; chunkY++; isOutOfChunk = true; }
-				if (iz + 1 > context.profile.terrain.settings.chunkSize) { iz = iz - context.profile.terrain.settings.chunkSize; origin.z -= context.profile.terrain.settings.chunkSize; chunkZ++; isOutOfChunk = true; }
+				if (ix < 0) { ix = ix + model.settings.chunkSize; origin.x += model.settings.chunkSize; chunkX--; isOutOfChunk = true; }
+				if (iy < 0) { iy = iy + model.settings.chunkSize; origin.y += model.settings.chunkSize; chunkY--; isOutOfChunk = true; }
+				if (iz < 0) { iz = iz + model.settings.chunkSize; origin.z += model.settings.chunkSize; chunkZ--; isOutOfChunk = true; }
+				if (ix + 1 > model.settings.chunkSize) { ix = ix - model.settings.chunkSize; origin.x -= model.settings.chunkSize; chunkX++; isOutOfChunk = true; }
+				if (iy + 1 > model.settings.chunkSize) { iy = iy - model.settings.chunkSize; origin.y -= model.settings.chunkSize; chunkY++; isOutOfChunk = true; }
+				if (iz + 1 > model.settings.chunkSize) { iz = iz - model.settings.chunkSize; origin.z -= model.settings.chunkSize; chunkZ++; isOutOfChunk = true; }
 
 				lastX = outX;
 				lastY = outY;
@@ -306,7 +305,7 @@ namespace Cubizer
 
 			int start = bestScore;
 
-			Vector3 _chunkOffset = (Vector3.one * context.profile.terrain.settings.chunkSize - Vector3.one) * 0.5f;
+			Vector3 _chunkOffset = (Vector3.one * model.settings.chunkSize - Vector3.one) * 0.5f;
 
 			for (int ix = radius[0].x; ix <= radius[0].y; ix++)
 			{
@@ -318,7 +317,7 @@ namespace Cubizer
 						int dy = y + iy;
 						int dz = z + iz;
 
-						if (dy < context.profile.terrain.settings.chunkHeightLimitLow || dy > context.profile.terrain.settings.chunkHeightLimitHigh)
+						if (dy < model.settings.chunkHeightLimitLow || dy > model.settings.chunkHeightLimitHigh)
 							continue;
 
 						ChunkPrimer chunk;
@@ -326,9 +325,9 @@ namespace Cubizer
 						if (hit)
 							continue;
 
-						var p = _chunkOffset + new Vector3(dx, dy, dz) * context.profile.terrain.settings.chunkSize;
+						var p = _chunkOffset + new Vector3(dx, dy, dz) * model.settings.chunkSize;
 
-						int invisiable = GeometryUtility.TestPlanesAABB(planes, new Bounds(p, Vector3.one * context.profile.terrain.settings.chunkSize)) ? 0 : 1;
+						int invisiable = GeometryUtility.TestPlanesAABB(planes, new Bounds(p, Vector3.one * model.settings.chunkSize)) ? 0 : 1;
 						int distance = Mathf.Max(Mathf.Max(Mathf.Abs(ix), Mathf.Abs(iy)), Mathf.Abs(iz));
 						int score = (invisiable << 24) | distance;
 
@@ -372,7 +371,7 @@ namespace Cubizer
 				{
 					var gameObject = new GameObject("Chunk");
 					gameObject.transform.parent = _chunkObject.transform;
-					gameObject.transform.position = new Vector3(chunk.position.x, chunk.position.y, chunk.position.z) * context.profile.terrain.settings.chunkSize;
+					gameObject.transform.position = new Vector3(chunk.position.x, chunk.position.y, chunk.position.z) * model.settings.chunkSize;
 					gameObject.AddComponent<ChunkData>().chunk = chunk;
 				}
 

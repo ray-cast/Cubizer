@@ -9,15 +9,6 @@ namespace Cubizer
 		[Serializable]
 		public struct TerrainSettings
 		{
-			[SerializeField, Range(16, 32)]
-			public int chunkSize;
-
-			[SerializeField]
-			public int chunkHeightLimitLow;
-
-			[SerializeField]
-			public int chunkHeightLimitHigh;
-
 			[SerializeField]
 			public int seed;
 
@@ -27,9 +18,6 @@ namespace Cubizer
 				{
 					return new TerrainSettings
 					{
-						chunkSize = 24,
-						chunkHeightLimitLow = -10,
-						chunkHeightLimitHigh = 20,
 						seed = 255
 					};
 				}

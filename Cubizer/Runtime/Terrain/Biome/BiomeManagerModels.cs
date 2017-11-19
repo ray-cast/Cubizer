@@ -9,7 +9,7 @@ namespace Cubizer
 	public class BiomeManagerModels : CubizerModel
 	{
 		[Serializable]
-		public struct BiomeManagerSettings
+		public struct BiomeGeneratorSettings
 		{
 			[SerializeField]
 			public IBiomeData biomeNull;
@@ -20,11 +20,11 @@ namespace Cubizer
 			[SerializeField]
 			public List<BiomeGenerator> biomeGenerators;
 
-			public static BiomeManagerSettings defaultSettings
+			public static BiomeGeneratorSettings defaultSettings
 			{
 				get
 				{
-					return new BiomeManagerSettings
+					return new BiomeGeneratorSettings
 					{
 						biomeNull = new BiomeDataNull(),
 						biomeManager = new BiomeDataManager()
@@ -34,9 +34,9 @@ namespace Cubizer
 		}
 
 		[SerializeField]
-		private BiomeManagerSettings _settings = BiomeManagerSettings.defaultSettings;
+		private BiomeGeneratorSettings _settings = BiomeGeneratorSettings.defaultSettings;
 
-		public BiomeManagerSettings settings
+		public BiomeGeneratorSettings settings
 		{
 			get { return _settings; }
 			set { _settings = value; }
@@ -44,7 +44,7 @@ namespace Cubizer
 
 		public override void Reset()
 		{
-			_settings = BiomeManagerSettings.defaultSettings;
+			_settings = BiomeGeneratorSettings.defaultSettings;
 		}
 	}
 }

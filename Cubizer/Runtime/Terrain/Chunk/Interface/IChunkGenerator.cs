@@ -2,6 +2,6 @@
 {
 	public interface IChunkGenerator
 	{
-		ChunkPrimer OnCreateChunk(Terrain terrain, short x, short y, short z);
+		ChunkPrimer OnCreateChunk(CubizerBehaviour terrain, short x, short y, short z);
 	}
 }
