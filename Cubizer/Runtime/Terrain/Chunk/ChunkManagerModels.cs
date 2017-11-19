@@ -8,18 +8,18 @@ namespace Cubizer
 	public class ChunkManagerModels : CubizerModel
 	{
 		[Serializable]
-		public struct ChunkDataSettings
+		public struct ChunkManagerSettings
 		{
 			[SerializeField, Range(256, 2048)]
 			public int chunkNumLimits;
 
 			public IChunkDataManager chunkManager;
 
-			public static ChunkDataSettings defaultSettings
+			public static ChunkManagerSettings defaultSettings
 			{
 				get
 				{
-					return new ChunkDataSettings
+					return new ChunkManagerSettings
 					{
 						chunkManager = new ChunkDataManager(0xFF),
 						chunkNumLimits = 1024,
@@ -29,9 +29,9 @@ namespace Cubizer
 		}
 
 		[SerializeField]
-		private ChunkDataSettings _settings = ChunkDataSettings.defaultSettings;
+		private ChunkManagerSettings _settings = ChunkManagerSettings.defaultSettings;
 
-		public ChunkDataSettings settings
+		public ChunkManagerSettings settings
 		{
 			get { return _settings; }
 			set { _settings = value; }
@@ -39,7 +39,7 @@ namespace Cubizer
 
 		public override void Reset()
 		{
-			_settings = ChunkDataSettings.defaultSettings;
+			_settings = ChunkManagerSettings.defaultSettings;
 		}
 	}
 }

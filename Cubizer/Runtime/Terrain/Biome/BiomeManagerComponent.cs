@@ -2,7 +2,7 @@
 
 namespace Cubizer
 {
-	public class BiomeManagerComponent : CubizerComponent<BiomeGeneratorModels>
+	public class BiomeManagerComponent : CubizerComponent<BiomeManagerModels>
 	{
 		private GameObject _biomeObject;
 

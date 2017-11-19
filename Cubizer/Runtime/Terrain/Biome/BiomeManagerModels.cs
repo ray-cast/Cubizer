@@ -6,10 +6,10 @@ using UnityEngine;
 namespace Cubizer
 {
 	[Serializable]
-	public class BiomeGeneratorModels : CubizerModel
+	public class BiomeManagerModels : CubizerModel
 	{
 		[Serializable]
-		public struct BiomeGeneratorSettings
+		public struct BiomeManagerSettings
 		{
 			[SerializeField]
 			public IBiomeData biomeNull;
@@ -20,25 +20,23 @@ namespace Cubizer
 			[SerializeField]
 			public List<BiomeGenerator> biomeGenerators;
 
-			public static BiomeGeneratorSettings defaultSettings
+			public static BiomeManagerSettings defaultSettings
 			{
 				get
 				{
-					return new BiomeGeneratorSettings
+					return new BiomeManagerSettings
 					{
 						biomeNull = new BiomeDataNull(),
 						biomeManager = new BiomeDataManager()
 					};
 				}
 			}
-
-			
 		}
 
 		[SerializeField]
-		private BiomeGeneratorSettings _settings = BiomeGeneratorSettings.defaultSettings;
+		private BiomeManagerSettings _settings = BiomeManagerSettings.defaultSettings;
 
-		public BiomeGeneratorSettings settings
+		public BiomeManagerSettings settings
 		{
 			get { return _settings; }
 			set { _settings = value; }
@@ -46,7 +44,7 @@ namespace Cubizer
 
 		public override void Reset()
 		{
-			_settings = BiomeGeneratorSettings.defaultSettings;
+			_settings = BiomeManagerSettings.defaultSettings;
 		}
 	}
 }

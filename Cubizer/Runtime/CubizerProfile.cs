@@ -10,7 +10,7 @@ namespace Cubizer
 
 		public TerrainModel terrain = new TerrainModel();
 		public ChunkManagerModels chunk = new ChunkManagerModels();
-		public BiomeGeneratorModels biome = new BiomeGeneratorModels();
+		public BiomeManagerModels biome = new BiomeManagerModels();
 		public LiveModels lives = new LiveModels();
 	}
 }
