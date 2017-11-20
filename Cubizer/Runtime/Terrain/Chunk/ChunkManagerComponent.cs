@@ -57,15 +57,16 @@ namespace Cubizer
 
 		public bool CreateChunk(int x, int y, int z)
 		{
-			ChunkPrimer chunk;
-			if (this.data.Get(x, y, z, out chunk))
-				return false;
-
 			if (this.data.Count() > model.settings.chunkNumLimits)
 			{
 				this.data.GC();
 				context.behaviour.biomeManager.biomes.GC();
+				return false;
 			}
+
+			ChunkPrimer chunk;
+			if (this.data.Get(x, y, z, out chunk))
+				return false;
 
 			if (_events.onLoadChunkData != null)
 				_events.onLoadChunkData(x, y, z, out chunk);
