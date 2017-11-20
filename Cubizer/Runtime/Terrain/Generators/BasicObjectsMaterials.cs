@@ -7,6 +7,7 @@
 		public VoxelMaterial sand;
 		public VoxelMaterial tree;
 		public VoxelMaterial treeLeaf;
+		public VoxelMaterial[] trees;
 		public VoxelMaterial[] flower;
 		public VoxelMaterial[] weed;
 		public VoxelMaterial obsidian;

@@ -23,6 +23,7 @@ namespace Cubizer
 
 		public GameObject[] _materialFlower;
 		public GameObject[] _materialWeed;
+		public GameObject[] _materialTrees;
 
 		public int layerGrass = 0;
 		public int layerCloud = 3;
@@ -75,6 +76,10 @@ namespace Cubizer
 			_materials.weed = new VoxelMaterial[_materialWeed.Length];
 			for (int i = 0; i < _materialWeed.Length; i++)
 				_materials.weed[i] = materialFactor.GetMaterial(_materialWeed[i].GetComponent<LiveBehaviour>().name);
+
+			_materials.trees = new VoxelMaterial[_materialTrees.Length];
+			for (int i = 0; i < _materialTrees.Length; i++)
+				_materials.trees[i] = materialFactor.GetMaterial(_materialTrees[i].GetComponent<LiveBehaviour>().name);
 
 			_biomeDatas = new BiomeData[biomeParams.Count];
 

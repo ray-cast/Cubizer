@@ -12,6 +12,6 @@ namespace Cubizer
 		public TerrainModel terrain = new TerrainModel();
 		public ChunkManagerModels chunk = new ChunkManagerModels();
 		public BiomeManagerModels biome = new BiomeManagerModels();
-		public LiveModels lives = new LiveModels();
+		public LiveManagerModels lives = new LiveManagerModels();
 	}
 }

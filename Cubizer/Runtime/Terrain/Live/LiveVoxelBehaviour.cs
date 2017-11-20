@@ -16,11 +16,11 @@ namespace Cubizer
 
 		public void Start()
 		{
-			if (_asset == null)
-				Debug.LogError("Please assign a .vox file on the inspector");
-
 			if (_shader == null)
 				Debug.LogError("Please assign a shader on the inspector");
+
+			if (_asset == null)
+				Debug.LogError("Please assign a .vox file on the inspector");
 
 			try
 			{
@@ -33,6 +33,8 @@ namespace Cubizer
 					var model = transform.GetChild(0);
 					if (model)
 					{
+						model.gameObject.layer = this.gameObject.layer;
+
 						_meshCollider = GetComponent<MeshCollider>();
 
 						_lodGroup = model.GetComponent<LODGroup>();
@@ -49,6 +51,9 @@ namespace Cubizer
 
 		public override void OnBuildChunk(IChunkData parent, IVoxelModel model, int faceCount)
 		{
+			if (_meshFilter == null)
+				return;
+
 			foreach (VoxelPrimitive it in model.GetEnumerator(this.material.GetInstanceID()))
 			{
 				Vector3 pos, scale;
@@ -56,12 +61,11 @@ namespace Cubizer
 
 				var actors = new GameObject(this.name);
 				actors.isStatic = gameObject.isStatic;
-				actors.layer = gameObject.layer;
 				actors.tag = gameObject.tag;
 				actors.transform.parent = parent.transform;
 				actors.transform.localPosition = transform.position + pos;
 				actors.transform.localRotation = transform.rotation;
-				actors.transform.localScale = transform.localScale;
+				actors.transform.localScale = Vector3.Scale(transform.localScale, scale);
 
 				actors.AddComponent<MeshFilter>().sharedMesh = _meshFilter.sharedMesh;
 

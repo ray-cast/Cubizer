@@ -96,11 +96,6 @@ namespace Cubizer
 		{
 			yield return new WaitForSeconds(_repeatRateUpdate);
 
-#if DEBUG
-			var sw = new System.Diagnostics.Stopwatch();
-			sw.Start();
-#endif
-
 			if (_terrain)
 			{
 				if (_player)
@@ -109,12 +104,6 @@ namespace Cubizer
 					_terrain.chunkManager.CreateChunk(_player, new Vector2Int[] { _chunkRadiusGenX, _chunkRadiusGenY, _chunkRadiusGenZ });
 				}
 			}
-
-#if DEBUG
-			sw.Stop();
-			if (sw.ElapsedMilliseconds >= 0.01f)
-				Debug.Log(string.Format("chunk generator: {0} ms", sw.ElapsedMilliseconds / 1000.0f));
-#endif
 
 			StartCoroutine("UpdateChunkWithCoroutine");
 		}

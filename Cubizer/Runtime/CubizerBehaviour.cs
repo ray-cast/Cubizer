@@ -12,7 +12,7 @@ namespace Cubizer
 		private CubizerProfile _profile;
 		private CubizerContext _context;
 
-		private LiveComponent _lives;
+		private LiveManagerComponent _lives;
 		private ChunkManagerComponent _chunkManager;
 		private BiomeManagerComponent _biomeManager;
 
@@ -70,7 +70,7 @@ namespace Cubizer
 
 			_components = new List<ICubizerComponent>();
 
-			_lives = AddComponent(new LiveComponent());
+			_lives = AddComponent(new LiveManagerComponent());
 			_lives.Init(_context, _profile.lives);
 
 			_chunkManager = AddComponent(new ChunkManagerComponent());

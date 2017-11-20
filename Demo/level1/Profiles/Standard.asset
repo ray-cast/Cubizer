@@ -67,7 +67,7 @@ MonoBehaviour:
         fresnelFade: 1
         fresnelFadePower: 1
       screenEdgeMask:
-        intensity: 0.03
+        intensity: 0
   depthOfField:
     m_Enabled: 0
     m_Settings:
@@ -102,13 +102,13 @@ MonoBehaviour:
       bloom:
         intensity: 1
         threshold: 1
-        maxBrightness: 4
+        maxBrightness: 3
         softKnee: 0
         radius: 4
         antiFlicker: 0
       lensDirt:
         texture: {fileID: 0}
-        intensity: 3
+        intensity: 1
   colorGrading:
     m_Enabled: 1
     m_Settings:

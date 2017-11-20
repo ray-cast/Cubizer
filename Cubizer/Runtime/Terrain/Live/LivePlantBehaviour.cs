@@ -71,7 +71,7 @@ namespace Cubizer
 
 				var actors = new GameObject(this.name);
 				actors.isStatic = this.gameObject.isStatic;
-				actors.layer = this.gameObject.layer;
+				actors.tag = gameObject.tag;
 				actors.transform.parent = parent.transform;
 				actors.transform.position = parent.transform.position;
 
@@ -84,15 +84,13 @@ namespace Cubizer
 					clone.receiveShadows = _renderer.receiveShadows;
 					clone.shadowCastingMode = _renderer.shadowCastingMode;
 
-					_renderer = clone;
-
 					if (_lodGroup != null)
 					{
 						var lods = _lodGroup.GetLODs();
 						for (int i = 0; i < lods.Length; i++)
 						{
 							if (lods[i].renderers.Length > 0)
-								lods[i].renderers[0] = _renderer;
+								lods[i].renderers[0] = clone;
 						}
 
 						actors.AddComponent<LODGroup>().SetLODs(lods);

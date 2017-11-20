@@ -179,7 +179,7 @@ Prefab:
     - target: {fileID: 224431451281944538, guid: 52eb078de896190488e6c13e15635297,
         type: 2}
       propertyPath: m_LocalPosition.x
-      value: 610.5
+      value: 601
       objectReference: {fileID: 0}
     - target: {fileID: 224431451281944538, guid: 52eb078de896190488e6c13e15635297,
         type: 2}
@@ -422,7 +422,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 4294967035
   m_RenderingPath: 3
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0

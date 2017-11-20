@@ -82,7 +82,7 @@ Material:
     m_Colors:
     - _AnimationDirection: {r: 2, g: 1, b: -1, a: 1}
     - _AnimationTiling: {r: 0.4, g: 0.391, b: 0.56, a: 0.7}
-    - _BaseColor: {r: 0.08235, g: 0.29411, b: 0.4838, a: 0.8}
+    - _BaseColor: {r: 0.08235, g: 0.29411, b: 0.4838, a: 0.74509805}
     - _BumpDirection: {r: 1, g: 30, b: 20, a: -20}
     - _BumpTiling: {r: 0.02, g: 0.02, b: 0.02, a: 0.02}
     - _Color: {r: 1, g: 1, b: 1, a: 1}

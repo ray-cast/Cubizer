@@ -36,21 +36,8 @@ namespace Cubizer
 
 		public void buildTree(ChunkPrimer map, byte ix, byte iz, byte h)
 		{
-			for (int iy = h + 3; iy < h + 8; iy++)
-			{
-				for (int ox = -3; ox <= 3; ox++)
-				{
-					for (int oz = -3; oz <= 3; oz++)
-					{
-						int d = (ox * ox) + (oz * oz) + (iy - (h + 4)) * (iy - (h + 4));
-						if (d < 11)
-							map.voxels.Set((byte)(ix + ox), (byte)iy, (byte)(iz + oz), _materials.treeLeaf);
-					}
-				}
-			}
-
-			for (byte iy = h; iy < h + 7; iy++)
-				map.voxels.Set(ix, iy, iz, _materials.tree);
+			UnityEngine.Random.InitState(ix * iz);
+			map.voxels.Set(ix, h, iz, _materials.trees[(int)System.Math.Round(UnityEngine.Random.value * (_materials.trees.Length - 1))]);
 		}
 
 		public void BuildGrass(ChunkPrimer map, byte ix, byte iz, int dx, int dz, VoxelMaterial main, out float f, out byte h)

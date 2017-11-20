@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Cubizer
 {
 	[Serializable]
-	public class LiveModels : CubizerModel
+	public class LiveManagerModels : CubizerModel
 	{
 		[Serializable]
 		public struct LiveSettings

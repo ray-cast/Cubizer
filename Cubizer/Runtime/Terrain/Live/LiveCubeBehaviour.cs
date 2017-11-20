@@ -77,7 +77,7 @@ namespace Cubizer
 
 				var actors = new GameObject(this.name);
 				actors.isStatic = this.gameObject.isStatic;
-				actors.layer = this.gameObject.layer;
+				actors.tag = gameObject.tag;
 				actors.transform.parent = parent.transform;
 				actors.transform.position = parent.transform.position;
 
