@@ -77,7 +77,7 @@ namespace Cubizer
 			return false;
 		}
 
-		public bool Set(Vector3<int> pos, BiomeData value)
+		public bool Set(Vector3<int> pos, IBiomeData value)
 		{
 			return Set(pos.x, pos.y, pos.z, value);
 		}
