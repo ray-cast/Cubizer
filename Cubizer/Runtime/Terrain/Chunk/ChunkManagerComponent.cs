@@ -14,7 +14,6 @@ namespace Cubizer
 		public class ChunkDelegates
 		{
 			public delegate void OnSaveData(GameObject chunk);
-
 			public delegate bool OnLoadData(int x, int y, int z, out ChunkPrimer chunk);
 
 			public OnSaveData onSaveChunkData;

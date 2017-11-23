@@ -45,6 +45,23 @@ namespace Cubizer
 			Cursor.visible = false;
 		}
 
+		public void Reset()
+		{
+			_isCursorLocked = false;
+
+			Cursor.lockState = CursorLockMode.None;
+			Cursor.visible = true;
+		}
+
+		public void OnApplicationQuit()
+		{
+			if (_isCursorLocked)
+			{
+				Cursor.lockState = CursorLockMode.None;
+				Cursor.visible = true;
+			}
+		}
+
 		public void UpdateMouseLock()
 		{
 			if (Input.GetKeyUp(KeyCode.Escape))
@@ -53,17 +70,16 @@ namespace Cubizer
 				_isCursorLocked = true;
 
 			if (_isCursorLocked)
-				Time.timeScale = 1;
-			else if (!_isCursorLocked)
-				Time.timeScale = 0;
-
-			if (_isCursorLocked)
 			{
+				Time.timeScale = 1;
+
 				Cursor.lockState = CursorLockMode.Locked;
 				Cursor.visible = false;
 			}
 			else if (!_isCursorLocked)
 			{
+				Time.timeScale = 0;
+
 				Cursor.lockState = CursorLockMode.None;
 				Cursor.visible = true;
 			}

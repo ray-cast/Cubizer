@@ -69,12 +69,6 @@ namespace Cubizer
 
 			if (data.indices.Length > 0)
 			{
-				Mesh mesh = new Mesh();
-				mesh.vertices = data.vertices;
-				mesh.normals = data.normals;
-				mesh.uv = data.uv;
-				mesh.triangles = data.indices;
-
 				var actors = new GameObject(this.name);
 				actors.isStatic = this.gameObject.isStatic;
 				actors.tag = gameObject.tag;
@@ -89,6 +83,7 @@ namespace Cubizer
 					clone.shadowCastingMode = _meshRenderer.shadowCastingMode;
 				}
 
+				var mesh = data.mesh;
 				actors.AddComponent<MeshFilter>().mesh = mesh;
 
 				if (_meshCollider && _meshCollider.enabled)

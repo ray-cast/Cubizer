@@ -6,8 +6,15 @@ namespace Cubizer
 	[DisallowMultipleComponent]
 	public abstract class IChunkData : MonoBehaviour
 	{
-		public abstract ChunkPrimer chunk { set; get; }
-		public abstract IChunkDataManager chunkManager { internal set; get; }
+		public abstract ChunkPrimer chunk
+		{
+			get; set;
+		}
+
+		public abstract IChunkDataManager chunkManager
+		{
+			get; internal set;
+		}
 
 		public abstract void OnBuildChunk();
 	}

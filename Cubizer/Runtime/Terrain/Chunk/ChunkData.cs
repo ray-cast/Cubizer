@@ -26,14 +26,14 @@ namespace Cubizer
 			set
 			{
 				Debug.Assert(_chunk != value);
-				
+
 				if (_chunk != null)
 					_chunk.onChunkChange -= OnBuildChunk;
 
 				_chunk = value;
 
 				if (_chunk != null)
-					_chunk.onChunkChange += OnBuildChunk;				
+					_chunk.onChunkChange += OnBuildChunk;
 			}
 			get
 			{
@@ -44,6 +44,12 @@ namespace Cubizer
 		public void Start()
 		{
 			this.OnBuildChunk();
+		}
+
+		public void OnDestroy()
+		{
+			if (_chunkManager != null)
+				_chunkManager.Set(_chunk.position.x, _chunk.position.y, _chunk.position.z, null);
 		}
 
 		public void OnDrawGizmos()

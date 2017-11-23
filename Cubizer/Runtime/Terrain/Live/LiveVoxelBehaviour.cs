@@ -19,7 +19,7 @@ namespace Cubizer
 			if (_shader == null)
 				Debug.LogError("Please assign a shader on the inspector");
 
-			if (_asset == null)
+			if (_asset == null || _asset.bytes.Length == 0)
 				Debug.LogError("Please assign a .vox file on the inspector");
 
 			try

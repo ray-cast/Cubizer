@@ -174,19 +174,19 @@ public class VOXFileLoader : EditorWindow
 
 	private static void CreateAssetBundlesFromSelection(string targetPath, string bundleName = "Resource", string ext = "")
 	{
-		var SelectedAsset = Selection.GetFiltered(typeof(UnityEngine.Object), SelectionMode.DeepAssets);
+		var SelectedDeppAsset = Selection.GetFiltered(typeof(UnityEngine.Object), SelectionMode.DeepAssets);
 
-		if (SelectedAsset.Length > 0)
+		if (SelectedDeppAsset.Length > 0)
 		{
 			AssetBundleBuild[] buildMap = new AssetBundleBuild[1];
 			buildMap[0].assetBundleName = bundleName + ext;
-			buildMap[0].assetNames = new string[SelectedAsset.Length];
+			buildMap[0].assetNames = new string[SelectedDeppAsset.Length];
 
-			for (int i = 0; i < SelectedAsset.Length; i++)
-				buildMap[0].assetNames[i] = AssetDatabase.GetAssetPath(SelectedAsset[i]);
+			for (int i = 0; i < SelectedDeppAsset.Length; i++)
+				buildMap[0].assetNames[i] = AssetDatabase.GetAssetPath(SelectedDeppAsset[i]);
 
 			if (!BuildPipeline.BuildAssetBundles(targetPath, buildMap, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows))
-				UnityEngine.Debug.Log(targetPath + ": Failed to create");
+				UnityEngine.Debug.Log(targetPath + ": Failed to create asset bundles.");
 
 			AssetDatabase.Refresh();
 		}
@@ -232,8 +232,13 @@ public class VOXFileLoader : EditorWindow
 		CreateAssetBundlesFromSelection(SelectedPath + "/", bundleName, ext);
 	}
 
-	private static void CreateAssetBundlesFromSelectionToStreamingAssets(string bundleName = "Resource", string ext = "")
+	private static void CreateAssetBundlesFromSelectionToStreamingAssets(string bundleName = "Resource", string ext = "Assets")
 	{
-		CreateAssetBundlesFromSelection(Application.dataPath + "/StreamingAssets/", bundleName, "Assets");
+		var targetPath = Application.dataPath + "/StreamingAssets/";
+
+		if (!Directory.Exists(targetPath))
+			Directory.CreateDirectory(targetPath);
+
+		CreateAssetBundlesFromSelection(targetPath, bundleName, ext);
 	}
 }

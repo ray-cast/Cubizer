@@ -500,7 +500,8 @@ namespace Cubizer
 						meshRenderer.sharedMaterial.mainTexture = texture;
 #else
 						meshFilter.mesh = mesh;
-						meshRenderer.material = new Material(Shader.Find("Mobile/Diffuse"));
+						meshRenderer.material = new Material(shader);
+						meshRenderer.material.name = "material";
 						meshRenderer.material.mainTexture = texture;
 #endif
 					}

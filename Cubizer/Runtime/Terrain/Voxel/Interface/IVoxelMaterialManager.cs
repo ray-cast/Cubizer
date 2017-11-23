@@ -1,6 +1,8 @@
-﻿namespace Cubizer
+﻿using System;
+
+namespace Cubizer
 {
-	public interface IVoxelMaterialManager
+	public interface IVoxelMaterialManager : IDisposable
 	{
 		VoxelMaterial CreateMaterial(string name, VoxelMaterialParams setting);
 
@@ -8,6 +10,6 @@
 
 		VoxelMaterial GetMaterial(int id);
 
-		VoxelMaterial[] GetMaterials();
+		VoxelMaterial[] GetMaterialAll();
 	}
 }
