@@ -114,8 +114,7 @@ namespace Cubizer
 
 			for (int i = 0; i < transform.childCount; i++)
 			{
-				var transformChild = transform.GetChild(i);
-				var child = transformChild.gameObject;
+				var child = transform.GetChild(i).gameObject;
 
 				if (is_save)
 				{
@@ -223,7 +222,7 @@ namespace Cubizer
 						return false;
 				}
 
-				chunk.voxels.Get((byte)ix, (byte)iy, (byte)iz, ref block);
+				chunk.voxels.Get(ix, iy, iz, ref block);
 
 				origin += ray.direction;
 

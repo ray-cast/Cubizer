@@ -344,6 +344,11 @@ Prefab:
       propertyPath: _repeatRateUpdate
       value: 0.1
       objectReference: {fileID: 0}
+    - target: {fileID: 114603188492066694, guid: a9b3b82065454b540a5c121de26b1240,
+        type: 2}
+      propertyPath: _isHitTesting
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: a9b3b82065454b540a5c121de26b1240, type: 2}
   m_IsPrefabParent: 0

@@ -23,7 +23,6 @@ namespace Cubizer
 		public class TerrainDelegates
 		{
 			public delegate void OnSaveData(GameObject chunk);
-
 			public delegate bool OnLoadData(int x, int y, int z, out ChunkPrimer chunk);
 
 			public OnSaveData onSaveChunkData;
@@ -33,7 +32,7 @@ namespace Cubizer
 		public CubizerProfile profile
 		{
 			get { return _profile; }
-		}		
+		}
 
 		public TerrainDelegates events
 		{
@@ -63,7 +62,7 @@ namespace Cubizer
 			Debug.Assert(_profile.chunk.settings.chunkSize > 0);
 
 			Math.Noise.simplex_seed(_profile.terrain.settings.seed);
-			
+
 			_context = new CubizerContext();
 			_context.profile = _profile;
 			_context.behaviour = this;
@@ -107,7 +106,7 @@ namespace Cubizer
 			}
 		}
 
-		private T AddComponent<T>(T component)	where T : ICubizerComponent
+		private T AddComponent<T>(T component) where T : ICubizerComponent
 		{
 			_components.Add(component);
 			return component;
