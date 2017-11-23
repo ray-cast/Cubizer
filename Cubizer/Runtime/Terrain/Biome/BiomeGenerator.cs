@@ -2,22 +2,16 @@
 {
 	public abstract class BiomeGenerator : IBiomeGenerator
 	{
-		private CubizerBehaviour _terrain;
+		private CubizerContext _context;
 
-		public CubizerBehaviour terrain
+		public override CubizerContext context
 		{
-			get { return _terrain; }
+			get { return _context; }
 		}
 
-		public void InvokeDefaultOnEnable()
+		public override void Init(CubizerContext context)
 		{
-			if (transform.parent != null)
-				_terrain = transform.parent.GetComponent<BiomeManagerComponent>().context.behaviour;
-		}
-
-		public void OnEnable()
-		{
-			this.InvokeDefaultOnEnable();
+			_context = context;
 		}
 	}
 }

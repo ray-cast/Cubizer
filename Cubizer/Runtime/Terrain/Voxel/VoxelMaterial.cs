@@ -2,8 +2,6 @@
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
-using UnityEngine;
-
 namespace Cubizer
 {
 	[Serializable]
@@ -11,24 +9,44 @@ namespace Cubizer
 	{
 		private int _instanceID;
 
-		[SerializeField]
-		private bool _transparent = false;
-
-		[SerializeField]
-		private bool _merge = false;
-
 		private string _name;
 
-		public object userdata;
+		private VoxelMaterialModels _model;
 
-		public bool is_transparent { set { _transparent = value; } get { return _transparent; } }
-		public bool is_merge { set { _merge = value; } get { return _merge; } }
+		public string name
+		{
+			get { return _name; }
+			set { _name = value; }
+		}
 
-		public string name { set { _name = value; } get { return _name; } }
+		public bool is_transparent
+		{
+			get { return _model.transparent; }
+			set { _model.transparent = value; }
+		}
 
-		public VoxelMaterial(string name, int instanceID)
+		public bool is_merge
+		{
+			get { return _model.merge; }
+			set { _model.merge = value; }
+		}
+
+		public object userdata
+		{
+			get
+			{
+				return _model.userdata;
+			}
+			internal set
+			{
+				_model.userdata = value;
+			}
+		}
+
+		public VoxelMaterial(string name, VoxelMaterialModels models, int instanceID)
 		{
 			_name = name;
+			_model = models;
 			_instanceID = instanceID;
 		}
 

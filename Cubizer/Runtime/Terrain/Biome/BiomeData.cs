@@ -9,7 +9,7 @@
 			_chunkGenerator = generator;
 		}
 
-		public ChunkPrimer OnBuildChunk(CubizerBehaviour terrain, short x, short y, short z)
+		public ChunkPrimer OnBuildChunk(CubizerBehaviour terrain, int x, int y, int z)
 		{
 			return _chunkGenerator != null ? _chunkGenerator.OnCreateChunk(terrain, x, y, z) : null;
 		}

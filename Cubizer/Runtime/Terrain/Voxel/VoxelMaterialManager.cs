@@ -1,8 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Collections.Generic;
 
-using UnityEngine;
-
 namespace Cubizer
 {
 	public sealed class VoxelMaterialManager : IVoxelMaterialManager
@@ -26,17 +24,17 @@ namespace Cubizer
 			return instance;
 		}
 
-		public VoxelMaterial CreateMaterial(string name, VoxelMaterialParams setting)
+		public VoxelMaterial CreateMaterial(string name, VoxelMaterialModels models)
 		{
-			System.Diagnostics.Debug.Assert(!System.String.IsNullOrEmpty(name));
+			UnityEngine.Debug.Assert(!System.String.IsNullOrEmpty(name));
 
 			if (_liveIndex.ContainsKey(name))
 				throw new System.Exception(string.Format("Material has been created ({0})", name));
 
-			var newMaterial = new VoxelMaterial(name, _lives.Count + 1)
+			var newMaterial = new VoxelMaterial(name, models, _lives.Count + 1)
 			{
-				is_merge = setting.merge,
-				is_transparent = setting.transparent
+				is_merge = models.merge,
+				is_transparent = models.transparent
 			};
 
 			_liveIndex.Add(name, _lives.Count + 1);
@@ -47,7 +45,7 @@ namespace Cubizer
 
 		public VoxelMaterial GetMaterial(string name)
 		{
-			System.Diagnostics.Debug.Assert(!System.String.IsNullOrEmpty(name));
+			UnityEngine.Debug.Assert(!System.String.IsNullOrEmpty(name));
 
 			int index = 0;
 			if (!_liveIndex.TryGetValue(name, out index))

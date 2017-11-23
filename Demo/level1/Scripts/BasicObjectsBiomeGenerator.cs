@@ -139,8 +139,10 @@ namespace Cubizer
 			}
 		}
 
-		public override IBiomeData OnBuildBiome(short x, short y, short z)
+		public override IBiomeData OnBuildBiome(int x, int y, int z)
 		{
+			Debug.Assert(_biomeDatas != null);
+
 			if (_isGenPlaneOnly)
 			{
 				if (y == layerGrass)

@@ -9,7 +9,7 @@ namespace Cubizer
 	[Serializable]
 	public class ChunkPrimer
 	{
-		private Vector3<System.Int16> _position;
+		private Vector3<int> _position;
 		private VoxelData<VoxelMaterial> _voxels;
 
 		[NonSerialized]
@@ -18,7 +18,7 @@ namespace Cubizer
 		[NonSerialized]
 		private ChunkPrimerDelegates.OnDestroyDelegate _onChunkDestroy;
 
-		public Vector3<System.Int16> position
+		public Vector3<int> position
 		{
 			set { _position = value; }
 			get { return _position; }
@@ -64,27 +64,27 @@ namespace Cubizer
 			_voxels = new VoxelData<VoxelMaterial>(bound, cout);
 		}
 
-		public ChunkPrimer(Vector3<int> bound, Vector3<System.Int16> pos, int cout = 0)
+		public ChunkPrimer(Vector3<int> bound, Vector3<int> pos, int cout = 0)
 		{
 			_position = pos;
 			_voxels = new VoxelData<VoxelMaterial>(bound, cout);
 		}
 
-		public ChunkPrimer(Vector3<int> bound, System.Int16 x, System.Int16 y, System.Int16 z, int cout = 0)
+		public ChunkPrimer(Vector3<int> bound, int x, int y, int z, int cout = 0)
 		{
-			_position = new Vector3<System.Int16>(x, y, z);
+			_position = new Vector3<int>(x, y, z);
 			_voxels = new VoxelData<VoxelMaterial>(bound, cout);
 		}
 
-		public ChunkPrimer(System.Int32 bound, System.Int16 x, System.Int16 y, System.Int16 z, int cout = 0)
+		public ChunkPrimer(System.Int32 bound, int x, int y, int z, int cout = 0)
 		{
-			_position = new Vector3<System.Int16>(x, y, z);
+			_position = new Vector3<int>(x, y, z);
 			_voxels = new VoxelData<VoxelMaterial>(bound, bound, bound, cout);
 		}
 
-		public ChunkPrimer(System.Int32 bound_x, System.Int32 bound_y, System.Int32 bound_z, System.Int16 x, System.Int16 y, System.Int16 z, int cout = 0)
+		public ChunkPrimer(System.Int32 bound_x, System.Int32 bound_y, System.Int32 bound_z, int x, int y, int z, int cout = 0)
 		{
-			_position = new Vector3<System.Int16>(x, y, z);
+			_position = new Vector3<int>(x, y, z);
 			_voxels = new VoxelData<VoxelMaterial>(bound_x, bound_y, bound_z, cout);
 		}
 

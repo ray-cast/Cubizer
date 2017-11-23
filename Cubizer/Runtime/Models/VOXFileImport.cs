@@ -489,20 +489,29 @@ namespace Cubizer
 						mesh.triangles = triangles;
 
 						var meshFilter = model.AddComponent<MeshFilter>();
-						var meshRenderer = model.AddComponent<MeshRenderer>();
 
 #if UNITY_EDITOR
 						MeshUtility.Optimize(mesh);
-
 						meshFilter.sharedMesh = mesh;
-						meshRenderer.sharedMaterial = new Material(shader);
-						meshRenderer.sharedMaterial.name = "material";
-						meshRenderer.sharedMaterial.mainTexture = texture;
+
+						if (shader != null)
+						{
+							var meshRenderer = model.AddComponent<MeshRenderer>();
+							meshRenderer.sharedMaterial = new Material(shader);
+							meshRenderer.sharedMaterial.name = "material";
+							meshRenderer.sharedMaterial.mainTexture = texture;
+						}
+
 #else
 						meshFilter.mesh = mesh;
-						meshRenderer.material = new Material(shader);
-						meshRenderer.material.name = "material";
-						meshRenderer.material.mainTexture = texture;
+
+						if (shader != null)
+						{
+							var meshRenderer = model.AddComponent<MeshRenderer>();
+							meshRenderer.material = new Material(shader);
+							meshRenderer.material.name = "material";
+							meshRenderer.material.mainTexture = texture;
+						}
 #endif
 					}
 				}
@@ -563,6 +572,18 @@ namespace Cubizer
 				gameObject.name = name;
 				gameObject.isStatic = true;
 				LoadVoxelFileAsGameObject(gameObject, voxel, lodLevel, Shader.Find(shader));
+
+				return gameObject;
+			}
+
+			public static GameObject LoadVoxelFileAsGameObject(string name, VoxFileData voxel, int lodLevel, Shader shader)
+			{
+				Debug.Assert(!String.IsNullOrEmpty(name));
+
+				GameObject gameObject = new GameObject();
+				gameObject.name = name;
+				gameObject.isStatic = true;
+				LoadVoxelFileAsGameObject(gameObject, voxel, lodLevel, shader);
 
 				return gameObject;
 			}

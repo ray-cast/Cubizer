@@ -4,7 +4,7 @@ namespace Cubizer
 {
 	public interface IVoxelMaterialManager : IDisposable
 	{
-		VoxelMaterial CreateMaterial(string name, VoxelMaterialParams setting);
+		VoxelMaterial CreateMaterial(string name, VoxelMaterialModels models);
 
 		VoxelMaterial GetMaterial(string name);
 

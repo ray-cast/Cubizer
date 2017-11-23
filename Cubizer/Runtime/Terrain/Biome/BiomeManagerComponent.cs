@@ -32,31 +32,34 @@ namespace Cubizer
 					var gameObject = GameObject.Instantiate(it.gameObject);
 					gameObject.name = it.name;
 					gameObject.transform.parent = _biomeObject.transform;
+					gameObject.GetComponent<IBiomeGenerator>().Init(this.context);
 				}
 			}
 		}
 
 		public IBiomeData buildBiomeIfNotExist(int x, int y, int z)
 		{
+			Debug.Assert(model.settings.biomeNull != null);
+
 			IBiomeData biomeData = null;
 			if (this.biomes.Get(x, y, z, out biomeData))
 				return biomeData;
 
 			var transform = _biomeObject.transform;
-			var transformCount = transform.childCount;
 
-			for (int i = 0; i < transformCount; i++)
+			for (int i = 0; i < transform.childCount; i++)
 			{
-				var biome = transform.GetChild(i).GetComponent<IBiomeGenerator>().OnBuildBiome((short)x, (short)y, (short)z);
-				if (biome != null)
-				{
-					model.settings.biomeManager.Set(x, y, z, biome);
-					return biome;
-				}
+				biomeData = transform.GetChild(i).GetComponent<IBiomeGenerator>().OnBuildBiome((short)x, (short)y, (short)z);
+				if (biomeData != null)
+					break;
 			}
 
-			model.settings.biomeManager.Set(x, y, z, model.settings.biomeNull);
-			return model.settings.biomeNull;
+			if (biomeData == null)
+				biomeData = model.settings.biomeNull;
+
+			model.settings.biomeManager.Set(x, y, z, biomeData);
+
+			return biomeData;
 		}
 	}
 }

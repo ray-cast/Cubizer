@@ -2,6 +2,6 @@
 {
 	public interface IBiomeData
 	{
-		ChunkPrimer OnBuildChunk(CubizerBehaviour terrain, short x, short y, short z);
+		ChunkPrimer OnBuildChunk(CubizerBehaviour terrain, int x, int y, int z);
 	}
 }

@@ -2,13 +2,9 @@
 
 namespace Cubizer
 {
-	[RequireComponent(typeof(MeshRenderer))]
 	[AddComponentMenu("Cubizer/LiveCubeBehaviour")]
 	public class LiveCubeBehaviour : LiveBehaviour
 	{
-		private MeshRenderer _meshRenderer;
-		private MeshCollider _meshCollider;
-
 		private static Vector3[,] _vertices = new Vector3[6, 4]
 		{
 			{ new Vector3(-0.5f, -0.5f, -0.5f), new Vector3(-0.5f, -0.5f, +0.5f), new Vector3(-0.5f, +0.5f, -0.5f), new Vector3(-0.5f, +0.5f, +0.5f) },
@@ -49,11 +45,11 @@ namespace Cubizer
 			{ 0, 3, 1, 0, 2, 3 }
 		};
 
-		public void Start()
-		{
-			_meshRenderer = GetComponent<MeshRenderer>();
-			_meshCollider = GetComponent<MeshCollider>();
-		}
+		[SerializeField]
+		public Material msehMaterial;
+
+		[SerializeField]
+		public PhysicMaterial physicMaterial;
 
 		public override void OnBuildChunk(IChunkData parent, IVoxelModel model, int faceCount)
 		{
@@ -71,26 +67,25 @@ namespace Cubizer
 			{
 				var actors = new GameObject(this.name);
 				actors.isStatic = this.gameObject.isStatic;
-				actors.tag = gameObject.tag;
+				actors.tag = this.gameObject.tag;
+				actors.layer = this.gameObject.layer;
 				actors.transform.parent = parent.transform;
 				actors.transform.position = parent.transform.position;
 
-				if (_meshRenderer != null)
+				if (msehMaterial != null)
 				{
 					var clone = actors.AddComponent<MeshRenderer>();
-					clone.material = _meshRenderer.material;
-					clone.receiveShadows = _meshRenderer.receiveShadows;
-					clone.shadowCastingMode = _meshRenderer.shadowCastingMode;
+					clone.material = msehMaterial;
 				}
 
 				var mesh = data.mesh;
 				actors.AddComponent<MeshFilter>().mesh = mesh;
 
-				if (_meshCollider && _meshCollider.enabled)
+				if (physicMaterial != null)
 				{
 					var meshCollider = actors.AddComponent<MeshCollider>();
-					meshCollider.sharedMesh = _meshCollider.sharedMesh ? _meshCollider.sharedMesh : mesh;
-					meshCollider.material = _meshCollider.material;
+					meshCollider.sharedMesh = mesh;
+					meshCollider.material = physicMaterial;
 				}
 			}
 		}

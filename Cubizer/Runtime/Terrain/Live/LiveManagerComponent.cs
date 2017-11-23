@@ -7,7 +7,7 @@ namespace Cubizer
 	[Serializable]
 	public sealed class LiveManagerComponent : CubizerComponent<LiveManagerModels>
 	{
-		GameObject _biomeObject;
+		private GameObject _biomeObject;
 
 		public override bool active
 		{
@@ -26,7 +26,6 @@ namespace Cubizer
 					gameObject.name = it.name;
 					gameObject.transform.parent = _biomeObject.transform;
 					gameObject.GetComponent<LiveBehaviour>().material = VoxelMaterialManager.GetInstance().CreateMaterial(it.name, it.settings);
-					gameObject.layer = 8;
 				}
 			}
 		}

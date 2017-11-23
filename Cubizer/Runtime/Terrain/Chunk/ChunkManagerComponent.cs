@@ -35,7 +35,7 @@ namespace Cubizer
 			get { return _events; }
 		}
 
-		public IChunkDataManager data
+		public IChunkDataManager manager
 		{
 			get { return model.settings.chunkManager; }
 		}
@@ -56,15 +56,15 @@ namespace Cubizer
 
 		public bool CreateChunk(int x, int y, int z)
 		{
-			if (this.data.Count() > model.settings.chunkNumLimits)
+			if (this.manager.Count() > model.settings.chunkNumLimits)
 			{
-				this.data.GC();
+				this.manager.GC();
 				context.behaviour.biomeManager.biomes.GC();
 				return false;
 			}
 
 			ChunkPrimer chunk;
-			if (this.data.Get(x, y, z, out chunk))
+			if (this.manager.Get(x, y, z, out chunk))
 				return false;
 
 			if (_events.onLoadChunkData != null)
@@ -75,9 +75,9 @@ namespace Cubizer
 				IBiomeData biomeData = context.behaviour.biomeManager.buildBiomeIfNotExist(x, y, z);
 				if (biomeData != null)
 				{
-					chunk = biomeData.OnBuildChunk(context.behaviour, (short)x, (short)y, (short)z);
+					chunk = biomeData.OnBuildChunk(context.behaviour, x, y, z);
 					if (chunk == null)
-						chunk = new ChunkPrimer(model.settings.chunkSize, (short)x, (short)y, (short)z);
+						chunk = new ChunkPrimer(model.settings.chunkSize, x, y, z);
 				}
 			}
 
@@ -86,12 +86,9 @@ namespace Cubizer
 				var gameObject = new GameObject("Chunk");
 				gameObject.transform.parent = _chunkObject.transform;
 				gameObject.transform.position = new Vector3(x, y, z) * model.settings.chunkSize;
+				gameObject.AddComponent<ChunkData>().Init(chunk, manager);
 
-				var chunkData = gameObject.AddComponent<ChunkData>();
-				chunkData.chunk = chunk;
-				chunkData.chunkManager = data;
-
-				this.data.Set(x, y, z, chunk);
+				this.manager.Set(x, y, z, chunk);
 			}
 
 			return chunk != null ? true : false;
@@ -184,7 +181,7 @@ namespace Cubizer
 			lastChunk = null;
 			lastX = lastY = lastZ = outX = outY = outZ = 255;
 
-			if (!this.data.Get(chunkX, chunkY, chunkZ, out chunk))
+			if (!this.manager.Get(chunkX, chunkY, chunkZ, out chunk))
 				return false;
 
 			Vector3 origin = ray.origin;
@@ -218,7 +215,7 @@ namespace Cubizer
 
 				if (isOutOfChunk)
 				{
-					if (!this.data.Get(chunkX, chunkY, chunkZ, out chunk))
+					if (!this.manager.Get(chunkX, chunkY, chunkZ, out chunk))
 						return false;
 				}
 
@@ -333,7 +330,7 @@ namespace Cubizer
 							continue;
 
 						ChunkPrimer chunk;
-						var hit = this.data.Get((short)dx, (short)dy, (short)dz, out chunk);
+						var hit = this.manager.Get(dx, dy, dz, out chunk);
 						if (hit)
 							continue;
 
@@ -365,7 +362,7 @@ namespace Cubizer
 			using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write))
 			{
 				var serializer = new BinaryFormatter();
-				serializer.Serialize(stream, this.data);
+				serializer.Serialize(stream, this.manager);
 
 				return true;
 			}
@@ -375,16 +372,16 @@ namespace Cubizer
 		{
 			Debug.Assert(path != null);
 
-			if (this.data.Load(path))
+			if (this.manager.Load(path))
 			{
 				DestroyChunksImmediate(is_save);
 
-				foreach (ChunkPrimer chunk in this.data.GetEnumerator())
+				foreach (ChunkPrimer chunk in this.manager.GetEnumerator())
 				{
 					var gameObject = new GameObject("Chunk");
 					gameObject.transform.parent = _chunkObject.transform;
 					gameObject.transform.position = new Vector3(chunk.position.x, chunk.position.y, chunk.position.z) * model.settings.chunkSize;
-					gameObject.AddComponent<ChunkData>().chunk = chunk;
+					gameObject.AddComponent<ChunkData>().Init(chunk, manager);
 				}
 
 				return true;

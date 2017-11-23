@@ -5,14 +5,14 @@ namespace Cubizer
 	[AddComponentMenu("Cubizer/LiveVoxelBehaviour")]
 	public class LiveVoxelBehaviour : LiveBehaviour
 	{
-		private MeshFilter _meshFilter;
-		private MeshRenderer _meshRenderer;
-		private MeshCollider _meshCollider;
-		private LODGroup _lodGroup;
+		private Mesh _mesh;
+		private Material _meshMaterial;
+		private LOD[] _lods;
 
 		public int _LOD = 0;
 		public Shader _shader;
 		public TextAsset _asset;
+		public PhysicMaterial _physicMaterial;
 
 		public void Start()
 		{
@@ -26,21 +26,20 @@ namespace Cubizer
 			{
 				var vox = Model.VoxFileImport.Load(_asset.bytes);
 				if (vox != null)
-					Model.VoxFileImport.LoadVoxelFileAsGameObject(gameObject, vox, _LOD, _shader);
-
-				if (transform.childCount > 0)
 				{
-					var model = transform.GetChild(0);
-					if (model)
-					{
-						model.gameObject.layer = this.gameObject.layer;
+					var model = Model.VoxFileImport.LoadVoxelFileAsGameObject(this.name, vox, _LOD, _shader);
 
-						_meshCollider = GetComponent<MeshCollider>();
+					_mesh = model.GetComponentInChildren<MeshFilter>().sharedMesh;
 
-						_lodGroup = model.GetComponent<LODGroup>();
-						_meshFilter = model.GetComponent<MeshFilter>();
-						_meshRenderer = model.GetComponent<MeshRenderer>();
-					}
+					var lodGroup = model.GetComponentInChildren<LODGroup>();
+					if (lodGroup != null)
+						_lods = lodGroup.GetLODs();
+
+					var meshRenderer = model.GetComponentInChildren<MeshRenderer>();
+					if (meshRenderer != null)
+						_meshMaterial = meshRenderer.sharedMaterial;
+
+					DestroyImmediate(model);
 				}
 			}
 			catch (System.Exception e)
@@ -51,7 +50,7 @@ namespace Cubizer
 
 		public override void OnBuildChunk(IChunkData parent, IVoxelModel model, int faceCount)
 		{
-			if (_meshFilter == null)
+			if (_mesh == null)
 				return;
 
 			foreach (VoxelPrimitive it in model.GetEnumerator(this.material.GetInstanceID()))
@@ -62,38 +61,38 @@ namespace Cubizer
 				var actors = new GameObject(this.name);
 				actors.isStatic = gameObject.isStatic;
 				actors.tag = gameObject.tag;
+				actors.layer = gameObject.layer;
 				actors.transform.parent = parent.transform;
 				actors.transform.localPosition = transform.position + pos;
 				actors.transform.localRotation = transform.rotation;
 				actors.transform.localScale = Vector3.Scale(transform.localScale, scale);
 
-				actors.AddComponent<MeshFilter>().sharedMesh = _meshFilter.sharedMesh;
+				actors.AddComponent<MeshFilter>().sharedMesh = _mesh;
 
-				if (_meshRenderer != null && _meshRenderer.enabled)
+				if (_meshMaterial)
 				{
 					var clone = actors.AddComponent<MeshRenderer>();
-					clone.material = _meshRenderer.material;
-					clone.receiveShadows = _meshRenderer.receiveShadows;
-					clone.shadowCastingMode = _meshRenderer.shadowCastingMode;
+					clone.material = _meshMaterial;
 
-					if (_lodGroup != null && _lodGroup.enabled)
+					if (_lods != null)
 					{
-						var lods = _lodGroup.GetLODs();
-						for (int i = 0; i < lods.Length; i++)
+						LOD[] lods = new LOD[_lods.Length];
+
+						for (int i = 0; i < _lods.Length; i++)
 						{
 							if (lods[i].renderers.Length > 0)
 								lods[i].renderers[0] = clone;
 						}
 
-						actors.AddComponent<LODGroup>().SetLODs(lods);
+						actors.AddComponent<LODGroup>().SetLODs(_lods);
 					}
 				}
 
-				if (_meshCollider && _meshCollider.enabled)
+				if (_physicMaterial != null)
 				{
 					var meshCollider = actors.AddComponent<MeshCollider>();
-					meshCollider.sharedMesh = _meshCollider.sharedMesh ? _meshCollider.sharedMesh : _meshFilter.mesh;
-					meshCollider.material = _meshCollider.material;
+					meshCollider.sharedMesh = _mesh;
+					meshCollider.material = _physicMaterial;
 				}
 			}
 		}

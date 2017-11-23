@@ -11,10 +11,6 @@ namespace Cubizer
 
 		public override IChunkDataManager chunkManager
 		{
-			internal set
-			{
-				_chunkManager = value;
-			}
 			get
 			{
 				return _chunkManager;
@@ -23,9 +19,14 @@ namespace Cubizer
 
 		public override ChunkPrimer chunk
 		{
+			get
+			{
+				return _chunk;
+			}
 			set
 			{
 				Debug.Assert(_chunk != value);
+				Debug.Assert(_chunkManager != null);
 
 				if (_chunk != null)
 					_chunk.onChunkChange -= OnBuildChunk;
@@ -34,10 +35,6 @@ namespace Cubizer
 
 				if (_chunk != null)
 					_chunk.onChunkChange += OnBuildChunk;
-			}
-			get
-			{
-				return _chunk;
 			}
 		}
 
@@ -99,6 +96,16 @@ namespace Cubizer
 					controller.OnBuildChunk(this, model, it.Value);
 				}
 			}
+		}
+
+		public void Init(ChunkPrimer chunk, IChunkDataManager chunkManager)
+		{
+			Debug.Assert(_chunk == null && _chunkManager == null);
+
+			_chunk = chunk;
+			_chunk.onChunkChange += OnBuildChunk;
+
+			_chunkManager = chunkManager;
 		}
 	}
 }

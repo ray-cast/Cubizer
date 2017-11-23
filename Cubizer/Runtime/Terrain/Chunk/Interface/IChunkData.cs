@@ -13,7 +13,7 @@ namespace Cubizer
 
 		public abstract IChunkDataManager chunkManager
 		{
-			get; internal set;
+			get;
 		}
 
 		public abstract void OnBuildChunk();

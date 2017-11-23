@@ -18,7 +18,7 @@ namespace Cubizer
 			public IBiomeDataManager biomeManager;
 
 			[SerializeField]
-			public List<BiomeGenerator> biomeGenerators;
+			public List<IBiomeGenerator> biomeGenerators;
 
 			public static BiomeGeneratorSettings defaultSettings
 			{
@@ -27,7 +27,8 @@ namespace Cubizer
 					return new BiomeGeneratorSettings
 					{
 						biomeNull = new BiomeDataNull(),
-						biomeManager = new BiomeDataManager()
+						biomeManager = new BiomeDataManager(),
+						biomeGenerators = new List<IBiomeGenerator>()
 					};
 				}
 			}

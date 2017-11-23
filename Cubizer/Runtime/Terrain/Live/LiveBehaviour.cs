@@ -6,13 +6,17 @@ namespace Cubizer
 	public abstract class LiveBehaviour : ILiveBehaviour
 	{
 		[SerializeField]
-		private VoxelMaterialParams _settings;
+		private VoxelMaterialModels _settings;
 
 		private VoxelMaterial _material;
 
-		public VoxelMaterialParams settings
+		public override VoxelMaterialModels settings
 		{
-			set
+			get
+			{
+				return _settings;
+			}
+			internal set
 			{
 				_settings = value;
 
@@ -22,23 +26,19 @@ namespace Cubizer
 					_material.is_transparent = value.transparent;
 				}
 			}
-			get
-			{
-				return _settings;
-			}
 		}
 
-		public VoxelMaterial material
+		public override VoxelMaterial material
 		{
-			set
+			get
+			{
+				return _material;
+			}
+			internal set
 			{
 				if (value != null)
 					value.userdata = this;
 				_material = value;
-			}
-			get
-			{
-				return _material;
 			}
 		}
 

@@ -12,7 +12,7 @@ namespace Cubizer
 		public struct LiveSettings
 		{
 			[SerializeField]
-			public List<LiveBehaviour> lives;
+			public List<ILiveBehaviour> lives;
 
 			public static LiveSettings defaultSettings
 			{

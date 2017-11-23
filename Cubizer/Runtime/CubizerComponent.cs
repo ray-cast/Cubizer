@@ -3,7 +3,7 @@ using UnityEngine.Rendering;
 
 namespace Cubizer
 {
-	interface ICubizerComponent
+	internal interface ICubizerComponent
 	{
 		bool active { get; }
 
@@ -33,8 +33,12 @@ namespace Cubizer
 			get; internal set;
 		}
 
-		public virtual void OnEnable() { }
-		public virtual void OnDisable() { }
+		public virtual void OnEnable()
+		{
+		}
+		public virtual void OnDisable()
+		{
+		}
 
 		public virtual void Init(CubizerContext _context, T _model)
 		{
