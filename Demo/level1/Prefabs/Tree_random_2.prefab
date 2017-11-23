@@ -19,7 +19,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4657844405516730}
-  - component: {fileID: 64683183905812458}
   - component: {fileID: 114328574832605986}
   m_Layer: 0
   m_Name: Tree_random_2
@@ -41,20 +40,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!64 &64683183905812458
-MeshCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1856026848683312}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Convex: 0
-  m_InflateMesh: 0
-  m_SkinWidth: 0.01
-  m_Mesh: {fileID: 0}
 --- !u!114 &114328574832605986
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -72,3 +57,4 @@ MonoBehaviour:
   _LOD: 0
   _shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
   _asset: {fileID: 4900000, guid: a8e48f9367056ca4399c0b61db5eddca, type: 3}
+  _physicMaterial: {fileID: 13400000, guid: 3aeb7dadc0c69d54d9e5777e9d5631f1, type: 2}
