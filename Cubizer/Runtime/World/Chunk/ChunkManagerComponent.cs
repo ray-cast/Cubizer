@@ -116,30 +116,6 @@ namespace Cubizer
 			}
 		}
 
-		public void DestroyChunksImmediate(bool is_save = true)
-		{
-			Debug.Assert(_chunkObject != null);
-
-			var transform = _chunkObject.transform;
-
-			for (int i = 0; i < transform.childCount; i++)
-			{
-				var transformChild = transform.GetChild(i);
-				var child = transformChild.gameObject;
-
-				if (is_save)
-				{
-					if (_events.onSaveChunkData != null)
-						_events.onSaveChunkData(child);
-				}
-
-				var chunk = transformChild.GetComponent<ChunkData>();
-				this.manager.Set(chunk.chunk.position.x, chunk.chunk.position.y, chunk.chunk.position.z, null);
-
-				GameObject.DestroyImmediate(child);
-			}
-		}
-
 		public void DestroyChunk(Vector3 point, float radius)
 		{
 			Debug.Assert(_chunkObject != null);
@@ -347,7 +323,7 @@ namespace Cubizer
 
 			if (this.manager.Load(path))
 			{
-				DestroyChunksImmediate(is_save);
+				DestroyChunks(is_save);
 
 				foreach (ChunkPrimer chunk in this.manager.GetEnumerator())
 				{
@@ -421,9 +397,8 @@ namespace Cubizer
 						if (dy < model.settings.chunkHeightLimitLow || dy > model.settings.chunkHeightLimitHigh)
 							continue;
 
-						ChunkPrimer chunkHitTest;
-						var hit = this.manager.Get(dx, dy, dz, out chunkHitTest);
-						if (hit)
+						var hit = FindChunk(dx, dy, dz);
+						if (hit != null)
 							continue;
 
 						var p = _chunkOffset + new Vector3(dx, dy, dz) * model.settings.chunkSize;
