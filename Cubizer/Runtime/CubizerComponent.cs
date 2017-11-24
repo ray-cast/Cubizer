@@ -12,6 +12,8 @@ namespace Cubizer
 		void OnEnable();
 		void OnDisable();
 
+		void Update();
+
 		CubizerModel GetModel();
 	}
 
@@ -33,13 +35,6 @@ namespace Cubizer
 			get; internal set;
 		}
 
-		public virtual void OnEnable()
-		{
-		}
-		public virtual void OnDisable()
-		{
-		}
-
 		public virtual void Init(CubizerContext _context, T _model)
 		{
 			model = _model;
@@ -49,6 +44,18 @@ namespace Cubizer
 		public virtual CubizerModel GetModel()
 		{
 			return model;
+		}
+
+		public virtual void OnEnable()
+		{
+		}
+
+		public virtual void OnDisable()
+		{
+		}
+
+		public virtual void Update()
+		{
 		}
 	}
 

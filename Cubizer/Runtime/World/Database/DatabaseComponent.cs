@@ -5,56 +5,51 @@ using UnityEngine;
 
 namespace Cubizer
 {
-	[DisallowMultipleComponent]
-	[RequireComponent(typeof(CubizerBehaviour))]
-	[AddComponentMenu("Cubizer/TerrainLoader")]
-	public class TerrainLoader : MonoBehaviour
+	public class DatabaseComponent : CubizerComponent<DatabaseModels>
 	{
-		public string rootPath;
-		public string username = "/SaveData/";
+		private string _url;
+		private string _username;
 
-		private CubizerBehaviour _terrain;
-
-		private void Start()
+		public override void OnEnable()
 		{
-			_terrain = GetComponent<CubizerBehaviour>();
-			_terrain.events.onSaveChunkData += this.OnSaveData;
-			_terrain.events.onLoadChunkData += this.OnLoadData;
+			_url = model.settings.url;
+			if (string.IsNullOrEmpty(_url))
+				_url = Application.persistentDataPath;
 
-			rootPath = Application.persistentDataPath;
+			_username = model.settings.username;
 
-			CreateDirectory(rootPath);
+			context.behaviour.events.onSaveChunkData += this.OnSaveData;
+			context.behaviour.events.onLoadChunkData += this.OnLoadData;
 		}
 
-		private void Reset()
+		public override void OnDisable()
 		{
-			rootPath = Application.persistentDataPath;
+			base.OnDisable();
 		}
 
 		private void OnSaveData(GameObject chunk)
 		{
-			var data = chunk.GetComponent<ChunkData>();
+			/*var data = chunk.GetComponent<ChunkData>();
 			if (data != null)
 			{
 				var archive = "chunk" + "_" + data.chunk.position.x + "_" + data.chunk.position.y + "_" + data.chunk.position.z;
 				CreateFile(archive, data.chunk);
-			}
+			}*/
 		}
 
 		private bool OnLoadData(int x, int y, int z, out ChunkPrimer chunk)
 		{
-			var archive = "chunk" + "_" + x + "_" + y + "_" + z;
+			/*var archive = "chunk" + "_" + x + "_" + y + "_" + z;
 			if (IsFileExists(archive))
 				chunk = Load(archive);
-			else
-				chunk = null;
-
+			*/
+			chunk = null;
 			return chunk != null;
 		}
 
 		private bool IsFileExists(string archive)
 		{
-			return File.Exists(rootPath + username + archive);
+			return File.Exists(_url + _username + archive);
 		}
 
 		private bool IsDirectoryExists(string archive)
@@ -73,7 +68,7 @@ namespace Cubizer
 		{
 			Debug.Assert(data != null);
 
-			using (var stream = new FileStream(rootPath + username + archive, FileMode.Create, FileAccess.Write))
+			using (var stream = new FileStream(_url + _username + archive, FileMode.Create, FileAccess.Write))
 			{
 				var serializer = new BinaryFormatter();
 				serializer.Serialize(stream, data.voxels);
@@ -82,7 +77,7 @@ namespace Cubizer
 
 		private ChunkPrimer Load(string archive)
 		{
-			using (var stream = new FileStream(rootPath + username + archive, FileMode.Open, FileAccess.Read))
+			using (var stream = new FileStream(_url + _username + archive, FileMode.Open, FileAccess.Read))
 			{
 				return new BinaryFormatter().Deserialize(stream) as ChunkPrimer;
 			}

@@ -5,13 +5,13 @@ namespace Cubizer
 {
 	[DisallowMultipleComponent]
 	[AddComponentMenu("Cubizer/TerrainPickCtrl")]
-	public class TerrainPickCtrl : MonoBehaviour
+	public class PlayerPickCtrl : MonoBehaviour
 	{
 		[SerializeField]
 		private Camera _player;
 
 		[SerializeField]
-		private CubizerBehaviour _terrain;
+		private CubizerBehaviour _server;
 
 		[SerializeField]
 		private LiveBehaviour _block;
@@ -27,12 +27,6 @@ namespace Cubizer
 		[SerializeField] private bool _isHitTesting = false;
 
 		[SerializeField] private int _hitTestDistance = 8;
-
-		public CubizerBehaviour terrain
-		{
-			set { _terrain = value; }
-			get { return _terrain; }
-		}
 
 		public Mesh drawPickMesh
 		{
@@ -72,10 +66,10 @@ namespace Cubizer
 
 		private void Start()
 		{
-			if (_terrain == null)
-				_terrain = GetComponent<CubizerBehaviour>();
+			if (_server == null)
+				_server = GetComponent<CubizerBehaviour>();
 
-			if (_terrain == null)
+			if (_server == null)
 				Debug.LogError("Please assign a terrain on the inspector");
 
 			if (_player == null)
@@ -126,14 +120,14 @@ namespace Cubizer
 				byte x, y, z;
 				ChunkPrimer chunk;
 
-				if (_terrain != null)
+				if (_server != null)
 				{
 					var ray = _player.ScreenPointToRay(Input.mousePosition);
 					ray.origin = _player.transform.position;
 
-					if (_terrain.chunkManager.HitTestByRay(ray, _hitTestDistance, out chunk, out x, out y, out z))
+					if (_server.chunkManager.HitTestByRay(ray, _hitTestDistance, out chunk, out x, out y, out z))
 					{
-						var position = new Vector3(chunk.position.x, chunk.position.y, chunk.position.z) * _terrain.profile.chunk.settings.chunkSize + new Vector3(x, y, z);
+						var position = new Vector3(chunk.position.x, chunk.position.y, chunk.position.z) * _server.profile.chunk.settings.chunkSize + new Vector3(x, y, z);
 						Graphics.DrawMesh(mesh, position, Quaternion.identity, material, gameObject.layer, _player);
 					}
 				}
@@ -147,8 +141,8 @@ namespace Cubizer
 
 			_isHitTesting = true;
 
-			if (_terrain != null && _block != null)
-				_terrain.chunkManager.AddBlockByScreenPos(Input.mousePosition, _hitTestDistance, _block.material);
+			if (_server != null && _block != null)
+				_server.chunkManager.AddBlockByScreenPos(Input.mousePosition, _hitTestDistance, _block.material);
 
 			yield return new WaitWhile(() => Input.GetMouseButton(1));
 
@@ -162,8 +156,8 @@ namespace Cubizer
 
 			_isHitTesting = true;
 
-			if (_terrain != null)
-				_terrain.chunkManager.RemoveBlockByScreenPos(Input.mousePosition, _hitTestDistance);
+			if (_server != null)
+				_server.chunkManager.RemoveBlockByScreenPos(Input.mousePosition, _hitTestDistance);
 
 			yield return new WaitWhile(() => Input.GetMouseButton(0));
 

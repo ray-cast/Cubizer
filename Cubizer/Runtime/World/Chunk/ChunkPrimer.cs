@@ -18,6 +18,20 @@ namespace Cubizer
 		[NonSerialized]
 		private ChunkPrimerDelegates.OnDestroyDelegate _onChunkDestroy;
 
+		private bool _dirty;
+
+		public bool dirty
+		{
+			get
+			{
+				return _dirty;
+			}
+			set
+			{
+				_dirty = value;
+			}
+		}
+
 		public Vector3<int> position
 		{
 			set { _position = value; }
@@ -61,29 +75,34 @@ namespace Cubizer
 
 		public ChunkPrimer(Vector3<int> bound, int cout)
 		{
+			_dirty = true;
 			_voxels = new VoxelData<VoxelMaterial>(bound, cout);
 		}
 
 		public ChunkPrimer(Vector3<int> bound, Vector3<int> pos, int cout = 0)
 		{
+			_dirty = true;
 			_position = pos;
 			_voxels = new VoxelData<VoxelMaterial>(bound, cout);
 		}
 
 		public ChunkPrimer(Vector3<int> bound, int x, int y, int z, int cout = 0)
 		{
+			_dirty = true;
 			_position = new Vector3<int>(x, y, z);
 			_voxels = new VoxelData<VoxelMaterial>(bound, cout);
 		}
 
 		public ChunkPrimer(System.Int32 bound, int x, int y, int z, int cout = 0)
 		{
+			_dirty = true;
 			_position = new Vector3<int>(x, y, z);
 			_voxels = new VoxelData<VoxelMaterial>(bound, bound, bound, cout);
 		}
 
 		public ChunkPrimer(System.Int32 bound_x, System.Int32 bound_y, System.Int32 bound_z, int x, int y, int z, int cout = 0)
 		{
+			_dirty = true;
 			_position = new Vector3<int>(x, y, z);
 			_voxels = new VoxelData<VoxelMaterial>(bound_x, bound_y, bound_z, cout);
 		}

@@ -6,14 +6,28 @@ namespace Cubizer
 {
 	public class ChunkData : IChunkData
 	{
-		private ChunkPrimer _chunk;
-		private IChunkDataManager _chunkManager;
+		private bool _dirty;
 
-		public override IChunkDataManager chunkManager
+		private ChunkPrimer _chunk;
+		private CubizerContext _context;
+
+		public override bool dirty
 		{
 			get
 			{
-				return _chunkManager;
+				return _dirty;
+			}
+			set
+			{
+				_dirty = value;
+			}
+		}
+
+		public override CubizerContext context
+		{
+			get
+			{
+				return _context;
 			}
 		}
 
@@ -26,7 +40,7 @@ namespace Cubizer
 			set
 			{
 				Debug.Assert(_chunk != value);
-				Debug.Assert(_chunkManager != null);
+				Debug.Assert(_context != null);
 
 				if (_chunk != null)
 					_chunk.onChunkChange -= OnBuildChunk;
@@ -45,8 +59,8 @@ namespace Cubizer
 
 		public void OnDestroy()
 		{
-			if (_chunkManager != null)
-				_chunkManager.Set(_chunk.position.x, _chunk.position.y, _chunk.position.z, null);
+			if (_context != null)
+				_context.behaviour.chunkManager.DestroyChunk(_chunk.position.x, _chunk.position.y, _chunk.position.z);
 		}
 
 		public void OnDrawGizmos()
@@ -85,7 +99,7 @@ namespace Cubizer
 
 				foreach (var it in entities)
 				{
-					var material = VoxelMaterialManager.GetInstance().GetMaterial(it.Key);
+					var material = _context.materialFactory.GetMaterial(it.Key);
 					if (material == null)
 						continue;
 
@@ -98,14 +112,15 @@ namespace Cubizer
 			}
 		}
 
-		public void Init(ChunkPrimer chunk, IChunkDataManager chunkManager)
+		public void Init(ChunkPrimer chunk, CubizerContext context)
 		{
-			Debug.Assert(_chunk == null && _chunkManager == null);
+			Debug.Assert(_chunk == null && _context == null);
 
 			_chunk = chunk;
+			_chunk.dirty = _dirty = false;
 			_chunk.onChunkChange += OnBuildChunk;
 
-			_chunkManager = chunkManager;
+			_context = context;
 		}
 	}
 }

@@ -14,12 +14,17 @@ MonoBehaviour:
   terrain:
     _settings:
       seed: 255
+  database:
+    _settings:
+      url: 
+      username: cubizer
   chunk:
     _settings:
       chunkSize: 24
       chunkHeightLimitLow: -10
       chunkHeightLimitHigh: 20
-      chunkNumLimits: 1024
+      chunkNumLimits: 4096
+      chunkUpdateRadius: 1
   biome:
     _settings:
       biomeGenerators:

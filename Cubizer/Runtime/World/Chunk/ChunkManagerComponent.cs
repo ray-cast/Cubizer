@@ -9,7 +9,7 @@ namespace Cubizer
 	{
 		private GameObject _chunkObject;
 
-		private ChunkDelegates _events;
+		private ChunkDelegates _events = new ChunkDelegates();
 
 		public class ChunkDelegates
 		{
@@ -25,17 +25,12 @@ namespace Cubizer
 			get { return _chunkObject != null ? _chunkObject.transform.childCount : 0; }
 		}
 
-		public override bool active
-		{
-			get { return true; }
-		}
-
 		public ChunkDelegates events
 		{
 			get { return _events; }
 		}
 
-		public IChunkDataManager manager
+		private IChunkDataManager manager
 		{
 			get { return model.settings.chunkManager; }
 		}
@@ -56,17 +51,16 @@ namespace Cubizer
 
 		public bool CreateChunk(int x, int y, int z)
 		{
+			if (this.count > model.settings.chunkNumLimits)
+				return false;
+
 			if (this.manager.Count() > model.settings.chunkNumLimits)
 			{
 				this.manager.GC();
 				context.behaviour.biomeManager.biomes.GC();
-				return false;
 			}
 
-			ChunkPrimer chunk;
-			if (this.manager.Get(x, y, z, out chunk))
-				return false;
-
+			ChunkPrimer chunk = null;
 			if (_events.onLoadChunkData != null)
 				_events.onLoadChunkData(x, y, z, out chunk);
 
@@ -86,7 +80,7 @@ namespace Cubizer
 				var gameObject = new GameObject("Chunk");
 				gameObject.transform.parent = _chunkObject.transform;
 				gameObject.transform.position = new Vector3(x, y, z) * model.settings.chunkSize;
-				gameObject.AddComponent<ChunkData>().Init(chunk, manager);
+				gameObject.AddComponent<ChunkData>().Init(chunk, context);
 
 				this.manager.Set(x, y, z, chunk);
 			}
@@ -94,13 +88,12 @@ namespace Cubizer
 			return chunk != null ? true : false;
 		}
 
-		public bool CreateChunk(Camera camera, Vector2Int[] radius)
+		public ChunkPrimer FindChunk(int x, int y, int z)
 		{
-			Vector3Int position;
-			if (!this.GetEmptryChunkPos(camera.transform.position, GeometryUtility.CalculateFrustumPlanes(camera), radius, out position))
-				return false;
-
-			return CreateChunk(position.x, position.y, position.z);
+			ChunkPrimer chunk;
+			if (manager.Get(x, y, z, out chunk))
+				return chunk;
+			return null;
 		}
 
 		public void DestroyChunks(bool is_save = true)
@@ -140,6 +133,9 @@ namespace Cubizer
 						_events.onSaveChunkData(child);
 				}
 
+				var chunk = transformChild.GetComponent<ChunkData>();
+				this.manager.Set(chunk.chunk.position.x, chunk.chunk.position.y, chunk.chunk.position.z, null);
+
 				GameObject.DestroyImmediate(child);
 			}
 		}
@@ -161,7 +157,36 @@ namespace Cubizer
 					if (_events.onSaveChunkData != null)
 						_events.onSaveChunkData(transformChild.gameObject);
 
+					var chunk = transformChild.GetComponent<ChunkData>();
+					this.manager.Set(chunk.chunk.position.x, chunk.chunk.position.y, chunk.chunk.position.z, null);
+
 					GameObject.Destroy(transformChild.gameObject);
+
+					break;
+				}
+			}
+		}
+
+		public void DestroyChunk(int x, int y, int z)
+		{
+			Debug.Assert(_chunkObject != null);
+
+			var transform = _chunkObject.transform;
+
+			for (int i = 0; i < transform.childCount; i++)
+			{
+				var transformChild = transform.GetChild(i);
+				if (transformChild.position.x == x &&
+					transformChild.position.y == y &&
+					transformChild.position.z == z)
+				{
+					if (_events.onSaveChunkData != null)
+						_events.onSaveChunkData(transformChild.gameObject);
+
+					GameObject.Destroy(transformChild.gameObject);
+
+					this.manager.Set(x, y, z, null);
+
 					break;
 				}
 			}
@@ -265,7 +290,7 @@ namespace Cubizer
 			{
 				var chunk = chunkLast != null ? chunkLast : chunkNow;
 				chunk.voxels.Set(lx, ly, lz, block);
-				chunk.OnChunkChange();
+				chunk.dirty = true;
 
 				return true;
 			}
@@ -288,7 +313,7 @@ namespace Cubizer
 			if (HitTestByRay(ray, hitDistance, out chunk, out x, out y, out z))
 			{
 				chunk.voxels.Set(x, y, z, null);
-				chunk.OnChunkChange();
+				chunk.dirty = true;
 
 				return true;
 			}
@@ -301,58 +326,6 @@ namespace Cubizer
 			var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			ray.origin = Camera.main.transform.position;
 			return this.RemoveBlockByRay(ray, hitDistance);
-		}
-
-		public bool GetEmptryChunkPos(Vector3 translate, Plane[] planes, Vector2Int[] radius, out Vector3Int position)
-		{
-			int x = CalculateChunkPosByWorld(translate.x);
-			int y = CalculateChunkPosByWorld(translate.y);
-			int z = CalculateChunkPosByWorld(translate.z);
-
-			int bestX = 0, bestY = 0, bestZ = 0;
-			int bestScore = int.MaxValue;
-
-			int start = bestScore;
-
-			Vector3 _chunkOffset = (Vector3.one * model.settings.chunkSize - Vector3.one) * 0.5f;
-
-			for (int ix = radius[0].x; ix <= radius[0].y; ix++)
-			{
-				for (int iy = radius[1].x; iy <= radius[1].y; iy++)
-				{
-					for (int iz = radius[2].x; iz <= radius[2].y; iz++)
-					{
-						int dx = x + ix;
-						int dy = y + iy;
-						int dz = z + iz;
-
-						if (dy < model.settings.chunkHeightLimitLow || dy > model.settings.chunkHeightLimitHigh)
-							continue;
-
-						ChunkPrimer chunk;
-						var hit = this.manager.Get(dx, dy, dz, out chunk);
-						if (hit)
-							continue;
-
-						var p = _chunkOffset + new Vector3(dx, dy, dz) * model.settings.chunkSize;
-
-						int invisiable = GeometryUtility.TestPlanesAABB(planes, new Bounds(p, Vector3.one * model.settings.chunkSize)) ? 0 : 1;
-						int distance = Mathf.Max(Mathf.Max(Mathf.Abs(ix), Mathf.Abs(iy)), Mathf.Abs(iz));
-						int score = (invisiable << 24) | distance;
-
-						if (score < bestScore)
-						{
-							bestScore = score;
-							bestX = dx;
-							bestY = dy;
-							bestZ = dz;
-						}
-					}
-				}
-			}
-
-			position = new Vector3Int(bestX, bestY, bestZ);
-			return start != bestScore;
 		}
 
 		public bool Save(string path)
@@ -381,13 +354,122 @@ namespace Cubizer
 					var gameObject = new GameObject("Chunk");
 					gameObject.transform.parent = _chunkObject.transform;
 					gameObject.transform.position = new Vector3(chunk.position.x, chunk.position.y, chunk.position.z) * model.settings.chunkSize;
-					gameObject.AddComponent<ChunkData>().Init(chunk, manager);
+					gameObject.AddComponent<ChunkData>().Init(chunk, context);
 				}
 
 				return true;
 			}
 
 			return false;
+		}
+
+		private void UpdatePlayer(IPlayer player)
+		{
+			var chunkX = CalculateChunkPosByWorld(player.model.settings.position.x);
+			var chunkY = CalculateChunkPosByWorld(player.model.settings.position.y);
+			var chunkZ = CalculateChunkPosByWorld(player.model.settings.position.z);
+
+			var radius = model.settings.chunkUpdateRadius;
+			for (int dx = -radius; dx <= radius; dx++)
+			{
+				for (int dz = -radius; dz <= radius; dz++)
+				{
+					var x = chunkX + dx;
+					var y = chunkY;
+					var z = chunkZ + dz;
+
+					var chunk = FindChunk(x, y, z);
+					if (chunk != null)
+					{
+						if (chunk.dirty)
+						{
+							chunk.OnChunkChange();
+							chunk.dirty = false;
+						}
+					}
+					else
+					{
+						CreateChunk(x, y, z);
+					}
+				}
+			}
+		}
+
+		private void UpdateCamera(Vector3 translate, Plane[] planes, Vector2Int[] radius)
+		{
+			int x = CalculateChunkPosByWorld(translate.x);
+			int y = CalculateChunkPosByWorld(translate.y);
+			int z = CalculateChunkPosByWorld(translate.z);
+
+			int bestX = 0, bestY = 0, bestZ = 0;
+			int bestScore = int.MaxValue;
+
+			int start = bestScore;
+
+			Vector3 _chunkOffset = (Vector3.one * model.settings.chunkSize - Vector3.one) * 0.5f;
+
+			for (int ix = radius[0].x; ix <= radius[0].y; ix++)
+			{
+				for (int iy = radius[1].x; iy <= radius[1].y; iy++)
+				{
+					for (int iz = radius[2].x; iz <= radius[2].y; iz++)
+					{
+						int dx = x + ix;
+						int dy = y + iy;
+						int dz = z + iz;
+
+						if (dy < model.settings.chunkHeightLimitLow || dy > model.settings.chunkHeightLimitHigh)
+							continue;
+
+						ChunkPrimer chunkHitTest;
+						var hit = this.manager.Get(dx, dy, dz, out chunkHitTest);
+						if (hit)
+							continue;
+
+						var p = _chunkOffset + new Vector3(dx, dy, dz) * model.settings.chunkSize;
+
+						int invisiable = GeometryUtility.TestPlanesAABB(planes, new Bounds(p, Vector3.one * model.settings.chunkSize)) ? 0 : 1;
+						int distance = Mathf.Max(Mathf.Max(Mathf.Abs(ix), Mathf.Abs(iy)), Mathf.Abs(iz));
+						int score = (invisiable << 24) | distance;
+
+						if (score < bestScore)
+						{
+							bestScore = score;
+							bestX = dx;
+							bestY = dy;
+							bestZ = dz;
+						}
+					}
+				}
+			}
+
+			if (start == bestScore)
+				return;
+
+			this.CreateChunk(bestX, bestY, bestZ);
+		}
+
+		public override void Update()
+		{
+			var players = context.players.settings.players;
+
+			foreach (var it in players)
+			{
+				DestroyChunk(it.model.settings.position, it.model.settings.chunkRadiusGC);
+			}
+
+			foreach (var it in players)
+			{
+				UpdatePlayer(it);
+			}
+
+			foreach (var it in players)
+			{
+				var translate = it.player.transform.position;
+				var planes = GeometryUtility.CalculateFrustumPlanes(it.player);
+
+				UpdateCamera(translate, planes, it.model.settings.chunkRadius);
+			}
 		}
 	}
 }

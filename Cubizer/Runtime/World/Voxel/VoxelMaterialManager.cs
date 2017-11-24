@@ -1,27 +1,15 @@
-﻿using System.Diagnostics;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Cubizer
 {
-	public sealed class VoxelMaterialManager : IVoxelMaterialManager
+	public class VoxelMaterialManager : IVoxelMaterialManager
 	{
-		private static List<VoxelMaterial> _lives = new List<VoxelMaterial>();
-		private static Dictionary<string, int> _liveIndex = new Dictionary<string, int>();
+		private List<VoxelMaterial> _lives = new List<VoxelMaterial>();
+		private Dictionary<string, int> _liveIndex = new Dictionary<string, int>();
 
-		private static readonly VoxelMaterialManager instance = new VoxelMaterialManager();
-
-		public static Dictionary<string, int> lives
+		public List<VoxelMaterial> lives
 		{
-			get { return _liveIndex; }
-		}
-
-		private VoxelMaterialManager()
-		{
-		}
-
-		public static VoxelMaterialManager GetInstance()
-		{
-			return instance;
+			get { return _lives; }
 		}
 
 		public VoxelMaterial CreateMaterial(string name, VoxelMaterialModels models)

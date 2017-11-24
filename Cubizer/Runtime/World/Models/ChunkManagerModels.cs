@@ -19,8 +19,11 @@ namespace Cubizer
 			[SerializeField]
 			public int chunkHeightLimitHigh;
 
-			[SerializeField, Range(256, 2048)]
+			[SerializeField, Range(256, 8192)]
 			public int chunkNumLimits;
+
+			[SerializeField, Range(1, 16)]
+			public int chunkUpdateRadius;
 
 			public IChunkDataManager chunkManager;
 
@@ -33,7 +36,8 @@ namespace Cubizer
 						chunkSize = 24,
 						chunkHeightLimitLow = -10,
 						chunkHeightLimitHigh = 20,
-						chunkNumLimits = 1024,
+						chunkNumLimits = 4096,
+						chunkUpdateRadius = 1,
 						chunkManager = new ChunkDataManager(0xFF),
 					};
 				}
