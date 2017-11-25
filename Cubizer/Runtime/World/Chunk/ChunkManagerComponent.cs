@@ -453,10 +453,15 @@ namespace Cubizer
 			this.CreateChunk(bestX, bestY, bestZ, thread);
 		}
 
-		private void UpdateChunk()
+		private int FetchResult()
 		{
+			int idles = 0;
+
 			foreach (var work in _threads)
 			{
+				if (work.state == ThreadTaskState.IDLE)
+					idles++;
+
 				if (work.state != ThreadTaskState.DONE)
 					continue;
 
@@ -465,12 +470,16 @@ namespace Cubizer
 					var chunk = work.chunk;
 					if (chunk != null)
 						CreateChunkbject(chunk, work._x, work._y, work._z);
+
+					idles++;
 				}
 				finally
 				{
 					work.state = ThreadTaskState.IDLE;
 				}
 			}
+
+			return idles;
 		}
 
 		private void AutoGC()
@@ -494,19 +503,21 @@ namespace Cubizer
 			foreach (var it in players)
 				UpdatePlayer(it);
 
-			this.UpdateChunk();
-
-			foreach (var it in players)
+			var idleThreads = this.FetchResult();
+			if (idleThreads > 0)
 			{
-				var translate = it.player.transform.position;
-				var planes = GeometryUtility.CalculateFrustumPlanes(it.player);
-
-				foreach (var thread in _threads)
+				foreach (var it in players)
 				{
-					if (thread.state != ThreadTaskState.IDLE)
-						continue;
+					var translate = it.player.transform.position;
+					var planes = GeometryUtility.CalculateFrustumPlanes(it.player);
 
-					UpdateCamera(translate, planes, it.model.settings.chunkRadius, thread);
+					foreach (var thread in _threads)
+					{
+						if (thread.state != ThreadTaskState.IDLE)
+							continue;
+
+						UpdateCamera(translate, planes, it.model.settings.chunkRadius, thread);
+					}
 				}
 			}
 		}
