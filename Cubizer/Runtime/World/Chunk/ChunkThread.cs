@@ -70,7 +70,7 @@ namespace Cubizer
 
 			_dispose = callback;
 			_event = new AutoResetEvent(false);
-			_thread = new Thread(UpdateThread);
+			_thread = new Thread(OnUpdate);
 		}
 
 		~ThreadTask()
@@ -104,25 +104,37 @@ namespace Cubizer
 				_context = null;
 				_event.Set();
 				_thread.Join();
+				_state = ThreadTaskState.QUIT;
 			}
 		}
 
-		private void UpdateThread()
+		private void OnUpdate()
 		{
-			while (!_isQuitRequest)
+			try
 			{
-				try
+				while (!_isQuitRequest)
 				{
-					while (_state != ThreadTaskState.BUSY)
-						_event.WaitOne();
+					try
+					{
+						while (_state != ThreadTaskState.BUSY)
+							_event.WaitOne();
 
-					if (_context != null)
-						_dispose.Invoke(ref _context);
+						if (_context != null)
+							_dispose.Invoke(ref _context);
+					}
+					finally
+					{
+						_state = ThreadTaskState.DONE;
+					}
 				}
-				finally
-				{
-					this.state = ThreadTaskState.DONE;
-				}
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e.Message);
+			}
+			finally
+			{
+				_state = ThreadTaskState.QUIT;
 			}
 		}
 	}
