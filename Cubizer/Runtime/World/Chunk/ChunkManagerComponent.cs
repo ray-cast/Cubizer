@@ -59,7 +59,7 @@ namespace Cubizer
 				this.DestroyChunks();
 
 			for (int i = 0; i < _threads.Length; i++)
-				_threads[i].Quit();
+				_threads[i].Dispose();
 		}
 
 		public ChunkPrimer FindChunk(int x, int y, int z)
@@ -324,9 +324,9 @@ namespace Cubizer
 			this.manager.Set(x, y, z, chunk);
 		}
 
-		private void CreateChunkPrimer(IBiomeData biome, int x, int y, int z, out ChunkPrimer chunk)
+		private void CreateChunkPrimer(ref ThreadData data)
 		{
-			chunk = biome.OnBuildChunk(context.behaviour, x, y, z);
+			data.chunk = data.biome.OnBuildChunk(this.context.behaviour, data.x, data.y, data.z);
 		}
 
 		private void CreateChunk(int x, int y, int z, ThreadTask thread = null)
@@ -345,7 +345,7 @@ namespace Cubizer
 				{
 					if (thread != null)
 					{
-						thread.Task(biomeData, x, y, z);
+						thread.Task(new ThreadData(biomeData, x, y, z));
 						this.manager.Set(x, y, z, new ChunkPrimer(model.settings.chunkSize, x, y, z));
 					}
 					else
@@ -364,11 +364,11 @@ namespace Cubizer
 			}
 		}
 
-		private void UpdatePlayer(IPlayer player, ThreadTask thread = null)
+		private void UpdatePlayer(Vector3 translate, ThreadTask thread = null)
 		{
-			var chunkX = CalculateChunkPosByWorld(player.model.settings.position.x);
-			var chunkY = CalculateChunkPosByWorld(player.model.settings.position.y);
-			var chunkZ = CalculateChunkPosByWorld(player.model.settings.position.z);
+			var chunkX = CalculateChunkPosByWorld(translate.x);
+			var chunkY = CalculateChunkPosByWorld(translate.y);
+			var chunkZ = CalculateChunkPosByWorld(translate.z);
 
 			var radius = model.settings.chunkUpdateRadius;
 			for (int dx = -radius; dx <= radius; dx++)
@@ -398,7 +398,7 @@ namespace Cubizer
 			}
 		}
 
-		private void UpdateCamera(Vector3 translate, Plane[] planes, Vector2Int[] radius, ThreadTask thread = null)
+		private bool UpdateCamera(Vector3 translate, Plane[] planes, Vector2Int[] radius, ThreadTask thread = null)
 		{
 			int x = CalculateChunkPosByWorld(translate.x);
 			int y = CalculateChunkPosByWorld(translate.y);
@@ -448,9 +448,10 @@ namespace Cubizer
 			}
 
 			if (start == bestScore)
-				return;
+				return false;
 
 			this.CreateChunk(bestX, bestY, bestZ, thread);
+			return true;
 		}
 
 		private int FetchResult()
@@ -467,9 +468,9 @@ namespace Cubizer
 
 				try
 				{
-					var chunk = work.chunk;
-					if (chunk != null)
-						CreateChunkbject(chunk, work._x, work._y, work._z);
+					var data = work.context;
+					if (data != null && data.chunk != null)
+						CreateChunkbject(data.chunk, data.x, data.y, data.z);
 
 					idles++;
 				}
@@ -493,21 +494,23 @@ namespace Cubizer
 
 		public override void Update()
 		{
-			var players = context.players.settings.players;
-
 			this.AutoGC();
 
+			var players = context.players.settings.players;
 			foreach (var it in players)
 				DestroyChunk(it.model.settings.position, it.model.settings.chunkRadiusGC);
 
 			foreach (var it in players)
-				UpdatePlayer(it);
+				UpdatePlayer(it.model.settings.position);
 
 			var idleThreads = this.FetchResult();
 			if (idleThreads > 0)
 			{
 				foreach (var it in players)
 				{
+					if (idleThreads == 0)
+						break;
+
 					var translate = it.player.transform.position;
 					var planes = GeometryUtility.CalculateFrustumPlanes(it.player);
 
@@ -516,7 +519,8 @@ namespace Cubizer
 						if (thread.state != ThreadTaskState.IDLE)
 							continue;
 
-						UpdateCamera(translate, planes, it.model.settings.chunkRadius, thread);
+						if (UpdateCamera(translate, planes, it.model.settings.chunkRadius, thread))
+							idleThreads--;
 					}
 				}
 			}

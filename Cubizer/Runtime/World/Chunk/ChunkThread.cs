@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 
 namespace Cubizer
 {
@@ -10,39 +11,43 @@ namespace Cubizer
 		DONE,
 	};
 
-	public class ThreadTask
+	public class ThreadData
 	{
-		private ThreadTaskState _state;
-		private Thread _thread;
-		private EventWaitHandle _event;
-		private ThreadUpdateDelegate _dispose;
+		public int x;
+		public int y;
+		public int z;
 
+		public IBiomeData biome;
+		public ChunkPrimer chunk;
+
+		public ThreadData(IBiomeData biomeData, int xx, int yy, int zz)
+		{
+			x = xx;
+			y = yy;
+			z = zz;
+
+			biome = biomeData;
+		}
+	}
+
+	public class ThreadTask : IDisposable
+	{
 		private bool _isQuitRequest;
 
-		private IBiomeData _data;
-		private ChunkPrimer _chunk;
+		private EventWaitHandle _event;
 
-		public int _x;
-		public int _y;
-		public int _z;
+		private Thread _thread;
+		private ThreadTaskState _state;
+		private ThreadUpdateDelegate _dispose;
+		private ThreadData _context;
 
-		public delegate void ThreadUpdateDelegate(IBiomeData data, int x, int y, int z, out ChunkPrimer chunk);
+		public delegate void ThreadUpdateDelegate(ref ThreadData context);
 
-		public IBiomeData data
+		public ThreadData context
 		{
 			get
 			{
-				UnityEngine.Debug.Assert(_state == ThreadTaskState.DONE);
-				return _data;
-			}
-		}
-
-		public ChunkPrimer chunk
-		{
-			get
-			{
-				UnityEngine.Debug.Assert(_state == ThreadTaskState.DONE);
-				return _chunk;
+				return _context;
 			}
 		}
 
@@ -70,15 +75,12 @@ namespace Cubizer
 
 		~ThreadTask()
 		{
-			this.Quit();
+			this.Dispose();
 		}
 
-		public void Task(IBiomeData data, int xx, int yy, int zz)
+		public void Task(ThreadData data)
 		{
-			_x = xx;
-			_y = yy;
-			_z = zz;
-			_data = data;
+			_context = data;
 			_state = ThreadTaskState.BUSY;
 			_event.Set();
 		}
@@ -92,14 +94,14 @@ namespace Cubizer
 			}
 		}
 
-		public void Quit()
+		public void Dispose()
 		{
 			if (!_isQuitRequest)
 			{
 				_isQuitRequest = true;
 
 				_state = ThreadTaskState.BUSY;
-				_data = null;
+				_context = null;
 				_event.Set();
 				_thread.Join();
 			}
@@ -114,8 +116,8 @@ namespace Cubizer
 					while (_state != ThreadTaskState.BUSY)
 						_event.WaitOne();
 
-					if (_data != null)
-						_dispose.Invoke(_data, _x, _y, _z, out _chunk);
+					if (_context != null)
+						_dispose.Invoke(ref _context);
 				}
 				finally
 				{

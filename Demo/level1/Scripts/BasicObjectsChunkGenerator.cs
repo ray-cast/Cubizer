@@ -11,7 +11,6 @@ namespace Cubizer
 
 		public BasicObjectsChunkGenerator(BasicObjectsParams parameters, BasicObjectsMaterials materials)
 		{
-#if DEBUG
 			if (parameters.isGenTree && materials.tree == null)
 				UnityEngine.Debug.LogError("Please drag a Tree into Hierarchy View.");
 			if (parameters.isGenTree && materials.treeLeaf == null)
@@ -30,13 +29,12 @@ namespace Cubizer
 				UnityEngine.Debug.LogError("Please drag a Cloud into Hierarchy View.");
 			if (parameters.isGenSoil && materials.soil == null)
 				UnityEngine.Debug.LogError("Please drag a Soil into Hierarchy View.");
-#endif
 
 			_params = parameters;
 			_materials = materials;
 		}
 
-		public void buildTree(ChunkPrimer map, byte ix, byte iz, byte h)
+		public void BuildTree(ChunkPrimer map, byte ix, byte iz, byte h)
 		{
 			map.voxels.Set(ix, h, iz, _materials.trees[random.Next(0, _materials.trees.Length - 1)]);
 		}
@@ -134,7 +132,7 @@ namespace Cubizer
 									_params.tree.persistence,
 									_params.tree.lacunarity) > _params.tree.threshold)
 								{
-									this.buildTree(map, ix, iz, h);
+									this.BuildTree(map, ix, iz, h);
 								}
 							}
 						}
