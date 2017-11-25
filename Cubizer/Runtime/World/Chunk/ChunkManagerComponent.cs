@@ -48,7 +48,7 @@ namespace Cubizer
 
 			for (int i = 0; i < _threads.Length; i++)
 			{
-				_threads[i] = new ThreadTask(this.UpdateThread);
+				_threads[i] = new ThreadTask(this.CreateChunkPrimer);
 				_threads[i].Start();
 			}
 		}
@@ -324,7 +324,12 @@ namespace Cubizer
 			this.manager.Set(x, y, z, chunk);
 		}
 
-		private void CreateChunk(int x, int y, int z)
+		private void CreateChunkPrimer(IBiomeData biome, int x, int y, int z, out ChunkPrimer chunk)
+		{
+			chunk = biome.OnBuildChunk(context.behaviour, x, y, z);
+		}
+
+		private void CreateChunk(int x, int y, int z, ThreadTask thread = null)
 		{
 			if (this.count > model.settings.chunkNumLimits)
 				return;
@@ -338,37 +343,28 @@ namespace Cubizer
 				IBiomeData biomeData = context.behaviour.biomeManager.buildBiomeIfNotExist(x, y, z);
 				if (biomeData != null)
 				{
-					chunk = biomeData.OnBuildChunk(context.behaviour, x, y, z);
-					if (chunk == null)
-						chunk = new ChunkPrimer(model.settings.chunkSize, x, y, z);
+					if (thread != null)
+					{
+						thread.Task(biomeData, x, y, z);
+						this.manager.Set(x, y, z, new ChunkPrimer(model.settings.chunkSize, x, y, z));
+					}
+					else
+					{
+						chunk = biomeData.OnBuildChunk(context.behaviour, x, y, z);
+						if (chunk == null)
+							chunk = new ChunkPrimer(model.settings.chunkSize, x, y, z);
+					}
 				}
 			}
 
-			if (chunk != null)
-				CreateChunkbject(chunk, x, y, z);
-		}
-
-		private void CreateChunk(ThreadTask thread, int x, int y, int z)
-		{
-			if (this.count > model.settings.chunkNumLimits)
-				return;
-
-			ChunkPrimer chunk = null;
-			if (_events.onLoadChunkData != null)
-				_events.onLoadChunkData(x, y, z, out chunk);
-
-			if (chunk == null)
+			if (thread == null)
 			{
-				IBiomeData biomeData = context.behaviour.biomeManager.buildBiomeIfNotExist(x, y, z);
-				if (biomeData != null)
-				{
-					thread.Task(biomeData, x, y, z);
-					this.manager.Set(x, y, z, new ChunkPrimer(model.settings.chunkSize, x, y, z));
-				}
+				if (chunk != null)
+					CreateChunkbject(chunk, x, y, z);
 			}
 		}
 
-		private void UpdatePlayer(IPlayer player)
+		private void UpdatePlayer(IPlayer player, ThreadTask thread = null)
 		{
 			var chunkX = CalculateChunkPosByWorld(player.model.settings.position.x);
 			var chunkY = CalculateChunkPosByWorld(player.model.settings.position.y);
@@ -402,7 +398,7 @@ namespace Cubizer
 			}
 		}
 
-		private void UpdateCamera(ThreadTask thread, Vector3 translate, Plane[] planes, Vector2Int[] radius)
+		private void UpdateCamera(Vector3 translate, Plane[] planes, Vector2Int[] radius, ThreadTask thread = null)
 		{
 			int x = CalculateChunkPosByWorld(translate.x);
 			int y = CalculateChunkPosByWorld(translate.y);
@@ -415,18 +411,20 @@ namespace Cubizer
 
 			Vector3 _chunkOffset = (Vector3.one * model.settings.chunkSize - Vector3.one) * 0.5f;
 
-			for (int ix = radius[0].x; ix <= radius[0].y; ix++)
+			for (int iy = radius[1].x; iy <= radius[1].y; iy++)
 			{
-				for (int iy = radius[1].x; iy <= radius[1].y; iy++)
+				int dy = y + iy;
+
+				if (dy < model.settings.chunkHeightLimitLow || dy > model.settings.chunkHeightLimitHigh)
+					continue;
+
+				for (int ix = radius[0].x; ix <= radius[0].y; ix++)
 				{
+					int dx = x + ix;
+
 					for (int iz = radius[2].x; iz <= radius[2].y; iz++)
 					{
-						int dx = x + ix;
-						int dy = y + iy;
 						int dz = z + iz;
-
-						if (dy < model.settings.chunkHeightLimitLow || dy > model.settings.chunkHeightLimitHigh)
-							continue;
 
 						var hit = FindChunk(dx, dy, dz);
 						if (hit != null)
@@ -452,12 +450,7 @@ namespace Cubizer
 			if (start == bestScore)
 				return;
 
-			this.CreateChunk(thread, bestX, bestY, bestZ);
-		}
-
-		private void UpdateThread(IBiomeData biome, int x, int y, int z, out ChunkPrimer chunk)
-		{
-			chunk = biome.OnBuildChunk(context.behaviour, x, y, z);
+			this.CreateChunk(bestX, bestY, bestZ, thread);
 		}
 
 		private void UpdateChunk()
@@ -508,12 +501,12 @@ namespace Cubizer
 				var translate = it.player.transform.position;
 				var planes = GeometryUtility.CalculateFrustumPlanes(it.player);
 
-				foreach (var work in _threads)
+				foreach (var thread in _threads)
 				{
-					if (work.state != ThreadTaskState.IDLE)
+					if (thread.state != ThreadTaskState.IDLE)
 						continue;
 
-					UpdateCamera(work, translate, planes, it.model.settings.chunkRadius);
+					UpdateCamera(translate, planes, it.model.settings.chunkRadius, thread);
 				}
 			}
 		}
