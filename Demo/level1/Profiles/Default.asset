@@ -25,6 +25,7 @@ MonoBehaviour:
       chunkHeightLimitHigh: 20
       chunkNumLimits: 4096
       chunkUpdateRadius: 1
+      chunkThreadNums: 2
   biome:
     _settings:
       biomeGenerators:

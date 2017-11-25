@@ -7,6 +7,8 @@ namespace Cubizer
 		private BasicObjectsMaterials _materials;
 		private BasicObjectsParams _params;
 
+		private System.Random random = new System.Random();
+
 		public BasicObjectsChunkGenerator(BasicObjectsParams parameters, BasicObjectsMaterials materials)
 		{
 #if DEBUG
@@ -36,8 +38,7 @@ namespace Cubizer
 
 		public void buildTree(ChunkPrimer map, byte ix, byte iz, byte h)
 		{
-			UnityEngine.Random.InitState(ix * iz);
-			map.voxels.Set(ix, h, iz, _materials.trees[(int)System.Math.Round(UnityEngine.Random.value * (_materials.trees.Length - 1))]);
+			map.voxels.Set(ix, h, iz, _materials.trees[random.Next(0, _materials.trees.Length - 1)]);
 		}
 
 		public void BuildGrass(ChunkPrimer map, byte ix, byte iz, int dx, int dz, VoxelMaterial main, out float f, out byte h)
@@ -54,7 +55,7 @@ namespace Cubizer
 					UnityEngine.Random.InitState(ix ^ iz * h);
 
 					for (byte iy = 0; iy < h; iy++)
-						map.voxels.Set(ix, iy, iz, UnityEngine.Random.value > _params.thresholdSand ? _materials.grass : _materials.sand);
+						map.voxels.Set(ix, iy, iz, random.Next() > _params.thresholdSand ? _materials.grass : _materials.sand);
 				}
 				else
 				{
@@ -78,7 +79,7 @@ namespace Cubizer
 		public ChunkPrimer Buildland(CubizerBehaviour terrain, int x, int y, int z, VoxelMaterial main)
 		{
 			var size = terrain.profile.chunk.settings.chunkSize;
-			var map = new ChunkPrimer(size, (short)x, (short)y, (short)z, size * size * _params.floorBase);
+			var map = new ChunkPrimer(size, x, y, z, size * size * _params.floorBase);
 
 			int offsetX = x * map.voxels.bound.x;
 			int offsetZ = z * map.voxels.bound.z;
@@ -111,8 +112,7 @@ namespace Cubizer
 								_params.weeds.persistence,
 								_params.weeds.lacunarity) > _params.weeds.threshold)
 						{
-							UnityEngine.Random.InitState(ix * iz);
-							map.voxels.Set(ix, h, iz, _materials.weed[(int)System.Math.Round(UnityEngine.Random.value * (_materials.weed.Length - 1))]);
+							map.voxels.Set(ix, h, iz, _materials.weed[random.Next(0, _materials.weed.Length - 1)]);
 						}
 						else if (_params.isGenFlower && Noise.simplex2(
 								_params.flowers.loopX * dx,
@@ -121,8 +121,7 @@ namespace Cubizer
 								_params.flowers.persistence,
 								_params.flowers.lacunarity) > _params.flowers.threshold)
 						{
-							UnityEngine.Random.InitState(ix * iz);
-							map.voxels.Set(ix, h, iz, _materials.flower[(int)System.Math.Round(UnityEngine.Random.value * (_materials.flower.Length - 1))]);
+							map.voxels.Set(ix, h, iz, _materials.flower[random.Next(0, _materials.flower.Length - 1)]);
 						}
 						else if (_params.isGenTree && h < map.voxels.bound.y - 8)
 						{
@@ -149,7 +148,7 @@ namespace Cubizer
 		public ChunkPrimer buildObsidian(CubizerBehaviour terrain, int x, int y, int z)
 		{
 			var size = terrain.profile.chunk.settings.chunkSize;
-			var map = new ChunkPrimer(size, (short)x, (short)y, (short)z, size * size * 8);
+			var map = new ChunkPrimer(size, x, y, z, size * size * 8);
 
 			for (byte ix = 0; ix < map.voxels.bound.x; ix++)
 			{

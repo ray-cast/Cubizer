@@ -18,6 +18,9 @@ namespace Cubizer
 		[NonSerialized]
 		private ChunkPrimerDelegates.OnDestroyDelegate _onChunkDestroy;
 
+		[NonSerialized]
+		private ChunkPrimerDelegates.OnUpdate _onUpdate;
+
 		private bool _dirty;
 
 		public bool dirty
@@ -66,6 +69,12 @@ namespace Cubizer
 		{
 			if (_onChunkDestroy != null)
 				_onChunkDestroy.Invoke();
+		}
+
+		public void OnUpdate()
+		{
+			if (_onUpdate != null)
+				_onUpdate.Invoke();
 		}
 
 		public ChunkPrimer(Vector3<int> bound)

@@ -25,6 +25,9 @@ namespace Cubizer
 			[SerializeField, Range(1, 16)]
 			public int chunkUpdateRadius;
 
+			[SerializeField, Range(1, 4)]
+			public int chunkThreadNums;
+
 			public IChunkDataManager chunkManager;
 
 			public static ChunkManagerSettings defaultSettings
@@ -38,6 +41,7 @@ namespace Cubizer
 						chunkHeightLimitHigh = 20,
 						chunkNumLimits = 4096,
 						chunkUpdateRadius = 1,
+						chunkThreadNums = 2,
 						chunkManager = new ChunkDataManager(0xFF),
 					};
 				}
