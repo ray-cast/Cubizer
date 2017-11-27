@@ -9,7 +9,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d59a4a48a934d374aa92ddaf23394f04, type: 3}
-  m_Name: Default
+  m_Name: Server
   m_EditorClassIdentifier: 
   terrain:
     _settings:
@@ -18,7 +18,6 @@ MonoBehaviour:
   database:
     _settings:
       url: 
-      username: cubizer
   chunk:
     _settings:
       chunkSize: 24

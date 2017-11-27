@@ -33,10 +33,6 @@ namespace Cubizer
 		public ChunkManagerComponent(string name = "ServerChunks")
 		{
 			_name = name;
-		}
-
-		public ChunkManagerComponent()
-		{
 			_listener = new ChunkDelegates();
 		}
 
@@ -99,7 +95,7 @@ namespace Cubizer
 			int x = CalculateChunkPosByWorld(point.x);
 			int y = CalculateChunkPosByWorld(point.y);
 			int z = CalculateChunkPosByWorld(point.z);
-			var chunkPos = new Vector3(x, y, z);
+			var chunkPos = new Vector3(x, y, z) * model.settings.chunkSize;
 
 			var transform = _chunkObject.transform;
 			var maxRadius = radius * model.settings.chunkSize;

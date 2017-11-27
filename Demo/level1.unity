@@ -174,7 +174,7 @@ Prefab:
     - target: {fileID: 114260100800677196, guid: b8c04b7d9aad9d94f8bd7640cf484951,
         type: 2}
       propertyPath: _model._settings.chunkRadiusGC
-      value: 30
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 114260100800677196, guid: b8c04b7d9aad9d94f8bd7640cf484951,
         type: 2}
@@ -196,7 +196,30 @@ Prefab:
       propertyPath: _model._settings.chunkRadius.Array.data[2].y
       value: 6
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 114260100800677196, guid: b8c04b7d9aad9d94f8bd7640cf484951,
+        type: 2}
+      propertyPath: _drawPickMesh
+      value: 
+      objectReference: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+    - target: {fileID: 114260100800677196, guid: b8c04b7d9aad9d94f8bd7640cf484951,
+        type: 2}
+      propertyPath: _drawPickMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: ca8651ba28620ec49a6efa144f310bf1, type: 2}
+    - target: {fileID: 114260100800677196, guid: b8c04b7d9aad9d94f8bd7640cf484951,
+        type: 2}
+      propertyPath: _block
+      value: 
+      objectReference: {fileID: 114601630312061134, guid: 5edd8a66efa9fa64e9fbb9f83e741cd5,
+        type: 2}
+    - target: {fileID: 114260100800677196, guid: b8c04b7d9aad9d94f8bd7640cf484951,
+        type: 2}
+      propertyPath: _profile
+      value: 
+      objectReference: {fileID: 11400000, guid: 4a5cdb163e113e4418f05f6d37b0f920,
+        type: 2}
+    m_RemovedComponents:
+    - {fileID: 114692549447764224, guid: b8c04b7d9aad9d94f8bd7640cf484951, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: b8c04b7d9aad9d94f8bd7640cf484951, type: 2}
   m_IsPrefabParent: 0
 --- !u!1 &485272838 stripped
