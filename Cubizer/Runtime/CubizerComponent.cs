@@ -46,6 +46,10 @@ namespace Cubizer
 			return model;
 		}
 
+		public virtual void Awake()
+		{
+		}
+
 		public virtual void OnEnable()
 		{
 		}
