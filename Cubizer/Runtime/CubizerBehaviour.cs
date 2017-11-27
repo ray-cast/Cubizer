@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 
 using UnityEngine;
 
@@ -68,7 +69,7 @@ namespace Cubizer
 			_context = new CubizerContext();
 			_context.profile = _profile;
 			_context.behaviour = this;
-			_context.materialFactory = _materialFactory = new VoxelMaterialManager();
+			_context.materialFactory = _materialFactory = VoxelMaterialManager.GetInstance();
 			_context.players = _players;
 
 			_components = new List<ICubizerComponent>();
@@ -91,9 +92,11 @@ namespace Cubizer
 			Math.Noise.simplex_seed(_profile.terrain.settings.seed);
 
 			this.EnableComponents();
+
+			StartCoroutine("UpdateComponentsWithCoroutine");
 		}
 
-		public void AddPlayer(IPlayer player)
+		public void AddPlayerListener(IPlayerListener player)
 		{
 			_players.settings.players.Add(player);
 		}
@@ -106,6 +109,14 @@ namespace Cubizer
 			_materialFactory.Dispose();
 		}
 
+		public void Update()
+		{
+			if (Cursor.visible)
+				Time.timeScale = 0;
+			else
+				Time.timeScale = 1;
+		}
+
 		public void OnSaveData(GameObject chunk)
 		{
 			this.events.onSaveChunkData(chunk);
@@ -114,11 +125,6 @@ namespace Cubizer
 		public bool OnLoadData(int x, int y, int z, out ChunkPrimer chunk)
 		{
 			return this.events.onLoadChunkData(x, y, z, out chunk);
-		}
-
-		public void Update()
-		{
-			UpdateComponents();
 		}
 
 		private void EnableComponents()
@@ -149,6 +155,15 @@ namespace Cubizer
 				if (model != null && component.active)
 					component.Update();
 			}
+		}
+
+		public IEnumerator UpdateComponentsWithCoroutine()
+		{
+			yield return new WaitForSeconds(profile.terrain.settings.repeatRate);
+
+			UpdateComponents();
+
+			StartCoroutine("UpdateComponentsWithCoroutine");
 		}
 
 		private T AddComponent<T>(T component) where T : ICubizerComponent

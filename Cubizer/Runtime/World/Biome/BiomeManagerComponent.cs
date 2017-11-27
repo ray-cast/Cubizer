@@ -4,6 +4,7 @@ namespace Cubizer
 {
 	public class BiomeManagerComponent : CubizerComponent<BiomeManagerModels>
 	{
+		private string _name;
 		private GameObject _biomeObject;
 
 		public int count
@@ -11,19 +12,19 @@ namespace Cubizer
 			get { return _biomeObject != null ? _biomeObject.transform.childCount : 0; }
 		}
 
-		public override bool active
-		{
-			get { return true; }
-		}
-
 		public IBiomeDataManager biomes
 		{
 			get { return model.settings.biomeManager; }
 		}
 
+		public BiomeManagerComponent(string name = "ServerBiomes")
+		{
+			_name = name;
+		}
+
 		public override void OnEnable()
 		{
-			_biomeObject = new GameObject("TerrainBiomes");
+			_biomeObject = new GameObject(_name);
 
 			foreach (var it in model.settings.biomeGenerators)
 			{

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 using UnityEngine;
 
@@ -11,8 +10,17 @@ namespace Cubizer
 		[Serializable]
 		public struct PlayerSettings
 		{
-			[NonSerialized]
-			public Vector3 position;
+			[SerializeField]
+			public string name;
+
+			[SerializeField]
+			public bool hitTestEnable;
+
+			[SerializeField]
+			public bool hitTestWireframe;
+
+			[SerializeField]
+			public int hitTestDistance;
 
 			[SerializeField]
 			public int chunkRadiusGC;
@@ -20,12 +28,19 @@ namespace Cubizer
 			[SerializeField]
 			public Vector2Int[] chunkRadius;
 
+			[NonSerialized]
+			public Vector3 position;
+
 			public static PlayerSettings defaultSettings
 			{
 				get
 				{
 					return new PlayerSettings
 					{
+						name = "cubizer",
+						hitTestEnable = true,
+						hitTestWireframe = true,
+						hitTestDistance = 8,
 						chunkRadiusGC = 14,
 						chunkRadius = new Vector2Int[]
 						{

@@ -2,10 +2,21 @@
 
 namespace Cubizer
 {
-	public class VoxelMaterialManager : IVoxelMaterialManager
+	public sealed class VoxelMaterialManager : IVoxelMaterialManager
 	{
 		private List<VoxelMaterial> _lives = new List<VoxelMaterial>();
 		private Dictionary<string, int> _liveIndex = new Dictionary<string, int>();
+
+		private static readonly VoxelMaterialManager _instance = new VoxelMaterialManager();
+
+		private VoxelMaterialManager()
+		{
+		}
+
+		public static VoxelMaterialManager GetInstance()
+		{
+			return _instance;
+		}
 
 		public List<VoxelMaterial> lives
 		{

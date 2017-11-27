@@ -9,7 +9,6 @@ namespace Cubizer
 		private bool _dirty;
 
 		private ChunkPrimer _chunk;
-		private CubizerContext _context;
 
 		public override bool dirty
 		{
@@ -23,14 +22,6 @@ namespace Cubizer
 			}
 		}
 
-		public override CubizerContext context
-		{
-			get
-			{
-				return _context;
-			}
-		}
-
 		public override ChunkPrimer chunk
 		{
 			get
@@ -40,7 +31,6 @@ namespace Cubizer
 			set
 			{
 				Debug.Assert(_chunk != value);
-				Debug.Assert(_context != null);
 
 				if (_chunk != null)
 					_chunk.onChunkChange -= OnBuildChunk;
@@ -55,12 +45,6 @@ namespace Cubizer
 		public void Start()
 		{
 			this.OnBuildChunk();
-		}
-
-		public void OnDestroy()
-		{
-			if (_context != null)
-				_context.behaviour.chunkManager.DestroyChunk(_chunk.position.x, _chunk.position.y, _chunk.position.z);
 		}
 
 		public void OnDrawGizmos()
@@ -99,7 +83,7 @@ namespace Cubizer
 
 				foreach (var it in entities)
 				{
-					var material = _context.materialFactory.GetMaterial(it.Key);
+					var material = VoxelMaterialManager.GetInstance().GetMaterial(it.Key);
 					if (material == null)
 						continue;
 
@@ -112,15 +96,13 @@ namespace Cubizer
 			}
 		}
 
-		public void Init(ChunkPrimer chunk, CubizerContext context)
+		public void Init(ChunkPrimer chunk)
 		{
-			Debug.Assert(_chunk == null && _context == null);
+			Debug.Assert(_chunk == null);
 
 			_chunk = chunk;
 			_chunk.dirty = _dirty = false;
 			_chunk.onChunkChange += OnBuildChunk;
-
-			_context = context;
 		}
 	}
 }

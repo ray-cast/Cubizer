@@ -116,14 +116,6 @@ namespace Cubizer
 			_voxels = new VoxelData<VoxelMaterial>(bound_x, bound_y, bound_z, cout);
 		}
 
-		public float GetDistance(int x, int y, int z)
-		{
-			x = System.Math.Abs(_position.x - x);
-			y = System.Math.Abs(_position.y - y);
-			z = System.Math.Abs(_position.z - z);
-			return System.Math.Max(System.Math.Max(x, y), z);
-		}
-
 		public IVoxelModel CreateVoxelModel(VoxelCullMode mode)
 		{
 			switch (mode)

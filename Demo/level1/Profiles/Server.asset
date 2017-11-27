@@ -14,6 +14,7 @@ MonoBehaviour:
   terrain:
     _settings:
       seed: 255
+      repeatRate: 0.01
   database:
     _settings:
       url: 
@@ -25,7 +26,7 @@ MonoBehaviour:
       chunkHeightLimitHigh: 20
       chunkNumLimits: 4096
       chunkUpdateRadius: 1
-      chunkThreadNums: 2
+      chunkThreadNums: 1
   biome:
     _settings:
       biomeGenerators:

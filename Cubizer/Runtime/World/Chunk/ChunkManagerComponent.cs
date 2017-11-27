@@ -1,13 +1,15 @@
 ﻿using System.IO;
-using System.Threading;
 using System.Runtime.Serialization.Formatters.Binary;
 
 using UnityEngine;
 
 namespace Cubizer
 {
+	using ThreadTask = ThreadTask<ChunkThreadData>;
+
 	public class ChunkManagerComponent : CubizerComponent<ChunkManagerModels>
 	{
+		private string _name;
 		private GameObject _chunkObject;
 		private ChunkDelegates _events = new ChunkDelegates();
 
@@ -17,9 +19,11 @@ namespace Cubizer
 		{
 			public delegate void OnSaveData(GameObject chunk);
 			public delegate bool OnLoadData(int x, int y, int z, out ChunkPrimer chunk);
+			public delegate bool OnCreatedChunk(ChunkPrimer chunk);
 
 			public OnSaveData onSaveChunkData;
 			public OnLoadData onLoadChunkData;
+			public OnCreatedChunk onCreatedChunk;
 		}
 
 		public int count
@@ -37,12 +41,17 @@ namespace Cubizer
 			get { return model.settings.chunkManager; }
 		}
 
+		public ChunkManagerComponent(string name = "ServerChunks")
+		{
+			_name = name;
+		}
+
 		public override void OnEnable()
 		{
 			Debug.Assert(model.settings.chunkManager != null);
 
 			_events = new ChunkDelegates();
-			_chunkObject = new GameObject("TerrainChunks");
+			_chunkObject = new GameObject(_name);
 
 			_threads = new ThreadTask[model.settings.chunkThreadNums];
 
@@ -94,6 +103,11 @@ namespace Cubizer
 		{
 			Debug.Assert(_chunkObject != null);
 
+			int x = CalculateChunkPosByWorld(point.x);
+			int y = CalculateChunkPosByWorld(point.y);
+			int z = CalculateChunkPosByWorld(point.z);
+			var chunkPos = new Vector3(x, y, z);
+
 			var transform = _chunkObject.transform;
 			var maxRadius = radius * model.settings.chunkSize;
 
@@ -101,7 +115,7 @@ namespace Cubizer
 			{
 				var transformChild = transform.GetChild(i);
 
-				var distance = Vector3.Distance(transformChild.position, point);
+				var distance = Vector3.Distance(transformChild.position, chunkPos);
 				if (distance > maxRadius)
 				{
 					if (_events.onSaveChunkData != null)
@@ -111,7 +125,6 @@ namespace Cubizer
 					this.manager.Set(chunk.chunk.position.x, chunk.chunk.position.y, chunk.chunk.position.z, null);
 
 					GameObject.Destroy(transformChild.gameObject);
-
 					break;
 				}
 			}
@@ -305,7 +318,7 @@ namespace Cubizer
 					var gameObject = new GameObject("Chunk");
 					gameObject.transform.parent = _chunkObject.transform;
 					gameObject.transform.position = new Vector3(chunk.position.x, chunk.position.y, chunk.position.z) * model.settings.chunkSize;
-					gameObject.AddComponent<ChunkData>().Init(chunk, context);
+					gameObject.AddComponent<ChunkData>().Init(chunk);
 				}
 
 				return true;
@@ -314,22 +327,25 @@ namespace Cubizer
 			return false;
 		}
 
-		private void CreateChunkbject(ChunkPrimer chunk, int x, int y, int z)
+		private void CreateChunkObject(IPlayerListener player, ChunkPrimer chunk, int x, int y, int z)
 		{
-			var gameObject = new GameObject("Chunk");
-			gameObject.transform.parent = _chunkObject.transform;
-			gameObject.transform.position = new Vector3(x, y, z) * model.settings.chunkSize;
-			gameObject.AddComponent<ChunkData>().Init(chunk, context);
+			if (_events.onCreatedChunk != null)
+				_events.onCreatedChunk(chunk);
 
 			this.manager.Set(x, y, z, chunk);
+
+			var gameObject = new GameObject("Chunk");
+			gameObject.transform.parent = _chunkObject.transform;
+			gameObject.transform.position = new Vector3(x, y, z) * context.profile.chunk.settings.chunkSize;
+			gameObject.AddComponent<ChunkData>().Init(chunk);
 		}
 
-		private void CreateChunkPrimer(ref ThreadData data)
+		private void CreateChunkPrimer(ref ChunkThreadData data)
 		{
 			data.chunk = data.biome.OnBuildChunk(this.context.behaviour, data.x, data.y, data.z);
 		}
 
-		private void CreateChunk(int x, int y, int z, ThreadTask thread = null)
+		private void CreateChunk(IPlayerListener player, int x, int y, int z, ThreadTask thread = null)
 		{
 			if (this.count > model.settings.chunkNumLimits)
 				return;
@@ -345,7 +361,7 @@ namespace Cubizer
 				{
 					if (thread != null)
 					{
-						thread.Task(new ThreadData(biomeData, x, y, z));
+						thread.Task(new ChunkThreadData(player, biomeData, x, y, z));
 						this.manager.Set(x, y, z, new ChunkPrimer(model.settings.chunkSize, x, y, z));
 					}
 					else
@@ -360,15 +376,15 @@ namespace Cubizer
 			if (thread == null)
 			{
 				if (chunk != null)
-					CreateChunkbject(chunk, x, y, z);
+					CreateChunkObject(player, chunk, x, y, z);
 			}
 		}
 
-		private void UpdatePlayer(Vector3 translate, ThreadTask thread = null)
+		private void UpdatePlayer(IPlayerListener player, ThreadTask thread = null)
 		{
-			var chunkX = CalculateChunkPosByWorld(translate.x);
-			var chunkY = CalculateChunkPosByWorld(translate.y);
-			var chunkZ = CalculateChunkPosByWorld(translate.z);
+			var chunkX = CalculateChunkPosByWorld(player.player.transform.position.x);
+			var chunkY = CalculateChunkPosByWorld(player.player.transform.position.y);
+			var chunkZ = CalculateChunkPosByWorld(player.player.transform.position.z);
 
 			var radius = model.settings.chunkUpdateRadius;
 			for (int dx = -radius; dx <= radius; dx++)
@@ -392,13 +408,13 @@ namespace Cubizer
 					}
 					else
 					{
-						CreateChunk(x, y, z);
+						CreateChunk(player, x, y, z);
 					}
 				}
 			}
 		}
 
-		private bool UpdateCamera(Vector3 translate, Plane[] planes, Vector2Int[] radius, ThreadTask thread = null)
+		private bool UpdateCamera(IPlayerListener player, Vector3 translate, Plane[] planes, Vector2Int[] radius, ThreadTask thread = null)
 		{
 			int x = CalculateChunkPosByWorld(translate.x);
 			int y = CalculateChunkPosByWorld(translate.y);
@@ -409,7 +425,7 @@ namespace Cubizer
 
 			int start = bestScore;
 
-			Vector3 _chunkOffset = (Vector3.one * model.settings.chunkSize - Vector3.one) * 0.5f;
+			var chunkOffset = (Vector3.one * (model.settings.chunkSize - 1)) * 0.5f;
 
 			for (int iy = radius[1].x; iy <= radius[1].y; iy++)
 			{
@@ -430,7 +446,7 @@ namespace Cubizer
 						if (hit != null)
 							continue;
 
-						var p = _chunkOffset + new Vector3(dx, dy, dz) * model.settings.chunkSize;
+						var p = chunkOffset + new Vector3(dx, dy, dz) * model.settings.chunkSize;
 
 						int invisiable = GeometryUtility.TestPlanesAABB(planes, new Bounds(p, Vector3.one * model.settings.chunkSize)) ? 0 : 1;
 						int distance = Mathf.Max(Mathf.Max(Mathf.Abs(ix), Mathf.Abs(iy)), Mathf.Abs(iz));
@@ -450,7 +466,7 @@ namespace Cubizer
 			if (start == bestScore)
 				return false;
 
-			this.CreateChunk(bestX, bestY, bestZ, thread);
+			this.CreateChunk(player, bestX, bestY, bestZ, thread);
 			return true;
 		}
 
@@ -460,23 +476,25 @@ namespace Cubizer
 
 			foreach (var work in _threads)
 			{
-				if (work.state == ThreadTaskState.IDLE)
+				if (work.state == ThreadTaskState.Idle)
 					idles++;
 
-				if (work.state != ThreadTaskState.DONE)
+				if (work.state != ThreadTaskState.Done)
 					continue;
 
 				try
 				{
 					var data = work.context;
 					if (data != null && data.chunk != null)
-						CreateChunkbject(data.chunk, data.x, data.y, data.z);
+					{
+						CreateChunkObject(work.context.player, data.chunk, data.x, data.y, data.z);
+					}
 
 					idles++;
 				}
 				finally
 				{
-					work.state = ThreadTaskState.IDLE;
+					work.state = ThreadTaskState.Idle;
 				}
 			}
 
@@ -485,11 +503,11 @@ namespace Cubizer
 
 		private void AutoGC()
 		{
-			if (this.manager.Count() > model.settings.chunkNumLimits)
-			{
-				this.manager.GC();
-				context.behaviour.biomeManager.biomes.GC();
-			}
+			if (this.manager.Count() < model.settings.chunkNumLimits)
+				return;
+
+			this.manager.GC();
+			context.behaviour.biomeManager.biomes.GC();
 		}
 
 		public override void Update()
@@ -497,11 +515,12 @@ namespace Cubizer
 			this.AutoGC();
 
 			var players = context.players.settings.players;
+
 			foreach (var it in players)
 				DestroyChunk(it.model.settings.position, it.model.settings.chunkRadiusGC);
 
 			foreach (var it in players)
-				UpdatePlayer(it.model.settings.position);
+				UpdatePlayer(it);
 
 			var idleThreads = this.FetchResult();
 			if (idleThreads > 0)
@@ -516,10 +535,10 @@ namespace Cubizer
 
 					foreach (var thread in _threads)
 					{
-						if (thread.state != ThreadTaskState.IDLE)
+						if (thread.state != ThreadTaskState.Idle)
 							continue;
 
-						if (UpdateCamera(translate, planes, it.model.settings.chunkRadius, thread))
+						if (UpdateCamera(it, translate, planes, it.model.settings.chunkRadius, thread))
 							idleThreads--;
 					}
 				}

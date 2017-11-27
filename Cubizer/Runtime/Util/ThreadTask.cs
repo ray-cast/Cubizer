@@ -3,34 +3,8 @@ using System.Threading;
 
 namespace Cubizer
 {
-	public enum ThreadTaskState
-	{
-		QUIT,
-		IDLE,
-		BUSY,
-		DONE,
-	};
-
-	public class ThreadData
-	{
-		public int x;
-		public int y;
-		public int z;
-
-		public IBiomeData biome;
-		public ChunkPrimer chunk;
-
-		public ThreadData(IBiomeData biomeData, int xx, int yy, int zz)
-		{
-			x = xx;
-			y = yy;
-			z = zz;
-
-			biome = biomeData;
-		}
-	}
-
-	public class ThreadTask : IDisposable
+	public class ThreadTask<ThreadData> : IDisposable
+		where ThreadData : class
 	{
 		private bool _isQuitRequest;
 
@@ -65,7 +39,7 @@ namespace Cubizer
 
 		public ThreadTask(ThreadUpdateDelegate callback)
 		{
-			_state = ThreadTaskState.IDLE;
+			_state = ThreadTaskState.Idle;
 			_isQuitRequest = true;
 
 			_dispose = callback;
@@ -81,7 +55,7 @@ namespace Cubizer
 		public void Task(ThreadData data)
 		{
 			_context = data;
-			_state = ThreadTaskState.BUSY;
+			_state = ThreadTaskState.Busy;
 			_event.Set();
 		}
 
@@ -100,11 +74,11 @@ namespace Cubizer
 			{
 				_isQuitRequest = true;
 
-				_state = ThreadTaskState.BUSY;
+				_state = ThreadTaskState.Busy;
 				_context = null;
 				_event.Set();
 				_thread.Join();
-				_state = ThreadTaskState.QUIT;
+				_state = ThreadTaskState.Quit;
 			}
 		}
 
@@ -116,7 +90,7 @@ namespace Cubizer
 				{
 					try
 					{
-						while (_state != ThreadTaskState.BUSY)
+						while (_state != ThreadTaskState.Busy)
 							_event.WaitOne();
 
 						if (_context != null)
@@ -124,7 +98,7 @@ namespace Cubizer
 					}
 					finally
 					{
-						_state = ThreadTaskState.DONE;
+						_state = ThreadTaskState.Done;
 					}
 				}
 			}
@@ -134,7 +108,7 @@ namespace Cubizer
 			}
 			finally
 			{
-				_state = ThreadTaskState.QUIT;
+				_state = ThreadTaskState.Quit;
 			}
 		}
 	}

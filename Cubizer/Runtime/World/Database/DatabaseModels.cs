@@ -13,16 +13,12 @@ namespace Cubizer
 			[SerializeField]
 			public string url;
 
-			[SerializeField]
-			public string username;
-
 			public static DatabaseSettings defaultSettings
 			{
 				get
 				{
 					return new DatabaseSettings
 					{
-						username = "cubizer"
 					};
 				}
 			}

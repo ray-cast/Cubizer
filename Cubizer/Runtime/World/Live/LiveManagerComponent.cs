@@ -7,6 +7,7 @@ namespace Cubizer
 	[Serializable]
 	public sealed class LiveManagerComponent : CubizerComponent<LiveManagerModels>
 	{
+		private string _name;
 		private GameObject _biomeObject;
 
 		public override bool active
@@ -14,9 +15,14 @@ namespace Cubizer
 			get { return true; }
 		}
 
+		public LiveManagerComponent(string name = "ServerEntities")
+		{
+			_name = name;
+		}
+
 		public override void OnEnable()
 		{
-			_biomeObject = new GameObject("TerrainEntities");
+			_biomeObject = new GameObject(_name);
 
 			foreach (var it in model.settings.lives)
 			{

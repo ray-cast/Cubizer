@@ -12,13 +12,17 @@ namespace Cubizer
 			[SerializeField]
 			public int seed;
 
+			[SerializeField]
+			public float repeatRate;
+
 			public static TerrainSettings defaultSettings
 			{
 				get
 				{
 					return new TerrainSettings
 					{
-						seed = 255
+						seed = 255,
+						repeatRate = 1.0f / 60.0f
 					};
 				}
 			}

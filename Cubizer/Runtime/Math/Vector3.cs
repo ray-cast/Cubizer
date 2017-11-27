@@ -52,6 +52,11 @@ namespace Cubizer
 			{
 				Debug.Assert(false);
 			}
+
+			public static Vector3 ConvertToVector3(this Vector3<int> v)
+			{
+				return new Vector3(v.x, v.y, v.z);
+			}
 		}
 	}
 }

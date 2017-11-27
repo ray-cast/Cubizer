@@ -16,8 +16,6 @@ namespace Cubizer
 			if (string.IsNullOrEmpty(_url))
 				_url = Application.persistentDataPath;
 
-			_username = model.settings.username;
-
 			context.behaviour.events.onSaveChunkData += this.OnSaveData;
 			context.behaviour.events.onLoadChunkData += this.OnLoadData;
 		}

@@ -12,7 +12,7 @@ namespace Cubizer
 		public struct PlayerSettings
 		{
 			[SerializeField]
-			public List<IPlayer> players;
+			public List<IPlayerListener> players;
 
 			public static PlayerSettings defaultSettings
 			{
@@ -20,7 +20,7 @@ namespace Cubizer
 				{
 					return new PlayerSettings
 					{
-						players = new List<IPlayer>()
+						players = new List<IPlayerListener>()
 					};
 				}
 			}
