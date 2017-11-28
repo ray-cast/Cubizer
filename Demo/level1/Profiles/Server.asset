@@ -14,10 +14,11 @@ MonoBehaviour:
   terrain:
     _settings:
       seed: 255
-      repeatRate: 0.01
+      repeatRate: 0.1
   database:
     _settings:
-      url: 
+      url: C:/Users/ray/AppData/LocalLow/DefaultCompany/Minecraft/
+      name: cubizer.db
   chunk:
     _settings:
       chunkSize: 24
