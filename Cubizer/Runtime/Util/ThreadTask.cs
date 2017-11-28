@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Threading;
 
-using UnityEngine;
-
 namespace Cubizer
 {
 	public class ThreadTask<ThreadData> : IDisposable

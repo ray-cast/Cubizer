@@ -1,12 +1,10 @@
-﻿using System.Collections;
-
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 
 namespace Cubizer
 {
 	[CustomEditor(typeof(ChunkData))]
-	public class TerrainDataInspector : Editor
+	public class ChunkDataInspector : Editor
 	{
 		public override void OnInspectorGUI()
 		{
@@ -26,7 +24,7 @@ namespace Cubizer
 				if (map != null)
 				{
 					data.chunk = map;
-					data.OnBuildChunk();
+					data.OnBuildChunkAsync();
 
 					Debug.Log("Your data of chunk was loaded successfully");
 				}

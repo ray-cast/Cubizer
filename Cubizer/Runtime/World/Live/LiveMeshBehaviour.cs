@@ -23,9 +23,9 @@ namespace Cubizer
 			_meshCollider = GetComponent<MeshCollider>();
 		}
 
-		public override void OnBuildChunk(IChunkData parent, IVoxelModel model, int faceCount)
+		public override void OnBuildChunk(ChunkDataContext context)
 		{
-			foreach (VoxelPrimitive it in model.GetEnumerator(this.material.GetInstanceID()))
+			foreach (VoxelPrimitive it in context.model.GetEnumerator(this.material.GetInstanceID()))
 			{
 				Vector3 pos, scale;
 				it.GetTranslateScale(out pos, out scale);
@@ -34,7 +34,7 @@ namespace Cubizer
 				actors.isStatic = gameObject.isStatic;
 				actors.tag = gameObject.tag;
 				actors.layer = this.gameObject.layer;
-				actors.transform.parent = parent.transform;
+				actors.transform.parent = context.parent.transform;
 				actors.transform.localPosition = transform.position + pos;
 				actors.transform.localRotation = transform.rotation;
 				actors.transform.localScale = transform.localScale;

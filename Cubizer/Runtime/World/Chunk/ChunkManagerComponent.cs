@@ -261,7 +261,7 @@ namespace Cubizer
 					var gameObject = new GameObject("Chunk");
 					gameObject.transform.parent = _chunkObject.transform;
 					gameObject.transform.position = new Vector3(chunk.position.x, chunk.position.y, chunk.position.z) * model.settings.chunkSize;
-					gameObject.AddComponent<ChunkData>().Init(chunk);
+					gameObject.AddComponent<ChunkData>().Init(chunk, true);
 				}
 
 				return true;
@@ -283,14 +283,14 @@ namespace Cubizer
 			}
 		}
 
-		private void CreateChunkObject(IPlayerListener player, ChunkPrimer chunk, int x, int y, int z)
+		private void CreateChunkObject(IPlayerListener player, ChunkPrimer chunk, int x, int y, int z, bool async)
 		{
 			this.manager.Set(x, y, z, chunk);
 
 			var gameObject = new GameObject("Chunk");
 			gameObject.transform.parent = _chunkObject.transform;
 			gameObject.transform.position = new Vector3(x, y, z) * context.profile.chunk.settings.chunkSize;
-			gameObject.AddComponent<ChunkData>().Init(chunk);
+			gameObject.AddComponent<ChunkData>().Init(chunk, async);
 		}
 
 		private void CreateChunkPrimer(ref ChunkThreadData data)
@@ -330,7 +330,7 @@ namespace Cubizer
 					CreateChunkPrimer(ref threadData);
 
 					if (threadData.chunk != null)
-						CreateChunkObject(player, threadData.chunk, x, y, z);
+						CreateChunkObject(player, threadData.chunk, x, y, z, false);
 				}
 			}
 		}
@@ -513,26 +513,17 @@ namespace Cubizer
 			foreach (var work in _threads)
 			{
 				if (work.except != null)
-					throw new System.Exception("this thread has a pending exception:" + work.except.Message);
+					throw new System.Exception("This thread has a pending exception:" + work.except.Message);
 
-				if (work.state == ThreadTaskState.Idle)
+				if (work.state == ThreadTaskState.Idle || work.state == ThreadTaskState.Done)
 					idles++;
 
-				if (work.state != ThreadTaskState.Done)
-					continue;
-
-				try
+				if (work.state == ThreadTaskState.Done)
 				{
 					var data = work.context;
 					if (data != null && data.chunk != null)
-					{
-						CreateChunkObject(work.context.player, data.chunk, data.x, data.y, data.z);
-					}
+						CreateChunkObject(work.context.player, data.chunk, data.x, data.y, data.z, true);
 
-					idles++;
-				}
-				finally
-				{
 					work.state = ThreadTaskState.Idle;
 				}
 			}

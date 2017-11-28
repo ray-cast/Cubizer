@@ -7,9 +7,9 @@ namespace Cubizer
 	[Serializable]
 	public sealed class LiveManagerComponent : CubizerComponent<LiveManagerModels>
 	{
+		private bool _active;
 		private string _name;
 		private GameObject _biomeObject;
-		private bool _active;
 
 		public override bool active
 		{
@@ -40,16 +40,15 @@ namespace Cubizer
 		public override void OnEnable()
 		{
 			_biomeObject = new GameObject(_name);
-
 			foreach (var it in model.settings.lives)
 			{
-				if (it != null)
-				{
-					var gameObject = GameObject.Instantiate(it.gameObject);
-					gameObject.name = it.name;
-					gameObject.transform.parent = _biomeObject.transform;
-					gameObject.GetComponent<LiveBehaviour>().material = context.materialFactory.CreateMaterial(it.name, it.settings);
-				}
+				if (it == null)
+					throw new NullReferenceException("Missing of index:" + model.settings.lives.IndexOf(null));
+
+				var gameObject = GameObject.Instantiate(it.gameObject);
+				gameObject.name = it.name;
+				gameObject.transform.parent = _biomeObject.transform;
+				gameObject.GetComponent<LiveBehaviour>().material = context.materialFactory.CreateMaterial(it.name, it.settings);
 			}
 		}
 

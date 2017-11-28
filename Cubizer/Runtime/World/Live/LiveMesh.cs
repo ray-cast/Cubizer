@@ -2,7 +2,7 @@
 
 namespace Cubizer
 {
-	public struct LiveMesh
+	public class LiveMesh
 	{
 		public Vector3[] vertices;
 		public Vector3[] normals;

@@ -14,6 +14,6 @@ namespace Cubizer
 			get; internal set;
 		}
 
-		public abstract void OnBuildChunk(IChunkData parent, IVoxelModel model, int faceCount);
+		public abstract void OnBuildChunk(ChunkDataContext context);
 	}
 }

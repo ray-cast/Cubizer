@@ -26,7 +26,7 @@ MonoBehaviour:
       chunkHeightLimitHigh: 20
       chunkNumLimits: 4096
       chunkUpdateRadius: 1
-      chunkThreadNums: 2
+      chunkThreadNums: 1
   biome:
     _settings:
       biomeGenerators:
@@ -40,7 +40,7 @@ MonoBehaviour:
       - {fileID: 114101155771645688, guid: d0469aa8e774636498d8042c06f8d5bd, type: 2}
       - {fileID: 114121575633708268, guid: febf3636c1825a248954507bb06fab60, type: 2}
       - {fileID: 114328574832605986, guid: 13b55ec49476e5143894479b1dddb8e0, type: 2}
-      - {fileID: 114601630312061134, guid: 5edd8a66efa9fa64e9fbb9f83e741cd5, type: 2}
+      - {fileID: 114741385759048994, guid: 5edd8a66efa9fa64e9fbb9f83e741cd5, type: 2}
       - {fileID: 114256094178885820, guid: 110530f672330034ca0aa2902787854c, type: 2}
       - {fileID: 114984134715657914, guid: d69f19d26e4a7c449bfd78fdcd5d78be, type: 2}
       - {fileID: 114675070187702980, guid: 2ba0b2a239f6c714e826ca3fb1eeee0f, type: 2}

@@ -42,11 +42,6 @@ namespace Cubizer
 			}
 		}
 
-		public void Start()
-		{
-			this.OnBuildChunk();
-		}
-
 		public void OnDrawGizmos()
 		{
 			if (chunk == null)
@@ -66,7 +61,7 @@ namespace Cubizer
 			}
 		}
 
-		public override void OnBuildChunk()
+		private void doBuildChunk(bool is_async)
 		{
 			for (int i = 0; i < transform.childCount; i++)
 				Destroy(transform.GetChild(i).gameObject);
@@ -91,18 +86,34 @@ namespace Cubizer
 					if (controller == null)
 						continue;
 
-					controller.OnBuildChunk(this, model, it.Value);
+					var context = new ChunkDataContext { parent = this, model = model, faceCount = it.Value, async = is_async };
+					controller.OnBuildChunk(context);
 				}
 			}
 		}
 
-		public void Init(ChunkPrimer chunk)
+		public void OnBuildChunk()
+		{
+			doBuildChunk(false);
+		}
+
+		public void OnBuildChunkAsync()
+		{
+			doBuildChunk(true);
+		}
+
+		public void Init(ChunkPrimer chunk, bool async)
 		{
 			Debug.Assert(_chunk == null);
 
 			_chunk = chunk;
 			_chunk.dirty = _dirty = false;
 			_chunk.onChunkChange += OnBuildChunk;
+
+			if (async)
+				this.OnBuildChunkAsync();
+			else
+				this.OnBuildChunk();
 		}
 	}
 }

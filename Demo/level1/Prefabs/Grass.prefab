@@ -19,7 +19,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4386415677508594}
-  - component: {fileID: 114601630312061134}
+  - component: {fileID: 114741385759048994}
   m_Layer: 0
   m_Name: Grass
   m_TagString: GameController
@@ -40,7 +40,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114601630312061134
+--- !u!114 &114741385759048994
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}

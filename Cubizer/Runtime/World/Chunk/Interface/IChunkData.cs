@@ -15,7 +15,5 @@ namespace Cubizer
 		{
 			get; set;
 		}
-
-		public abstract void OnBuildChunk();
 	}
 }

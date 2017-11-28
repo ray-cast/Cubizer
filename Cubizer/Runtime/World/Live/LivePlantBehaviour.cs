@@ -6,11 +6,7 @@ namespace Cubizer
 	[AddComponentMenu("Cubizer/LivePlantBehaviour")]
 	public class LivePlantBehaviour : LiveBehaviour
 	{
-		private LODGroup _lodGroup;
-		private MeshRenderer _renderer;
-		private MeshCollider _meshCollider;
-
-		public static readonly Vector3[,] _vertices = new Vector3[4, 4]
+		public readonly static Vector3[,] _vertices = new Vector3[4, 4]
 		{
 			{ new Vector3( 0.0f, -0.5f, -0.5f), new Vector3( 0.0f, -0.5f, +0.5f), new Vector3( 0.0f, +0.5f, -0.5f), new Vector3( 0.0f, +0.5f, +0.5f)},
 			{ new Vector3( 0.0f, -0.5f, -0.5f), new Vector3( 0.0f, -0.5f, +0.5f), new Vector3( 0.0f, +0.5f, -0.5f), new Vector3( 0.0f, +0.5f, +0.5f)},
@@ -18,7 +14,7 @@ namespace Cubizer
 			{ new Vector3(-0.5f, -0.5f,  0.0f), new Vector3(-0.5f, +0.5f,  0.0f), new Vector3(+0.5f, -0.5f,  0.0f), new Vector3(+0.5f, +0.5f,  0.0f)}
 		};
 
-		public static readonly Vector3[] _normals = new Vector3[4]
+		public readonly static Vector3[] _normals = new Vector3[4]
 		{
 			new Vector3(-1, 0, 0),
 			new Vector3(+1, 0, 0),
@@ -26,7 +22,7 @@ namespace Cubizer
 			new Vector3(0, 0, +1)
 		};
 
-		public static readonly Vector2[,] _uvs = new Vector2[4, 4]
+		public readonly static Vector2[,] _uvs = new Vector2[4, 4]
 		{
 			{ new Vector2(0, 0), new Vector2(1, 0), new Vector2(0, 1), new Vector2(1, 1)},
 			{ new Vector2(1, 0), new Vector2(0, 0), new Vector2(1, 1), new Vector2(0, 1)},
@@ -34,13 +30,18 @@ namespace Cubizer
 			{ new Vector2(1, 0), new Vector2(1, 1), new Vector2(0, 0), new Vector2(0, 1)}
 		};
 
-		public static readonly int[,] _indices = new int[4, 6]
+		public readonly static int[,] _indices = new int[4, 6]
 		{
 			{0, 3, 2, 0, 1, 3},
 			{0, 3, 1, 0, 2, 3},
 			{0, 3, 2, 0, 1, 3},
 			{0, 3, 1, 0, 2, 3}
 		};
+
+		private LODGroup _lodGroup;
+		private MeshRenderer _renderer;
+
+		private MeshCollider _meshCollider;
 
 		public void Start()
 		{
@@ -49,12 +50,12 @@ namespace Cubizer
 			_renderer = GetComponent<MeshRenderer>();
 		}
 
-		public override void OnBuildChunk(IChunkData parent, IVoxelModel model, int faceCount)
+		public override void OnBuildChunk(ChunkDataContext context)
 		{
 			var writeCount = 0;
-			var data = new LiveMesh((faceCount / 6) * 16, (faceCount / 6) * 24);
+			var data = new LiveMesh((context.faceCount / 6) * 16, (context.faceCount / 6) * 24);
 
-			foreach (VoxelPrimitive it in model.GetEnumerator(this.material.GetInstanceID()))
+			foreach (VoxelPrimitive it in context.model.GetEnumerator(this.material.GetInstanceID()))
 			{
 				Vector3 pos, scale;
 				it.GetTranslateScale(out pos, out scale);
@@ -67,8 +68,8 @@ namespace Cubizer
 				actors.isStatic = this.gameObject.isStatic;
 				actors.tag = gameObject.tag;
 				actors.layer = this.gameObject.layer;
-				actors.transform.parent = parent.transform;
-				actors.transform.position = parent.transform.position;
+				actors.transform.parent = context.parent.transform;
+				actors.transform.position = context.parent.transform.position;
 
 				var mesh = data.mesh;
 				actors.AddComponent<MeshFilter>().mesh = mesh;

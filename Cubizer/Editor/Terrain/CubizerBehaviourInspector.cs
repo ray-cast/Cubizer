@@ -1,11 +1,10 @@
 using UnityEngine;
 using UnityEditor;
-using System.Collections.Generic;
 
 namespace Cubier
 {
 	[CustomEditor(typeof(Cubizer.CubizerBehaviour))]
-	public class TerrainChunkInspector : Editor
+	public class CubizerBehaviourInspector : Editor
 	{
 		private Cubizer.CubizerBehaviour terrain;
 

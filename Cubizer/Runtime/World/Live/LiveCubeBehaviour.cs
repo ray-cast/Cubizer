@@ -1,4 +1,8 @@
 ﻿using UnityEngine;
+
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Cubizer
@@ -52,17 +56,69 @@ namespace Cubizer
 		[SerializeField]
 		public PhysicMaterial physicMaterial;
 
-		public override void OnBuildChunk(IChunkData parent, IVoxelModel model, int faceCount)
+		private readonly Queue<LiveMesh> _queue = new Queue<LiveMesh>();
+
+		public override void OnBuildChunk(ChunkDataContext context)
 		{
-			var data = OnBuildBlocks(model, faceCount);
+			if (context.async)
+				StartCoroutine("BuildChunkWithCoroutine", context);
+			else
+			{
+				var data = BuildBlocks(context);
+				BuildGameObject(context, data);
+			}
+		}
+
+		private LiveMesh BuildBlocks(ChunkDataContext context)
+		{
+			var writeCount = 0;
+			var mesh = new LiveMesh(context.faceCount * 4, context.faceCount * 6);
+
+			foreach (VoxelPrimitive it in context.model.GetEnumerator(this.material.GetInstanceID()))
+			{
+				Vector3 translate, scale;
+				it.GetTranslateScale(out translate, out scale);
+
+				for (int i = 0; i < 6; i++)
+				{
+					if (!it.faces[i])
+						continue;
+
+					for (int n = writeCount * 4, k = 0; k < 4; k++, n++)
+					{
+						Vector3 v = _vertices[i, k];
+						v.x *= scale.x;
+						v.y *= scale.y;
+						v.z *= scale.z;
+						v.x += translate.x;
+						v.y += translate.y;
+						v.z += translate.z;
+
+						mesh.vertices[n] = v;
+						mesh.normals[n] = _normals[i];
+						mesh.uv[n] = _uvs[i, k];
+					}
+
+					for (int j = writeCount * 6, k = 0; k < 6; k++, j++)
+						mesh.indices[j] = writeCount * 4 + _indices[i, k];
+
+					writeCount++;
+				}
+			}
+
+			return mesh;
+		}
+
+		private void BuildGameObject(ChunkDataContext context, LiveMesh data)
+		{
 			if (data.indices.Length > 0)
 			{
 				var actors = new GameObject(this.name);
 				actors.isStatic = this.gameObject.isStatic;
 				actors.tag = this.gameObject.tag;
 				actors.layer = this.gameObject.layer;
-				actors.transform.parent = parent.transform;
-				actors.transform.position = parent.transform.position;
+				actors.transform.parent = context.parent.transform;
+				actors.transform.position = context.parent.transform.position;
 
 				if (msehMaterial != null)
 				{
@@ -82,47 +138,28 @@ namespace Cubizer
 			}
 		}
 
-		public LiveMesh OnBuildBlocks(IVoxelModel model, int faceCount)
+		public IEnumerator BuildChunkWithCoroutine(ChunkDataContext context)
 		{
-			var writeCount = 0;
-			var data = new LiveMesh(faceCount * 4, faceCount * 6);
-
-			foreach (VoxelPrimitive it in model.GetEnumerator(this.material.GetInstanceID()))
+			Func<Task> task = async () =>
 			{
-				Vector3 pos, scale;
-				it.GetTranslateScale(out pos, out scale);
-				OnBuildBlock(ref data, ref writeCount, pos, scale, it.faces);
-			}
-
-			return data;
-		}
-
-		public void OnBuildBlock(ref LiveMesh mesh, ref int index, Vector3 translate, Vector3 scale, VoxelVisiableFaces faces)
-		{
-			for (int i = 0; i < 6; i++)
-			{
-				if (!faces[i])
-					continue;
-
-				for (int n = index * 4, k = 0; k < 4; k++, n++)
+				await Task.Run(() =>
 				{
-					Vector3 v = _vertices[i, k];
-					v.x *= scale.x;
-					v.y *= scale.y;
-					v.z *= scale.z;
-					v.x += translate.x;
-					v.y += translate.y;
-					v.z += translate.z;
+					var data = BuildBlocks(context);
 
-					mesh.vertices[n] = v;
-					mesh.normals[n] = _normals[i];
-					mesh.uv[n] = _uvs[i, k];
-				}
+					lock (_queue)
+					{
+						_queue.Enqueue(data);
+					}
+				});
+			};
 
-				for (int j = index * 6, k = 0; k < 6; k++, j++)
-					mesh.indices[j] = index * 4 + _indices[i, k];
+			task();
 
-				index++;
+			yield return new WaitWhile(() => !(_queue.Count > 0));
+
+			lock (_queue)
+			{
+				BuildGameObject(context, _queue.Dequeue());
 			}
 		}
 	}
