@@ -4,9 +4,11 @@ namespace Cubizer
 {
 	public class DbComponent : CubizerComponent<DbModels>
 	{
-		private string _url;
-		private string _dbname;
+		private string _dbUrl;
+		private string _dbName;
+
 		private DbSqlite _sqlite;
+
 		private bool _active;
 
 		public override bool active
@@ -29,20 +31,25 @@ namespace Cubizer
 			}
 		}
 
-		public DbComponent(string name)
+		public DbComponent()
 		{
-			Debug.Assert(!string.IsNullOrEmpty(name));
-			_dbname = name;
 			_active = true;
 		}
 
 		public override void OnEnable()
 		{
-			_url = model.settings.url;
-			if (string.IsNullOrEmpty(_url))
+			_dbUrl = model.settings.url;
+			if (string.IsNullOrEmpty(_dbUrl))
 			{
-				_url = Application.persistentDataPath + "/";
-				model.SetDefaultURL(_url);
+				_dbUrl = Application.persistentDataPath + "/";
+				model.SetDefaultURL(_dbUrl);
+			}
+
+			_dbName = model.settings.name;
+			if (string.IsNullOrEmpty(_dbName))
+			{
+				_dbName = "cubizer.db";
+				model.SetDefaultName(_dbName);
 			}
 
 			if (this.active)
@@ -51,7 +58,7 @@ namespace Cubizer
 				context.behaviour.events.OnAddBlockBefore += this.OnAddBlockBefore;
 				context.behaviour.events.OnRemoveBlockBefore += this.OnRemoveBlockBefore;
 
-				_sqlite = new DbSqlite(_url + _dbname + ".db");
+				_sqlite = new DbSqlite(_dbUrl + _dbName);
 			}
 		}
 

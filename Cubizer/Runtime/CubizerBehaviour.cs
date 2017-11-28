@@ -190,7 +190,7 @@ namespace Cubizer
 			_biomeManager = AddComponent(new BiomeManagerComponent());
 			_biomeManager.Init(_context, _profile.biome);
 
-			_database = AddComponent(new DbComponent("cubizer"));
+			_database = AddComponent(new DbComponent());
 			_database.Init(_context, _profile.database);
 
 			Math.Noise.simplex_seed(_profile.terrain.settings.seed);

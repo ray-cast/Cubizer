@@ -54,8 +54,8 @@ namespace Cubizer
 
 		public ChunkManagerComponent(string name = "ServerChunks")
 		{
-			this.active = true;
 			_name = name;
+			_active = true;
 			_callbacks = new ChunkDelegates();
 		}
 

@@ -13,6 +13,9 @@ namespace Cubizer
 			[SerializeField]
 			public string url;
 
+			[SerializeField]
+			public string name;
+
 			public static DbSettings defaultSettings
 			{
 				get
@@ -30,6 +33,11 @@ namespace Cubizer
 		public void SetDefaultURL(string url)
 		{
 			_settings.url = url;
+		}
+
+		public void SetDefaultName(string name)
+		{
+			_settings.name = name;
 		}
 
 		public DbSettings settings
