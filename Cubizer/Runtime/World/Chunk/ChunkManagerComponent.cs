@@ -15,6 +15,28 @@ namespace Cubizer
 
 		private ThreadTask[] _threads;
 
+		private bool _active;
+
+		public override bool active
+		{
+			get
+			{
+				return _active;
+			}
+			set
+			{
+				if (_active != value)
+				{
+					if (value)
+						this.OnEnable();
+					else
+						this.OnDisable();
+
+					_active = value;
+				}
+			}
+		}
+
 		public int count
 		{
 			get { return _chunkObject != null ? _chunkObject.transform.childCount : 0; }
@@ -32,6 +54,7 @@ namespace Cubizer
 
 		public ChunkManagerComponent(string name = "ServerChunks")
 		{
+			this.active = true;
 			_name = name;
 			_callbacks = new ChunkDelegates();
 		}
@@ -53,14 +76,18 @@ namespace Cubizer
 
 		public override void OnDisable()
 		{
+			for (int i = 0; i < _threads.Length; i++)
+			{
+				_threads[i].Dispose();
+				_threads[i] = null;
+			}
+
 			if (_chunkObject != null)
 			{
 				this.DestroyChunks();
 				GameObject.Destroy(_chunkObject);
+				_chunkObject = null;
 			}
-
-			for (int i = 0; i < _threads.Length; i++)
-				_threads[i].Dispose();
 		}
 
 		public ChunkPrimer FindChunk(int x, int y, int z)

@@ -20,7 +20,7 @@ namespace Cubizer
 	public abstract class CubizerComponent<T> : ICubizerComponent
 		where T : CubizerModel
 	{
-		public virtual bool active
+		public abstract bool active
 		{
 			get; set;
 		}

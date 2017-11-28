@@ -27,6 +27,11 @@ namespace Cubizer
 		[SerializeField]
 		private DbSettings _settings = DbSettings.defaultSettings;
 
+		public void SetDefaultURL(string url)
+		{
+			_settings.url = url;
+		}
+
 		public DbSettings settings
 		{
 			get { return _settings; }

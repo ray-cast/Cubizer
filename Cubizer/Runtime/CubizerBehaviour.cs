@@ -108,7 +108,7 @@ namespace Cubizer
 			foreach (var component in _components)
 			{
 				var model = component.GetModel();
-				if (model != null)
+				if (component.active && model != null)
 					component.OnEnable();
 			}
 		}
@@ -118,7 +118,7 @@ namespace Cubizer
 			foreach (var component in _components)
 			{
 				var model = component.GetModel();
-				if (model != null)
+				if (component.active && model != null)
 					component.OnDisable();
 			}
 		}
@@ -128,7 +128,7 @@ namespace Cubizer
 			foreach (var component in _components)
 			{
 				var model = component.GetModel();
-				if (model != null && component.active)
+				if (component.active && model != null)
 					component.Update();
 			}
 		}
