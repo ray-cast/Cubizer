@@ -86,7 +86,7 @@ namespace Cubizer
 					if (controller == null)
 						continue;
 
-					var context = new ChunkDataContext { parent = this, model = model, faceCount = it.Value, async = is_async };
+					var context = new ChunkDataContext(this, model, it.Value, is_async);
 					controller.OnBuildChunk(context);
 				}
 			}
