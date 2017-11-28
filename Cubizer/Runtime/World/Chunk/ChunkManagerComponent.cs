@@ -11,7 +11,7 @@ namespace Cubizer
 	{
 		private string _name;
 		private GameObject _chunkObject;
-		private ChunkDelegates _listener;
+		private ChunkDelegates _callbacks;
 
 		private ThreadTask[] _threads;
 
@@ -20,9 +20,9 @@ namespace Cubizer
 			get { return _chunkObject != null ? _chunkObject.transform.childCount : 0; }
 		}
 
-		public ChunkDelegates listener
+		public ChunkDelegates callbacks
 		{
-			get { return _listener; }
+			get { return _callbacks; }
 		}
 
 		private IChunkDataManager manager
@@ -33,7 +33,7 @@ namespace Cubizer
 		public ChunkManagerComponent(string name = "ServerChunks")
 		{
 			_name = name;
-			_listener = new ChunkDelegates();
+			_callbacks = new ChunkDelegates();
 		}
 
 		public override void OnEnable()
@@ -54,7 +54,10 @@ namespace Cubizer
 		public override void OnDisable()
 		{
 			if (_chunkObject != null)
+			{
 				this.DestroyChunks();
+				GameObject.Destroy(_chunkObject);
+			}
 
 			for (int i = 0; i < _threads.Length; i++)
 				_threads[i].Dispose();
@@ -66,82 +69,6 @@ namespace Cubizer
 			if (manager.Get(x, y, z, out chunk))
 				return chunk;
 			return null;
-		}
-
-		public void DestroyChunks(bool is_save = true)
-		{
-			Debug.Assert(_chunkObject != null);
-
-			var transform = _chunkObject.transform;
-
-			for (int i = 0; i < transform.childCount; i++)
-			{
-				var child = transform.GetChild(i).gameObject;
-
-				if (is_save)
-				{
-					if (_listener.onSaveChunkData != null)
-						_listener.onSaveChunkData(child);
-				}
-
-				GameObject.Destroy(child);
-			}
-		}
-
-		public void DestroyChunk(Vector3 point, float radius)
-		{
-			Debug.Assert(_chunkObject != null);
-
-			int x = CalculateChunkPosByWorld(point.x);
-			int y = CalculateChunkPosByWorld(point.y);
-			int z = CalculateChunkPosByWorld(point.z);
-			var chunkPos = new Vector3(x, y, z) * model.settings.chunkSize;
-
-			var transform = _chunkObject.transform;
-			var maxRadius = radius * model.settings.chunkSize;
-
-			for (int i = 0; i < transform.childCount; i++)
-			{
-				var transformChild = transform.GetChild(i);
-
-				var distance = Vector3.Distance(transformChild.position, chunkPos);
-				if (distance > maxRadius)
-				{
-					if (_listener.onSaveChunkData != null)
-						_listener.onSaveChunkData(transformChild.gameObject);
-
-					var chunk = transformChild.GetComponent<ChunkData>();
-					this.manager.Set(chunk.chunk.position.x, chunk.chunk.position.y, chunk.chunk.position.z, null);
-
-					GameObject.Destroy(transformChild.gameObject);
-					break;
-				}
-			}
-		}
-
-		public void DestroyChunk(int x, int y, int z)
-		{
-			Debug.Assert(_chunkObject != null);
-
-			var transform = _chunkObject.transform;
-
-			for (int i = 0; i < transform.childCount; i++)
-			{
-				var transformChild = transform.GetChild(i);
-				if (transformChild.position.x == x &&
-					transformChild.position.y == y &&
-					transformChild.position.z == z)
-				{
-					if (_listener.onSaveChunkData != null)
-						_listener.onSaveChunkData(transformChild.gameObject);
-
-					GameObject.Destroy(transformChild.gameObject);
-
-					this.manager.Set(x, y, z, null);
-
-					break;
-				}
-			}
 		}
 
 		public short CalculateChunkPosByWorld(float x)
@@ -242,11 +169,15 @@ namespace Cubizer
 			if (HitTestByRay(ray, hitDistance, out chunkNow, out x, out y, out z, out chunkLast, out lx, out ly, out lz))
 			{
 				var chunk = chunkLast != null ? chunkLast : chunkNow;
+
+				if (_callbacks.OnAddBlockBefore != null)
+					_callbacks.OnAddBlockBefore(chunk, lx, ly, lz, block);
+
 				chunk.voxels.Set(lx, ly, lz, block);
 				chunk.dirty = true;
 
-				if (_listener.onAddBlock != null)
-					_listener.onAddBlock(chunk, lx, ly, lz);
+				if (_callbacks.OnAddBlockAfter != null)
+					_callbacks.OnAddBlockAfter(chunk, lx, ly, lz, block);
 
 				return true;
 			}
@@ -268,11 +199,14 @@ namespace Cubizer
 
 			if (HitTestByRay(ray, hitDistance, out chunk, out x, out y, out z))
 			{
+				if (_callbacks.OnRemoveBlockBefore != null)
+					_callbacks.OnRemoveBlockBefore(chunk, x, y, z, null);
+
 				chunk.voxels.Set(x, y, z, null);
 				chunk.dirty = true;
 
-				if (_listener.onRemoveBlock != null)
-					_listener.onRemoveBlock(chunk, x, y, z);
+				if (_callbacks.OnRemoveBlockAfter != null)
+					_callbacks.OnRemoveBlockAfter(chunk, x, y, z, null);
 
 				return true;
 			}
@@ -324,9 +258,6 @@ namespace Cubizer
 
 		private void CreateChunkObject(IPlayerListener player, ChunkPrimer chunk, int x, int y, int z)
 		{
-			if (_listener.onCreatedChunk != null)
-				_listener.onCreatedChunk(chunk);
-
 			this.manager.Set(x, y, z, chunk);
 
 			var gameObject = new GameObject("Chunk");
@@ -337,7 +268,18 @@ namespace Cubizer
 
 		private void CreateChunkPrimer(ref ChunkThreadData data)
 		{
-			data.chunk = data.biome.OnBuildChunk(this.context.behaviour, data.x, data.y, data.z);
+			ChunkPrimer chunk = null;
+			if (_callbacks.OnLoadChunkBefore != null)
+				_callbacks.OnLoadChunkBefore(data.x, data.y, data.z, ref chunk);
+
+			if (chunk == null)
+				chunk = data.biome.OnBuildChunk(this.context.behaviour, data.x, data.y, data.z);
+
+			if (chunk != null)
+				data.chunk = chunk;
+
+			if (_callbacks.OnLoadChunkAfter != null)
+				_callbacks.OnLoadChunkAfter(data.chunk);
 		}
 
 		private void CreateChunk(IPlayerListener player, int x, int y, int z, ThreadTask thread = null)
@@ -345,33 +287,104 @@ namespace Cubizer
 			if (this.count > model.settings.chunkNumLimits)
 				return;
 
-			ChunkPrimer chunk = null;
-			if (_listener.onLoadChunkData != null)
-				_listener.onLoadChunkData(x, y, z, out chunk);
-
-			if (chunk == null)
+			IBiomeData biomeData = context.behaviour.biomeManager.buildBiomeIfNotExist(x, y, z);
+			if (biomeData != null)
 			{
-				IBiomeData biomeData = context.behaviour.biomeManager.buildBiomeIfNotExist(x, y, z);
-				if (biomeData != null)
+				var threadData = new ChunkThreadData(player, biomeData, x, y, z);
+				if (thread != null)
 				{
-					if (thread != null)
-					{
-						thread.Task(new ChunkThreadData(player, biomeData, x, y, z));
-						this.manager.Set(x, y, z, new ChunkPrimer(model.settings.chunkSize, x, y, z));
-					}
-					else
-					{
-						chunk = biomeData.OnBuildChunk(context.behaviour, x, y, z);
-						if (chunk == null)
-							chunk = new ChunkPrimer(model.settings.chunkSize, x, y, z);
-					}
+					threadData.chunk = new ChunkPrimer(model.settings.chunkSize, x, y, z);
+					this.manager.Set(x, y, z, threadData.chunk);
+					thread.Task(threadData);
+				}
+				else
+				{
+					CreateChunkPrimer(ref threadData);
+
+					if (threadData.chunk != null)
+						CreateChunkObject(player, threadData.chunk, x, y, z);
 				}
 			}
+		}
 
-			if (thread == null)
+		private void DestroyChunks(bool noticeAll = true)
+		{
+			Debug.Assert(_chunkObject != null);
+
+			var transform = _chunkObject.transform;
+
+			for (int i = 0; i < transform.childCount; i++)
 			{
-				if (chunk != null)
-					CreateChunkObject(player, chunk, x, y, z);
+				var child = transform.GetChild(i).gameObject;
+
+				if (noticeAll)
+				{
+					var chunk = child.GetComponent<ChunkData>();
+
+					if (_callbacks.OnDestroyChunk != null)
+						_callbacks.OnDestroyChunk(chunk.chunk);
+				}
+
+				GameObject.Destroy(child);
+			}
+		}
+
+		private void DestroyChunk(Vector3 point, float radius)
+		{
+			Debug.Assert(_chunkObject != null);
+
+			int x = CalculateChunkPosByWorld(point.x);
+			int y = CalculateChunkPosByWorld(point.y);
+			int z = CalculateChunkPosByWorld(point.z);
+			var chunkPos = new Vector3(x, y, z) * model.settings.chunkSize;
+
+			var transform = _chunkObject.transform;
+			var maxRadius = radius * model.settings.chunkSize;
+
+			for (int i = 0; i < transform.childCount; i++)
+			{
+				var transformChild = transform.GetChild(i);
+
+				var distance = Vector3.Distance(transformChild.position, chunkPos);
+				if (distance > maxRadius)
+				{
+					var chunk = transformChild.GetComponent<ChunkData>();
+
+					if (_callbacks.OnDestroyChunk != null)
+						_callbacks.OnDestroyChunk(chunk.chunk);
+
+					this.manager.Set(chunk.chunk.position.x, chunk.chunk.position.y, chunk.chunk.position.z, null);
+
+					GameObject.Destroy(transformChild.gameObject);
+					break;
+				}
+			}
+		}
+
+		private void DestroyChunk(int x, int y, int z)
+		{
+			Debug.Assert(_chunkObject != null);
+
+			var transform = _chunkObject.transform;
+
+			for (int i = 0; i < transform.childCount; i++)
+			{
+				var transformChild = transform.GetChild(i);
+				if (transformChild.position.x == x &&
+					transformChild.position.y == y &&
+					transformChild.position.z == z)
+				{
+					var chunk = transformChild.GetComponent<ChunkData>();
+
+					if (_callbacks.OnDestroyChunk != null)
+						_callbacks.OnDestroyChunk(chunk.chunk);
+
+					GameObject.Destroy(transformChild.gameObject);
+
+					this.manager.Set(x, y, z, null);
+
+					break;
+				}
 			}
 		}
 
@@ -471,6 +484,9 @@ namespace Cubizer
 
 			foreach (var work in _threads)
 			{
+				if (work.state == ThreadTaskState.Quit)
+					throw new System.Exception("this thread has a pending exception or has been stopped before starting");
+
 				if (work.state == ThreadTaskState.Idle)
 					idles++;
 

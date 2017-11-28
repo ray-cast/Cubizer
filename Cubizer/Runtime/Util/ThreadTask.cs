@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading;
 
+using UnityEngine;
+
 namespace Cubizer
 {
 	public class ThreadTask<ThreadData> : IDisposable
@@ -104,7 +106,7 @@ namespace Cubizer
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine(e.Message);
+				Debug.LogError(e.Message);
 			}
 			finally
 			{

@@ -16,7 +16,7 @@ namespace Cubizer
 		private LiveManagerComponent _lives;
 		private ChunkManagerComponent _chunkManager;
 		private BiomeManagerComponent _biomeManager;
-		private DatabaseComponent _database;
+		private DbComponent _database;
 
 		private List<ICubizerComponent> _components;
 
@@ -57,14 +57,46 @@ namespace Cubizer
 
 		#region delegate
 
-		private void OnSaveData(GameObject chunk)
+		private void OnLoadChunkDataBefore(int x, int y, int z, ref ChunkPrimer chunk)
 		{
-			this.events.onSaveChunkData(chunk);
+			if (this.events.OnLoadChunkBefore != null)
+				this.events.OnLoadChunkBefore(x, y, z, ref chunk);
 		}
 
-		private bool OnLoadData(int x, int y, int z, out ChunkPrimer chunk)
+		private void OnLoadChunkDataAfter(ChunkPrimer chunk)
 		{
-			return this.events.onLoadChunkData(x, y, z, out chunk);
+			if (this.events.OnLoadChunkAfter != null)
+				this.events.OnLoadChunkAfter(chunk);
+		}
+
+		private void OnDestroyChunkData(ChunkPrimer chunk)
+		{
+			if (this.events.OnDestroyChunk != null)
+				this.events.OnDestroyChunk(chunk);
+		}
+
+		private void OnAddBlockBefore(ChunkPrimer chunk, int x, int y, int z, VoxelMaterial voxel)
+		{
+			if (this.events.OnAddBlockBefore != null)
+				this.events.OnAddBlockBefore(chunk, x, y, z, voxel);
+		}
+
+		private void OnAddBlockAfter(ChunkPrimer chunk, int x, int y, int z, VoxelMaterial voxel)
+		{
+			if (this.events.OnAddBlockAfter != null)
+				this.events.OnAddBlockAfter(chunk, x, y, z, voxel);
+		}
+
+		private void OnRemoveBlockBefore(ChunkPrimer chunk, int x, int y, int z, VoxelMaterial voxel)
+		{
+			if (this.events.OnRemoveBlockBefore != null)
+				this.events.OnRemoveBlockBefore(chunk, x, y, z, voxel);
+		}
+
+		private void OnRemoveBlockAfter(ChunkPrimer chunk, int x, int y, int z, VoxelMaterial voxel)
+		{
+			if (this.events.OnRemoveBlockAfter != null)
+				this.events.OnRemoveBlockAfter(chunk, x, y, z, voxel);
 		}
 
 		#endregion delegate
@@ -147,13 +179,18 @@ namespace Cubizer
 			_chunkManager = AddComponent(new ChunkManagerComponent());
 			_chunkManager.Init(_context, _profile.chunk);
 			_chunkManager.active = true;
-			_chunkManager.listener.onLoadChunkData += this.OnLoadData;
-			_chunkManager.listener.onSaveChunkData += this.OnSaveData;
+			_chunkManager.callbacks.OnLoadChunkBefore += this.OnLoadChunkDataBefore;
+			_chunkManager.callbacks.OnLoadChunkAfter += this.OnLoadChunkDataAfter;
+			_chunkManager.callbacks.OnDestroyChunk += this.OnDestroyChunkData;
+			_chunkManager.callbacks.OnAddBlockBefore += this.OnAddBlockBefore;
+			_chunkManager.callbacks.OnAddBlockAfter += this.OnAddBlockAfter;
+			_chunkManager.callbacks.OnRemoveBlockBefore += this.OnRemoveBlockBefore;
+			_chunkManager.callbacks.OnRemoveBlockAfter += this.OnRemoveBlockAfter;
 
 			_biomeManager = AddComponent(new BiomeManagerComponent());
 			_biomeManager.Init(_context, _profile.biome);
 
-			_database = AddComponent(new DatabaseComponent());
+			_database = AddComponent(new DbComponent("cubizer"));
 			_database.Init(_context, _profile.database);
 
 			Math.Noise.simplex_seed(_profile.terrain.settings.seed);

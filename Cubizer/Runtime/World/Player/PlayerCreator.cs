@@ -133,12 +133,15 @@ namespace Cubizer
 
 		private void UpdateChunkForHit(Mesh mesh, Material material)
 		{
-			if (_isHitTestEnable && Cursor.lockState == CursorLockMode.Locked)
+			if (_isHitTestEnable)
 			{
-				if (Input.GetMouseButton(0))
-					StartCoroutine("RemoveEnitiyByScreenPosWithCoroutine");
-				else if (Input.GetMouseButton(1))
-					StartCoroutine("AddEnitiyByScreenPosWithCoroutine");
+				if (Cursor.lockState == CursorLockMode.Locked)
+				{
+					if (Input.GetMouseButton(0))
+						StartCoroutine("RemoveEnitiyByScreenPosWithCoroutine");
+					else if (Input.GetMouseButton(1))
+						StartCoroutine("AddEnitiyByScreenPosWithCoroutine");
+				}
 			}
 
 			if (_isHitTestWireframe)

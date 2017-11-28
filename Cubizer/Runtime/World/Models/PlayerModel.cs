@@ -11,7 +11,7 @@ namespace Cubizer
 		public struct PlayerSettings
 		{
 			[SerializeField]
-			public string name;
+			public string username;
 
 			[SerializeField]
 			public bool hitTestEnable;
@@ -37,7 +37,7 @@ namespace Cubizer
 				{
 					return new PlayerSettings
 					{
-						name = "cubizer",
+						username = "cubizer",
 						hitTestEnable = true,
 						hitTestWireframe = true,
 						hitTestDistance = 8,

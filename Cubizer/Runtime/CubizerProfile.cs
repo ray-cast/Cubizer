@@ -10,7 +10,7 @@ namespace Cubizer
 	public class CubizerProfile : ScriptableObject
 	{
 		public TerrainModel terrain = new TerrainModel();
-		public DatabaseModels database = new DatabaseModels();
+		public DbModels database = new DbModels();
 		public ChunkManagerModels chunk = new ChunkManagerModels();
 		public BiomeManagerModels biome = new BiomeManagerModels();
 		public LiveManagerModels lives = new LiveManagerModels();

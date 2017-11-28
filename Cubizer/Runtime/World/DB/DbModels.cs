@@ -5,19 +5,19 @@ using UnityEngine;
 namespace Cubizer
 {
 	[Serializable]
-	public class DatabaseModels : CubizerModel
+	public class DbModels : CubizerModel
 	{
 		[Serializable]
-		public struct DatabaseSettings
+		public struct DbSettings
 		{
 			[SerializeField]
 			public string url;
 
-			public static DatabaseSettings defaultSettings
+			public static DbSettings defaultSettings
 			{
 				get
 				{
-					return new DatabaseSettings
+					return new DbSettings
 					{
 					};
 				}
@@ -25,9 +25,9 @@ namespace Cubizer
 		}
 
 		[SerializeField]
-		private DatabaseSettings _settings = DatabaseSettings.defaultSettings;
+		private DbSettings _settings = DbSettings.defaultSettings;
 
-		public DatabaseSettings settings
+		public DbSettings settings
 		{
 			get { return _settings; }
 			set { _settings = value; }
@@ -35,7 +35,7 @@ namespace Cubizer
 
 		public override void Reset()
 		{
-			_settings = DatabaseSettings.defaultSettings;
+			_settings = DbSettings.defaultSettings;
 		}
 	}
 }

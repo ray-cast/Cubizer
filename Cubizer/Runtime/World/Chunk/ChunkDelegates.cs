@@ -4,16 +4,21 @@ namespace Cubizer
 {
 	public class ChunkDelegates
 	{
-		public delegate void OnSaveData(GameObject chunk);
-		public delegate bool OnLoadData(int x, int y, int z, out ChunkPrimer chunk);
-		public delegate bool OnBlockEvent(ChunkPrimer chunk, int x, int y, int z);
-		public delegate bool OnCreatedChunk(ChunkPrimer chunk);
+		public delegate void OnDestroyData(ChunkPrimer chunk);
+		public delegate void OnBlockEvent(ChunkPrimer chunk, int x, int y, int z, VoxelMaterial voxel);
 
-		public OnSaveData onSaveChunkData;
-		public OnLoadData onLoadChunkData;
-		public OnCreatedChunk onCreatedChunk;
+		public delegate void OnLoadDataBefore(int x, int y, int z, ref ChunkPrimer chunk);
+		public delegate void OnLoadDataAfter(ChunkPrimer chunk);
 
-		public OnBlockEvent onAddBlock;
-		public OnBlockEvent onRemoveBlock;
+		public OnDestroyData OnDestroyChunk;
+
+		public OnLoadDataBefore OnLoadChunkBefore;
+		public OnLoadDataAfter OnLoadChunkAfter;
+
+		public OnBlockEvent OnAddBlockBefore;
+		public OnBlockEvent OnAddBlockAfter;
+
+		public OnBlockEvent OnRemoveBlockBefore;
+		public OnBlockEvent OnRemoveBlockAfter;
 	}
 }
