@@ -26,6 +26,23 @@ namespace Cubizer
 			public bool back;
 			public bool front;
 
+			public bool this[int index]
+			{
+				get
+				{
+					switch (index)
+					{
+						case 0: return left;
+						case 1: return right;
+						case 2: return top;
+						case 3: return bottom;
+						case 4: return front;
+						case 5: return back;
+						default: throw new System.ArgumentOutOfRangeException("Out of index:" + index);
+					}
+				}
+			}
+
 			public VOXVisiableFaces(bool _left, bool _right, bool _bottom, bool _top, bool _back, bool _front)
 			{
 				left = _left;

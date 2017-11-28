@@ -432,13 +432,11 @@ namespace Cubizer
 
 				foreach (var it in model.voxels)
 				{
-					bool[] visiable = new bool[] { it.faces.left, it.faces.right, it.faces.top, it.faces.bottom, it.faces.front, it.faces.back };
-
 					int facesCount = 0;
 
 					for (int j = 0; j < 6; j++)
 					{
-						if (visiable[j])
+						if (it.faces[j])
 							facesCount++;
 					}
 

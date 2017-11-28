@@ -10,11 +10,12 @@ namespace Cubizer
 	{
 		private bool _isQuitRequest;
 
-		private EventWaitHandle _event;
+		private readonly EventWaitHandle _event;
 
-		private Thread _thread;
+		private readonly Thread _thread;
+		private readonly ThreadUpdateDelegate _dispose;
+
 		private ThreadTaskState _state;
-		private ThreadUpdateDelegate _dispose;
 		private ThreadData _context;
 		private Exception _except;
 
@@ -71,7 +72,9 @@ namespace Cubizer
 		{
 			if (_isQuitRequest)
 			{
+				_except = null;
 				_isQuitRequest = false;
+				_state = ThreadTaskState.Idle;
 				_thread.Start();
 			}
 		}
@@ -96,18 +99,13 @@ namespace Cubizer
 			{
 				while (!_isQuitRequest)
 				{
-					try
-					{
-						while (_state != ThreadTaskState.Busy)
-							_event.WaitOne();
+					while (_state != ThreadTaskState.Busy)
+						_event.WaitOne();
 
-						if (_context != null)
-							_dispose.Invoke(ref _context);
-					}
-					finally
-					{
-						_state = ThreadTaskState.Done;
-					}
+					if (_context != null)
+						_dispose.Invoke(ref _context);
+
+					_state = ThreadTaskState.Done;
 				}
 			}
 			catch (Exception e)

@@ -18,8 +18,11 @@ namespace Cubizer
 			"create unique index if not exists auth.identity_token_username_idx on identity_token (username);" +
 			"create unique index if not exists block_idx on block (x, y, z, xx, yy, zz);";
 
-		private const string queryInsertBlock = "insert or replace into block (x, y, z, xx, yy, zz, ww) values (?, ?, ?, ?, ?, ?, ?);";
-		private const string queryLoadBlocks = "select xx, yy, zz, ww from block where x = ? and y = ? and z = ?;";
+		private const string queryInsertBlock =
+			"insert or replace into block (x, y, z, xx, yy, zz, ww) values (?, ?, ?, ?, ?, ?, ?);";
+
+		private const string queryLoadBlocks =
+			"select xx, yy, zz, ww from block where x = ? and y = ? and z = ?;";
 
 		public DbSqlite()
 		{
