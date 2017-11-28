@@ -102,13 +102,12 @@ MonoBehaviour:
       bloom:
         intensity: 1
         threshold: 1
-        maxBrightness: 3
         softKnee: 0
-        radius: 4
-        antiFlicker: 0
+        radius: 7
+        antiFlicker: 1
       lensDirt:
-        texture: {fileID: 0}
-        intensity: 1
+        texture: {fileID: 2800000, guid: 69e847bbff1cf5449a4ee0bbd045dbc9, type: 3}
+        intensity: 2
   colorGrading:
     m_Enabled: 1
     m_Settings:

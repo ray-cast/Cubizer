@@ -178,7 +178,6 @@ namespace Cubizer
 
 			_chunkManager = AddComponent(new ChunkManagerComponent());
 			_chunkManager.Init(_context, _profile.chunk);
-			_chunkManager.active = true;
 			_chunkManager.callbacks.OnLoadChunkBefore += this.OnLoadChunkDataBefore;
 			_chunkManager.callbacks.OnLoadChunkAfter += this.OnLoadChunkDataAfter;
 			_chunkManager.callbacks.OnDestroyChunk += this.OnDestroyChunkData;
