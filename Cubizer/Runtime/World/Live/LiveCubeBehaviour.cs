@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Threading.Tasks;
 
 namespace Cubizer
 {
@@ -53,16 +54,7 @@ namespace Cubizer
 
 		public override void OnBuildChunk(IChunkData parent, IVoxelModel model, int faceCount)
 		{
-			var writeCount = 0;
-			var data = new LiveMesh(faceCount * 4, faceCount * 6);
-
-			foreach (VoxelPrimitive it in model.GetEnumerator(this.material.GetInstanceID()))
-			{
-				Vector3 pos, scale;
-				it.GetTranslateScale(out pos, out scale);
-				OnBuildBlock(ref data, ref writeCount, pos, scale, it.faces);
-			}
-
+			var data = OnBuildBlocks(model, faceCount);
 			if (data.indices.Length > 0)
 			{
 				var actors = new GameObject(this.name);
@@ -88,6 +80,21 @@ namespace Cubizer
 					meshCollider.material = physicMaterial;
 				}
 			}
+		}
+
+		public LiveMesh OnBuildBlocks(IVoxelModel model, int faceCount)
+		{
+			var writeCount = 0;
+			var data = new LiveMesh(faceCount * 4, faceCount * 6);
+
+			foreach (VoxelPrimitive it in model.GetEnumerator(this.material.GetInstanceID()))
+			{
+				Vector3 pos, scale;
+				it.GetTranslateScale(out pos, out scale);
+				OnBuildBlock(ref data, ref writeCount, pos, scale, it.faces);
+			}
+
+			return data;
 		}
 
 		public void OnBuildBlock(ref LiveMesh mesh, ref int index, Vector3 translate, Vector3 scale, VoxelVisiableFaces faces)

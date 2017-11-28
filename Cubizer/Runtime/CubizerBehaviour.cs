@@ -208,14 +208,6 @@ namespace Cubizer
 			_materialFactory.Dispose();
 		}
 
-		public void LateUpdate()
-		{
-			if (Cursor.visible)
-				Time.timeScale = 0;
-			else
-				Time.timeScale = 1;
-		}
-
 		#endregion events
 	}
 }

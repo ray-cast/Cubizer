@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Threading.Tasks;
 
 namespace Cubizer
 {
@@ -52,14 +53,11 @@ namespace Cubizer
 				model.SetDefaultName(_dbName);
 			}
 
-			if (this.active)
-			{
-				context.behaviour.events.OnLoadChunkAfter += this.OnLoadChunkDataAfter;
-				context.behaviour.events.OnAddBlockBefore += this.OnAddBlockBefore;
-				context.behaviour.events.OnRemoveBlockBefore += this.OnRemoveBlockBefore;
+			context.behaviour.events.OnLoadChunkAfter += this.OnLoadChunkDataAfter;
+			context.behaviour.events.OnAddBlockBefore += this.OnAddBlockBefore;
+			context.behaviour.events.OnRemoveBlockBefore += this.OnRemoveBlockBefore;
 
-				_sqlite = new DbSqlite(_dbUrl + _dbName);
-			}
+			_sqlite = new DbSqlite(_dbUrl + _dbName);
 		}
 
 		public override void OnDisable()
@@ -80,14 +78,20 @@ namespace Cubizer
 			_sqlite.loadChunk(chunk, chunk.position.x, chunk.position.y, chunk.position.z);
 		}
 
-		private void OnAddBlockBefore(ChunkPrimer chunk, int x, int y, int z, VoxelMaterial voxel)
+		private async void OnAddBlockBefore(ChunkPrimer chunk, int x, int y, int z, VoxelMaterial voxel)
 		{
-			_sqlite.insertBlock(chunk.position.x, chunk.position.y, chunk.position.z, x, y, z, voxel.GetInstanceID());
+			await Task.Run(() =>
+			{
+				_sqlite.insertBlock(chunk.position.x, chunk.position.y, chunk.position.z, x, y, z, voxel.GetInstanceID());
+			});
 		}
 
-		private void OnRemoveBlockBefore(ChunkPrimer chunk, int x, int y, int z, VoxelMaterial voxel)
+		private async void OnRemoveBlockBefore(ChunkPrimer chunk, int x, int y, int z, VoxelMaterial voxel)
 		{
-			_sqlite.insertBlock(chunk.position.x, chunk.position.y, chunk.position.z, x, y, z, 0);
+			await Task.Run(() =>
+			{
+				_sqlite.insertBlock(chunk.position.x, chunk.position.y, chunk.position.z, x, y, z, 0);
+			});
 		}
 	}
 }
