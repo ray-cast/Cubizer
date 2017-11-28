@@ -14,10 +14,10 @@ MonoBehaviour:
   terrain:
     _settings:
       seed: 255
-      repeatRate: 0.1
+      repeatRate: 0.016666668
   database:
     _settings:
-      url: C:/Users/ray/AppData/LocalLow/DefaultCompany/Minecraft/
+      url: localhost
       name: cubizer.db
   chunk:
     _settings:
@@ -26,7 +26,7 @@ MonoBehaviour:
       chunkHeightLimitHigh: 20
       chunkNumLimits: 4096
       chunkUpdateRadius: 1
-      chunkThreadNums: 1
+      chunkThreadNums: 2
   biome:
     _settings:
       biomeGenerators:

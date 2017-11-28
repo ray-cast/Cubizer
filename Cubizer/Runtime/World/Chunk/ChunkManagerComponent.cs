@@ -318,9 +318,10 @@ namespace Cubizer
 			if (biomeData != null)
 			{
 				var threadData = new ChunkThreadData(player, biomeData, x, y, z);
+				threadData.chunk = new ChunkPrimer(model.settings.chunkSize, x, y, z);
+
 				if (thread != null)
 				{
-					threadData.chunk = new ChunkPrimer(model.settings.chunkSize, x, y, z);
 					this.manager.Set(x, y, z, threadData.chunk);
 					thread.Task(threadData);
 				}
@@ -511,8 +512,8 @@ namespace Cubizer
 
 			foreach (var work in _threads)
 			{
-				if (work.state == ThreadTaskState.Quit)
-					throw new System.Exception("this thread has a pending exception or has been stopped before starting");
+				if (work.except != null)
+					throw new System.Exception("this thread has a pending exception:" + work.except.Message);
 
 				if (work.state == ThreadTaskState.Idle)
 					idles++;

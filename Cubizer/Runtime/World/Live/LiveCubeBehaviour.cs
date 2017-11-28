@@ -6,7 +6,7 @@ namespace Cubizer
 	[AddComponentMenu("Cubizer/LiveCubeBehaviour")]
 	public class LiveCubeBehaviour : LiveBehaviour
 	{
-		private static Vector3[,] _vertices = new Vector3[6, 4]
+		private static readonly Vector3[,] _vertices = new Vector3[6, 4]
 		{
 			{ new Vector3(-0.5f, -0.5f, -0.5f), new Vector3(-0.5f, -0.5f, +0.5f), new Vector3(-0.5f, +0.5f, -0.5f), new Vector3(-0.5f, +0.5f, +0.5f) },
 			{ new Vector3(+0.5f, -0.5f, -0.5f), new Vector3(+0.5f, -0.5f, +0.5f), new Vector3(+0.5f, +0.5f, -0.5f), new Vector3(+0.5f, +0.5f, +0.5f) },
@@ -16,7 +16,7 @@ namespace Cubizer
 			{ new Vector3(-0.5f, -0.5f, +0.5f), new Vector3(-0.5f, +0.5f, +0.5f), new Vector3(+0.5f, -0.5f, +0.5f), new Vector3(+0.5f, +0.5f, +0.5f) }
 		};
 
-		private static Vector3[] _normals = new Vector3[6]
+		private static readonly Vector3[] _normals = new Vector3[6]
 		{
 			new Vector3(-1, 0, 0),
 			new Vector3(+1, 0, 0),
@@ -26,7 +26,7 @@ namespace Cubizer
 			new Vector3(0, 0, +1)
 		};
 
-		private static Vector2[,] _uvs = new Vector2[6, 4]
+		private static readonly Vector2[,] _uvs = new Vector2[6, 4]
 		{
 			{ new Vector2(0, 0), new Vector2(1, 0), new Vector2(0, 1), new Vector2(1, 1) },
 			{ new Vector2(1, 0), new Vector2(0, 0), new Vector2(1, 1), new Vector2(0, 1) },
@@ -36,7 +36,7 @@ namespace Cubizer
 			{ new Vector2(1, 0), new Vector2(1, 1), new Vector2(0, 0), new Vector2(0, 1) }
 		};
 
-		private static int[,] _indices = new int[6, 6]
+		private static readonly int[,] _indices = new int[6, 6]
 		{
 			{ 0, 3, 2, 0, 1, 3 },
 			{ 0, 3, 1, 0, 2, 3 },

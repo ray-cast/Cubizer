@@ -10,8 +10,6 @@ namespace Cubizer
 		private string _path;
 
 		private SqliteConnection _dbConnection;
-		private SqliteCommand _dbCommandLoadBlocks;
-		private SqliteCommand _dbCommandInsertBlock;
 
 		private const string queryCreateDB =
 			"attach database 'auth.db' as auth;" +
@@ -51,22 +49,6 @@ namespace Cubizer
 
 				this.ExecuteNonQuery(queryCreateDB);
 
-				_dbCommandLoadBlocks = _dbConnection.CreateCommand();
-				_dbCommandLoadBlocks.CommandText = queryLoadBlocks;
-				_dbCommandLoadBlocks.Parameters.Add(new SqliteParameter("x", 0));
-				_dbCommandLoadBlocks.Parameters.Add(new SqliteParameter("y", 0));
-				_dbCommandLoadBlocks.Parameters.Add(new SqliteParameter("z", 0));
-
-				_dbCommandInsertBlock = _dbConnection.CreateCommand();
-				_dbCommandInsertBlock.CommandText = queryInsertBlock;
-				_dbCommandInsertBlock.Parameters.Add(new SqliteParameter("x", 0));
-				_dbCommandInsertBlock.Parameters.Add(new SqliteParameter("y", 0));
-				_dbCommandInsertBlock.Parameters.Add(new SqliteParameter("z", 0));
-				_dbCommandInsertBlock.Parameters.Add(new SqliteParameter("xx", 0));
-				_dbCommandInsertBlock.Parameters.Add(new SqliteParameter("yy", 0));
-				_dbCommandInsertBlock.Parameters.Add(new SqliteParameter("zz", 0));
-				_dbCommandInsertBlock.Parameters.Add(new SqliteParameter("ww", 0));
-
 				_path = path;
 
 				Debug.Log("Database Starting");
@@ -80,18 +62,6 @@ namespace Cubizer
 
 		public void Dispose()
 		{
-			if (_dbCommandInsertBlock != null)
-			{
-				_dbCommandInsertBlock.Dispose();
-				_dbCommandInsertBlock = null;
-			}
-
-			if (_dbCommandLoadBlocks != null)
-			{
-				_dbCommandLoadBlocks.Dispose();
-				_dbCommandLoadBlocks = null;
-			}
-
 			if (_dbConnection != null)
 			{
 				_dbConnection.Close();
@@ -112,24 +82,28 @@ namespace Cubizer
 
 		public void loadChunk(ChunkPrimer chunk, int x, int y, int z)
 		{
-			_dbCommandLoadBlocks.Parameters[0].Value = x;
-			_dbCommandLoadBlocks.Parameters[1].Value = y;
-			_dbCommandLoadBlocks.Parameters[2].Value = z;
-
-			using (var dbReader = _dbCommandLoadBlocks.ExecuteReader())
+			using (var _dbCommandLoadBlocks = _dbConnection.CreateCommand())
 			{
-				if (dbReader.HasRows)
+				_dbCommandLoadBlocks.CommandText = queryLoadBlocks;
+				_dbCommandLoadBlocks.Parameters.Add(new SqliteParameter("x", x));
+				_dbCommandLoadBlocks.Parameters.Add(new SqliteParameter("y", y));
+				_dbCommandLoadBlocks.Parameters.Add(new SqliteParameter("z", z));
+
+				using (var dbReader = _dbCommandLoadBlocks.ExecuteReader())
 				{
-					while (dbReader.Read())
+					if (dbReader.HasRows)
 					{
-						var xx = dbReader.GetByte(0);
-						var yy = dbReader.GetByte(1);
-						var zz = dbReader.GetByte(2);
-						var ww = dbReader.GetByte(3);
-						if (ww > 0)
-							chunk.voxels.Set(xx, yy, zz, VoxelMaterialManager.GetInstance().GetMaterial(ww));
-						else
-							chunk.voxels.Set(xx, yy, zz, null);
+						while (dbReader.Read())
+						{
+							var xx = dbReader.GetByte(0);
+							var yy = dbReader.GetByte(1);
+							var zz = dbReader.GetByte(2);
+							var ww = dbReader.GetByte(3);
+							if (ww > 0)
+								chunk.voxels.Set(xx, yy, zz, VoxelMaterialManager.GetInstance().GetMaterial(ww));
+							else
+								chunk.voxels.Set(xx, yy, zz, null);
+						}
 					}
 				}
 			}
@@ -137,14 +111,18 @@ namespace Cubizer
 
 		public void insertBlock(int x, int y, int z, int xx, int yy, int zz, int ww)
 		{
-			_dbCommandInsertBlock.Parameters.Add(new SqliteParameter("x", x));
-			_dbCommandInsertBlock.Parameters.Add(new SqliteParameter("y", y));
-			_dbCommandInsertBlock.Parameters.Add(new SqliteParameter("z", z));
-			_dbCommandInsertBlock.Parameters.Add(new SqliteParameter("xx", xx));
-			_dbCommandInsertBlock.Parameters.Add(new SqliteParameter("yy", yy));
-			_dbCommandInsertBlock.Parameters.Add(new SqliteParameter("zz", zz));
-			_dbCommandInsertBlock.Parameters.Add(new SqliteParameter("ww", ww));
-			_dbCommandInsertBlock.ExecuteNonQuery();
+			using (var _dbCommandInsertBlock = _dbConnection.CreateCommand())
+			{
+				_dbCommandInsertBlock.CommandText = queryInsertBlock;
+				_dbCommandInsertBlock.Parameters.Add(new SqliteParameter("x", x));
+				_dbCommandInsertBlock.Parameters.Add(new SqliteParameter("y", y));
+				_dbCommandInsertBlock.Parameters.Add(new SqliteParameter("z", z));
+				_dbCommandInsertBlock.Parameters.Add(new SqliteParameter("xx", xx));
+				_dbCommandInsertBlock.Parameters.Add(new SqliteParameter("yy", yy));
+				_dbCommandInsertBlock.Parameters.Add(new SqliteParameter("zz", zz));
+				_dbCommandInsertBlock.Parameters.Add(new SqliteParameter("ww", ww));
+				_dbCommandInsertBlock.ExecuteNonQuery();
+			}
 		}
 	}
 }

@@ -16,6 +16,7 @@ namespace Cubizer
 		private ThreadTaskState _state;
 		private ThreadUpdateDelegate _dispose;
 		private ThreadData _context;
+		private Exception _except;
 
 		public delegate void ThreadUpdateDelegate(ref ThreadData context);
 
@@ -37,6 +38,11 @@ namespace Cubizer
 			{
 				return _state;
 			}
+		}
+
+		public Exception except
+		{
+			get { return _except; }
 		}
 
 		public ThreadTask(ThreadUpdateDelegate callback)
@@ -106,7 +112,7 @@ namespace Cubizer
 			}
 			catch (Exception e)
 			{
-				Debug.LogError(e.Message);
+				_except = e;
 			}
 			finally
 			{

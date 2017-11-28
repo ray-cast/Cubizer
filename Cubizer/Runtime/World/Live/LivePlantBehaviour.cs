@@ -10,7 +10,7 @@ namespace Cubizer
 		private MeshRenderer _renderer;
 		private MeshCollider _meshCollider;
 
-		public static Vector3[,] _vertices = new Vector3[4, 4]
+		public static readonly Vector3[,] _vertices = new Vector3[4, 4]
 		{
 			{ new Vector3( 0.0f, -0.5f, -0.5f), new Vector3( 0.0f, -0.5f, +0.5f), new Vector3( 0.0f, +0.5f, -0.5f), new Vector3( 0.0f, +0.5f, +0.5f)},
 			{ new Vector3( 0.0f, -0.5f, -0.5f), new Vector3( 0.0f, -0.5f, +0.5f), new Vector3( 0.0f, +0.5f, -0.5f), new Vector3( 0.0f, +0.5f, +0.5f)},
@@ -18,7 +18,7 @@ namespace Cubizer
 			{ new Vector3(-0.5f, -0.5f,  0.0f), new Vector3(-0.5f, +0.5f,  0.0f), new Vector3(+0.5f, -0.5f,  0.0f), new Vector3(+0.5f, +0.5f,  0.0f)}
 		};
 
-		public static Vector3[] _normals = new Vector3[4]
+		public static readonly Vector3[] _normals = new Vector3[4]
 		{
 			new Vector3(-1, 0, 0),
 			new Vector3(+1, 0, 0),
@@ -26,7 +26,7 @@ namespace Cubizer
 			new Vector3(0, 0, +1)
 		};
 
-		public static Vector2[,] _uvs = new Vector2[4, 4]
+		public static readonly Vector2[,] _uvs = new Vector2[4, 4]
 		{
 			{ new Vector2(0, 0), new Vector2(1, 0), new Vector2(0, 1), new Vector2(1, 1)},
 			{ new Vector2(1, 0), new Vector2(0, 0), new Vector2(1, 1), new Vector2(0, 1)},
@@ -34,7 +34,7 @@ namespace Cubizer
 			{ new Vector2(1, 0), new Vector2(1, 1), new Vector2(0, 0), new Vector2(0, 1)}
 		};
 
-		public static int[,] _indices = new int[4, 6]
+		public static readonly int[,] _indices = new int[4, 6]
 		{
 			{0, 3, 2, 0, 1, 3},
 			{0, 3, 1, 0, 2, 3},
