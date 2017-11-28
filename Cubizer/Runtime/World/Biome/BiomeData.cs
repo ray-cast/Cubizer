@@ -2,7 +2,7 @@
 {
 	public class BiomeData : IBiomeData
 	{
-		public IChunkGenerator _chunkGenerator;
+		public readonly IChunkGenerator _chunkGenerator;
 
 		public BiomeData(IChunkGenerator generator)
 		{

@@ -7,7 +7,7 @@ namespace Cubizer
 		where _Ty : class
 	{
 		private int position = -1;
-		private BiomeDataNode<_Tx, _Ty>[] _array;
+		private readonly BiomeDataNode<_Tx, _Ty>[] _array;
 
 		public BiomeDataNodeEnum(BiomeDataNode<_Tx, _Ty>[] list)
 		{

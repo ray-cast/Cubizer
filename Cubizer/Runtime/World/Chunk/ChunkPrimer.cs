@@ -9,7 +9,7 @@ namespace Cubizer
 	[Serializable]
 	public class ChunkPrimer
 	{
-		private Vector3<int> _position;
+		private readonly Vector3<int> _position;
 		private VoxelData<VoxelMaterial> _voxels;
 
 		[NonSerialized]
@@ -37,7 +37,6 @@ namespace Cubizer
 
 		public Vector3<int> position
 		{
-			set { _position = value; }
 			get { return _position; }
 		}
 

@@ -103,8 +103,6 @@ namespace Cubizer
 
 		public void OnBuildBlock(ref LiveMesh mesh, ref int index, Vector3 translate, Vector3 scale, VoxelVisiableFaces faces)
 		{
-			bool[] visiable = new bool[] { faces.left, faces.right, faces.top, faces.bottom, faces.front, faces.back };
-
 			float s = tilePadding > 0 ? 1.0f / tilePadding : 0;
 
 			float a = s;
@@ -112,7 +110,7 @@ namespace Cubizer
 
 			for (int i = 0; i < 6; i++)
 			{
-				if (!visiable[i])
+				if (!faces[i])
 					continue;
 
 				float du = (tiles[i] % tileSize) / (float)tileSize;

@@ -6,7 +6,7 @@ namespace Cubizer
 	public class VoxelModelListEnum : IEnumerator
 	{
 		private int position = -1;
-		private List<VoxelPrimitive> _array;
+		private readonly List<VoxelPrimitive> _array;
 
 		public VoxelModelListEnum(List<VoxelPrimitive> list)
 		{

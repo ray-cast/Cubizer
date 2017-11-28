@@ -7,7 +7,7 @@ namespace Cubizer
 		where _Tx : struct
 		where _Ty : class
 	{
-		public _Tx position;
+		public readonly _Tx position;
 		public _Ty value;
 
 		public ChunkDataNode()

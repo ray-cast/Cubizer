@@ -6,8 +6,8 @@ namespace Cubizer
 	public class VoxelModelListIDEnum : IEnumerator
 	{
 		private int position = -1;
-		private int _instanceID = 0;
-		private List<VoxelPrimitive> _array;
+		private readonly int _instanceID = 0;
+		private readonly List<VoxelPrimitive> _array;
 
 		public VoxelModelListIDEnum(List<VoxelPrimitive> list, int instanceID)
 		{

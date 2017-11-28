@@ -2,12 +2,12 @@
 {
 	public class ChunkThreadData
 	{
-		public int x;
-		public int y;
-		public int z;
+		public readonly int x;
+		public readonly int y;
+		public readonly int z;
 
-		public IPlayerListener player;
-		public IBiomeData biome;
+		public readonly IPlayerListener player;
+		public readonly IBiomeData biome;
 		public ChunkPrimer chunk;
 
 		public ChunkThreadData(IPlayerListener playerData, IBiomeData biomeData, int xx, int yy, int zz)

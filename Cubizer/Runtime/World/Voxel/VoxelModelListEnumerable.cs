@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace Cubizer
 {
-	public class VoxelModelListEnumerable: IEnumerable
+	public class VoxelModelListEnumerable : IEnumerable
 	{
-		private List<VoxelPrimitive> _array;
+		private readonly List<VoxelPrimitive> _array;
 
 		public VoxelModelListEnumerable(List<VoxelPrimitive> array)
 		{

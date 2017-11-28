@@ -5,8 +5,8 @@ namespace Cubizer
 {
 	public class VoxelModelListIDEnumerable : IEnumerable
 	{
-		private List<VoxelPrimitive> _array;
-		private int _instanceID;
+		private readonly int _instanceID;
+		private readonly List<VoxelPrimitive> _array;
 
 		public VoxelModelListIDEnumerable(List<VoxelPrimitive> array, int instanceID)
 		{

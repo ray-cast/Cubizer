@@ -25,9 +25,6 @@ namespace Cubizer
 				var map = ChunkPrimer.Load(SelectedPath);
 				if (map != null)
 				{
-					if (data.chunk != null)
-						map.position = data.chunk.position;
-
 					data.chunk = map;
 					data.OnBuildChunk();
 

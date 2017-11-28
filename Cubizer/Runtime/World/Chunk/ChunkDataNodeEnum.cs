@@ -7,7 +7,7 @@ namespace Cubizer
 		where _Ty : class
 	{
 		private int position = -1;
-		private ChunkDataNode<_Tx, _Ty>[] _array;
+		private readonly ChunkDataNode<_Tx, _Ty>[] _array;
 
 		public ChunkDataNodeEnum(ChunkDataNode<_Tx, _Ty>[] list)
 		{

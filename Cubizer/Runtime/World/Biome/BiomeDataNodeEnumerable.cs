@@ -6,7 +6,7 @@ namespace Cubizer
 		where _Tx : struct
 		where _Ty : class
 	{
-		private BiomeDataNode<_Tx, _Ty>[] _array;
+		private readonly BiomeDataNode<_Tx, _Ty>[] _array;
 
 		public BiomeDataNodeEnumerable(BiomeDataNode<_Tx, _Ty>[] array)
 		{

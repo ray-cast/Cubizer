@@ -6,7 +6,7 @@ namespace Cubizer
 		where _Tx : struct
 		where _Ty : class
 	{
-		private ChunkDataNode<_Tx, _Ty>[] _array;
+		private readonly ChunkDataNode<_Tx, _Ty>[] _array;
 
 		public ChunkDataNodeEnumerable(ChunkDataNode<_Tx, _Ty>[] array)
 		{

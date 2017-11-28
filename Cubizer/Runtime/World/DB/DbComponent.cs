@@ -40,10 +40,12 @@ namespace Cubizer
 		public override void OnEnable()
 		{
 			_dbUrl = model.settings.url;
-			if (string.IsNullOrEmpty(_dbUrl))
+			if (string.IsNullOrEmpty(_dbUrl) || _dbUrl == "localhost")
 			{
 				_dbUrl = Application.persistentDataPath + "/";
-				model.SetDefaultURL(_dbUrl);
+
+				if (string.IsNullOrEmpty(_dbUrl))
+					model.SetDefaultURL("localhost");
 			}
 
 			_dbName = model.settings.name;
@@ -75,7 +77,8 @@ namespace Cubizer
 
 		private void OnLoadChunkDataAfter(ChunkPrimer chunk)
 		{
-			_sqlite.loadChunk(chunk, chunk.position.x, chunk.position.y, chunk.position.z);
+			if (chunk != null)
+				_sqlite.loadChunk(chunk, chunk.position.x, chunk.position.y, chunk.position.z);
 		}
 
 		private async void OnAddBlockBefore(ChunkPrimer chunk, int x, int y, int z, VoxelMaterial voxel)

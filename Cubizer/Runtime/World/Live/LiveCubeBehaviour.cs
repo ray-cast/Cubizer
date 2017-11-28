@@ -99,11 +99,9 @@ namespace Cubizer
 
 		public void OnBuildBlock(ref LiveMesh mesh, ref int index, Vector3 translate, Vector3 scale, VoxelVisiableFaces faces)
 		{
-			bool[] visiable = new bool[] { faces.left, faces.right, faces.top, faces.bottom, faces.front, faces.back };
-
 			for (int i = 0; i < 6; i++)
 			{
-				if (!visiable[i])
+				if (!faces[i])
 					continue;
 
 				for (int n = index * 4, k = 0; k < 4; k++, n++)
