@@ -12,10 +12,11 @@ namespace Cubizer
 {
 	public class ChunkManagerComponent : CubizerComponent<ChunkManagerModels>
 	{
-		private readonly string _name;
 		private GameObject _chunkObject;
+
+		private readonly string _name;
 		private readonly ChunkDelegates _callbacks;
-		private Task[] _tasks;
+		private readonly Task[] _tasks;
 
 		private readonly ConcurrentQueue<ChunkPrimer> _deferredUpdater = new ConcurrentQueue<ChunkPrimer>();
 
@@ -61,12 +62,12 @@ namespace Cubizer
 			_name = name;
 			_active = true;
 			_callbacks = new ChunkDelegates();
+			_tasks = new Task[model.settings.chunkThreadNums];
 		}
 
 		public override void OnEnable()
 		{
 			_chunkObject = new GameObject(_name);
-			_tasks = new Task[model.settings.chunkThreadNums];
 		}
 
 		public override void OnDisable()
