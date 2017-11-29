@@ -154,20 +154,15 @@ namespace Cubizer
 
 		public IEnumerator BuildChunkWithCoroutine(ChunkDataContext context)
 		{
-			Func<Task> task = async () =>
-			{
-				await Task.Run(() =>
-				{
-					var data = BuildBlocks(context);
+			Task.Run(() =>
+		   {
+			   var data = BuildBlocks(context);
 
-					lock (_queue)
-					{
-						_queue.Enqueue(data);
-					}
-				});
-			};
-
-			task();
+			   lock (_queue)
+			   {
+				   _queue.Enqueue(data);
+			   }
+		   });
 
 			yield return new WaitWhile(() => !(_queue.Count > 0));
 

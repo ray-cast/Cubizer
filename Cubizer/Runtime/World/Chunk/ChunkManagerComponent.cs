@@ -1,19 +1,19 @@
 ﻿using System.IO;
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
 using System.Runtime.Serialization.Formatters.Binary;
 
 using UnityEngine;
 
+using Cubizer.Math;
+
 namespace Cubizer
 {
-	using ThreadTask = ThreadTask<ChunkThreadData>;
-
 	public class ChunkManagerComponent : CubizerComponent<ChunkManagerModels>
 	{
-		private string _name;
-		private GameObject _chunkObject;
-		private ChunkDelegates _callbacks;
-
-		private ThreadTask[] _threads;
+		private readonly ChunkDelegates _callbacks;
+		private readonly GameObject _chunkObject;
+		private readonly ConcurrentQueue<ChunkPrimer> _deferredUpdater = new ConcurrentQueue<ChunkPrimer>();
 
 		private bool _active;
 
@@ -54,39 +54,127 @@ namespace Cubizer
 
 		public ChunkManagerComponent(string name = "ServerChunks")
 		{
-			_name = name;
 			_active = true;
 			_callbacks = new ChunkDelegates();
+			_chunkObject = new GameObject(name);
 		}
 
-		public override void OnEnable()
+		~ChunkManagerComponent()
 		{
-			Debug.Assert(model.settings.chunkManager != null);
-
-			_chunkObject = new GameObject(_name);
-
-			_threads = new ThreadTask[model.settings.chunkThreadNums];
-
-			for (int i = 0; i < _threads.Length; i++)
-			{
-				_threads[i] = new ThreadTask(this.CreateChunkPrimer);
-				_threads[i].Start();
-			}
+			GameObject.Destroy(_chunkObject);
 		}
 
 		public override void OnDisable()
 		{
-			for (int i = 0; i < _threads.Length; i++)
+			this.DestroyChunks();
+		}
+
+		public void CreateChunk(IPlayerListener player, int x, int y, int z)
+		{
+			ChunkPrimer chunk = null;
+			if (_callbacks.OnLoadChunkBefore != null)
+				_callbacks.OnLoadChunkBefore(x, y, z, ref chunk);
+
+			if (chunk == null)
 			{
-				_threads[i].Dispose();
-				_threads[i] = null;
+				IBiomeData biomeData = context.behaviour.biomeManager.buildBiomeIfNotExist(x, y, z);
+				if (biomeData != null)
+				{
+					if (chunk == null)
+						chunk = biomeData.OnBuildChunk(this.context.behaviour, x, y, z);
+				}
 			}
 
-			if (_chunkObject != null)
+			if (chunk == null)
+				chunk = new ChunkPrimer(model.settings.chunkSize, x, y, z);
+
+			if (_callbacks.OnLoadChunkAfter != null)
+				_callbacks.OnLoadChunkAfter(chunk);
+
+			this.manager.Set(x, y, z, chunk);
+
+			if (chunk.voxels.count > 0)
+				_deferredUpdater.Enqueue(chunk);
+		}
+
+		public void DestroyChunks(bool noticeAll = true)
+		{
+			Debug.Assert(_chunkObject != null);
+
+			var transform = _chunkObject.transform;
+
+			for (int i = 0; i < transform.childCount; i++)
 			{
-				this.DestroyChunks();
-				GameObject.Destroy(_chunkObject);
-				_chunkObject = null;
+				var child = transform.GetChild(i).gameObject;
+
+				if (noticeAll)
+				{
+					var chunk = child.GetComponent<ChunkData>();
+
+					if (_callbacks.OnDestroyChunk != null)
+						_callbacks.OnDestroyChunk(chunk.chunk);
+				}
+
+				GameObject.Destroy(child);
+			}
+		}
+
+		public void DestroyChunk(Vector3 point, float radius)
+		{
+			Debug.Assert(_chunkObject != null);
+
+			int x = CalculateChunkPosByWorld(point.x);
+			int y = CalculateChunkPosByWorld(point.y);
+			int z = CalculateChunkPosByWorld(point.z);
+			var chunkPos = new Vector3(x, y, z) * model.settings.chunkSize;
+
+			var transform = _chunkObject.transform;
+			var maxRadius = radius * model.settings.chunkSize;
+
+			for (int i = 0; i < transform.childCount; i++)
+			{
+				var transformChild = transform.GetChild(i);
+
+				var distance = Vector3.Distance(transformChild.position, chunkPos);
+				if (distance > maxRadius)
+				{
+					var chunk = transformChild.GetComponent<ChunkData>();
+
+					if (_callbacks.OnDestroyChunk != null)
+						_callbacks.OnDestroyChunk(chunk.chunk);
+
+					this.manager.Set(chunk.chunk.position.x, chunk.chunk.position.y, chunk.chunk.position.z, null);
+
+					GameObject.Destroy(transformChild.gameObject);
+					break;
+				}
+			}
+		}
+
+		public void DestroyChunk(int x, int y, int z)
+		{
+			Debug.Assert(_chunkObject != null);
+
+			var transform = _chunkObject.transform;
+
+			for (int i = 0; i < transform.childCount; i++)
+			{
+				var transformChild = transform.GetChild(i);
+				if (transformChild.position.x == x &&
+					transformChild.position.y == y &&
+					transformChild.position.z == z)
+				{
+					var chunk = transformChild.GetComponent<ChunkData>();
+
+					if (_callbacks.OnDestroyChunk != null)
+						_callbacks.OnDestroyChunk(chunk.chunk);
+
+					GameObject.Destroy(transformChild.gameObject);
+
+					this.manager.Set(x, y, z, null);
+
+					break;
+				}
 			}
 		}
 
@@ -283,140 +371,7 @@ namespace Cubizer
 			}
 		}
 
-		private void CreateChunkObject(IPlayerListener player, ChunkPrimer chunk, int x, int y, int z, bool async)
-		{
-			this.manager.Set(x, y, z, chunk);
-
-			var gameObject = new GameObject("Chunk");
-			gameObject.transform.parent = _chunkObject.transform;
-			gameObject.transform.position = new Vector3(x, y, z) * context.profile.chunk.settings.chunkSize;
-			gameObject.AddComponent<ChunkData>().Init(chunk, async);
-		}
-
-		private void CreateChunkPrimer(ref ChunkThreadData data)
-		{
-			ChunkPrimer chunk = null;
-			if (_callbacks.OnLoadChunkBefore != null)
-				_callbacks.OnLoadChunkBefore(data.x, data.y, data.z, ref chunk);
-
-			if (chunk == null)
-				chunk = data.biome.OnBuildChunk(this.context.behaviour, data.x, data.y, data.z);
-
-			if (chunk != null)
-				data.chunk = chunk;
-
-			if (_callbacks.OnLoadChunkAfter != null)
-				_callbacks.OnLoadChunkAfter(data.chunk);
-		}
-
-		private void CreateChunk(IPlayerListener player, int x, int y, int z, ThreadTask thread = null)
-		{
-			if (this.count > model.settings.chunkNumLimits)
-				return;
-
-			IBiomeData biomeData = context.behaviour.biomeManager.buildBiomeIfNotExist(x, y, z);
-			if (biomeData != null)
-			{
-				var threadData = new ChunkThreadData(player, biomeData, x, y, z);
-				threadData.chunk = new ChunkPrimer(model.settings.chunkSize, x, y, z);
-
-				if (thread != null)
-				{
-					this.manager.Set(x, y, z, threadData.chunk);
-					thread.Task(threadData);
-				}
-				else
-				{
-					CreateChunkPrimer(ref threadData);
-
-					if (threadData.chunk != null)
-						CreateChunkObject(player, threadData.chunk, x, y, z, false);
-				}
-			}
-		}
-
-		private void DestroyChunks(bool noticeAll = true)
-		{
-			Debug.Assert(_chunkObject != null);
-
-			var transform = _chunkObject.transform;
-
-			for (int i = 0; i < transform.childCount; i++)
-			{
-				var child = transform.GetChild(i).gameObject;
-
-				if (noticeAll)
-				{
-					var chunk = child.GetComponent<ChunkData>();
-
-					if (_callbacks.OnDestroyChunk != null)
-						_callbacks.OnDestroyChunk(chunk.chunk);
-				}
-
-				GameObject.Destroy(child);
-			}
-		}
-
-		private void DestroyChunk(Vector3 point, float radius)
-		{
-			Debug.Assert(_chunkObject != null);
-
-			int x = CalculateChunkPosByWorld(point.x);
-			int y = CalculateChunkPosByWorld(point.y);
-			int z = CalculateChunkPosByWorld(point.z);
-			var chunkPos = new Vector3(x, y, z) * model.settings.chunkSize;
-
-			var transform = _chunkObject.transform;
-			var maxRadius = radius * model.settings.chunkSize;
-
-			for (int i = 0; i < transform.childCount; i++)
-			{
-				var transformChild = transform.GetChild(i);
-
-				var distance = Vector3.Distance(transformChild.position, chunkPos);
-				if (distance > maxRadius)
-				{
-					var chunk = transformChild.GetComponent<ChunkData>();
-
-					if (_callbacks.OnDestroyChunk != null)
-						_callbacks.OnDestroyChunk(chunk.chunk);
-
-					this.manager.Set(chunk.chunk.position.x, chunk.chunk.position.y, chunk.chunk.position.z, null);
-
-					GameObject.Destroy(transformChild.gameObject);
-					break;
-				}
-			}
-		}
-
-		private void DestroyChunk(int x, int y, int z)
-		{
-			Debug.Assert(_chunkObject != null);
-
-			var transform = _chunkObject.transform;
-
-			for (int i = 0; i < transform.childCount; i++)
-			{
-				var transformChild = transform.GetChild(i);
-				if (transformChild.position.x == x &&
-					transformChild.position.y == y &&
-					transformChild.position.z == z)
-				{
-					var chunk = transformChild.GetComponent<ChunkData>();
-
-					if (_callbacks.OnDestroyChunk != null)
-						_callbacks.OnDestroyChunk(chunk.chunk);
-
-					GameObject.Destroy(transformChild.gameObject);
-
-					this.manager.Set(x, y, z, null);
-
-					break;
-				}
-			}
-		}
-
-		private void UpdatePlayer(IPlayerListener player, ThreadTask thread = null)
+		private void UpdatePlayer(IPlayerListener player)
 		{
 			var chunkX = CalculateChunkPosByWorld(player.player.transform.position.x);
 			var chunkY = CalculateChunkPosByWorld(player.player.transform.position.y);
@@ -450,7 +405,7 @@ namespace Cubizer
 			}
 		}
 
-		private bool UpdateCamera(IPlayerListener player, Vector3 translate, Plane[] planes, Vector2Int[] radius, ThreadTask thread = null)
+		private bool UpdateCamera(IPlayerListener player, Vector3 translate, Plane[] planes, Vector2Int[] radius)
 		{
 			int x = CalculateChunkPosByWorld(translate.x);
 			int y = CalculateChunkPosByWorld(translate.y);
@@ -502,33 +457,24 @@ namespace Cubizer
 			if (start == bestScore)
 				return false;
 
-			this.CreateChunk(player, bestX, bestY, bestZ, thread);
+			Task.Run(() =>
+			{
+				this.CreateChunk(player, bestX, bestY, bestZ);
+			});
+
 			return true;
 		}
 
-		private int FetchResults()
+		private void FetchResults()
 		{
-			int idles = 0;
-
-			foreach (var work in _threads)
+			ChunkPrimer chunk;
+			if (_deferredUpdater.TryDequeue(out chunk))
 			{
-				if (work.except != null)
-					throw new System.Exception("This thread has a pending exception:" + work.except.Message);
-
-				if (work.state == ThreadTaskState.Idle || work.state == ThreadTaskState.Done)
-					idles++;
-
-				if (work.state == ThreadTaskState.Done)
-				{
-					var data = work.context;
-					if (data != null && data.chunk != null)
-						CreateChunkObject(work.context.player, data.chunk, data.x, data.y, data.z, true);
-
-					work.state = ThreadTaskState.Idle;
-				}
+				var gameObject = new GameObject("Chunk");
+				gameObject.transform.parent = _chunkObject.transform;
+				gameObject.transform.position = chunk.position.ConvertToVector3() * context.profile.chunk.settings.chunkSize;
+				gameObject.AddComponent<ChunkData>().Init(chunk, true);
 			}
-
-			return idles;
 		}
 
 		private void AutoGC()
@@ -542,6 +488,9 @@ namespace Cubizer
 
 		public override void Update()
 		{
+			if (this.count > model.settings.chunkNumLimits)
+				return;
+
 			this.AutoGC();
 
 			var players = context.players.settings.players;
@@ -551,26 +500,14 @@ namespace Cubizer
 			foreach (var it in players)
 				UpdatePlayer(it);
 
-			var idleThreads = this.FetchResults();
-			if (idleThreads > 0)
+			this.FetchResults();
+
+			foreach (var it in players)
 			{
-				foreach (var it in players)
-				{
-					if (idleThreads == 0)
-						break;
+				var translate = it.player.transform.position;
+				var planes = GeometryUtility.CalculateFrustumPlanes(it.player);
 
-					var translate = it.player.transform.position;
-					var planes = GeometryUtility.CalculateFrustumPlanes(it.player);
-
-					foreach (var thread in _threads)
-					{
-						if (thread.state != ThreadTaskState.Idle)
-							continue;
-
-						if (UpdateCamera(it, translate, planes, it.model.settings.chunkRadius, thread))
-							idleThreads--;
-					}
-				}
+				UpdateCamera(it, translate, planes, it.model.settings.chunkRadius);
 			}
 		}
 	}

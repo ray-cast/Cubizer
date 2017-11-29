@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 namespace Cubizer
 {
 	public class BiomeManagerComponent : CubizerComponent<BiomeManagerModels>
 	{
-		private readonly string _name;
-		private GameObject _biomeObject;
-
+		private readonly GameObject _biomeObject;
+		private readonly List<IBiomeGenerator> _biomeGenerators;
 		private bool _active;
 
 		public override bool active
@@ -41,14 +41,13 @@ namespace Cubizer
 
 		public BiomeManagerComponent(string name = "ServerBiomes")
 		{
-			_name = name;
 			_active = true;
+			_biomeObject = new GameObject(name);
+			_biomeGenerators = new List<IBiomeGenerator>();
 		}
 
 		public override void OnEnable()
 		{
-			_biomeObject = new GameObject(_name);
-
 			foreach (var it in model.settings.biomeGenerators)
 			{
 				if (it != null)
@@ -56,18 +55,21 @@ namespace Cubizer
 					var gameObject = GameObject.Instantiate(it.gameObject);
 					gameObject.name = it.name;
 					gameObject.transform.parent = _biomeObject.transform;
-					gameObject.GetComponent<IBiomeGenerator>().Init(this.context);
+
+					var generator = gameObject.GetComponent<IBiomeGenerator>();
+					generator.Init(this.context);
+
+					_biomeGenerators.Add(generator);
 				}
 			}
 		}
 
 		public override void OnDisable()
 		{
-			if (_biomeObject != null)
-			{
-				GameObject.Destroy(_biomeObject);
-				_biomeObject = null;
-			}
+			GameObject.Destroy(_biomeObject);
+
+			if (_biomeGenerators != null)
+				_biomeGenerators.Clear();
 		}
 
 		public IBiomeData buildBiomeIfNotExist(int x, int y, int z)
@@ -78,11 +80,9 @@ namespace Cubizer
 			if (this.biomes.Get(x, y, z, out biomeData))
 				return biomeData;
 
-			var transform = _biomeObject.transform;
-
-			for (int i = 0; i < transform.childCount; i++)
+			foreach (var it in _biomeGenerators)
 			{
-				biomeData = transform.GetChild(i).GetComponent<IBiomeGenerator>().OnBuildBiome((short)x, (short)y, (short)z);
+				biomeData = it.OnBuildBiome((short)x, (short)y, (short)z);
 				if (biomeData != null)
 					break;
 			}
@@ -91,7 +91,6 @@ namespace Cubizer
 				biomeData = model.settings.biomeNull;
 
 			model.settings.biomeManager.Set(x, y, z, biomeData);
-
 			return biomeData;
 		}
 	}

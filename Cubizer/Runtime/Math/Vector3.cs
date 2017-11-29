@@ -53,7 +53,26 @@ namespace Cubizer
 				Debug.Assert(false);
 			}
 
+			public static void set(this Vector3<int> _this, Vector3Int v)
+			{
+				_this.x = v.x;
+				_this.y = v.y;
+				_this.z = v.z;
+			}
+
+			public static void set(this Vector3<float> _this, Vector3 v)
+			{
+				_this.x = v.x;
+				_this.y = v.y;
+				_this.z = v.z;
+			}
+
 			public static Vector3 ConvertToVector3(this Vector3<int> v)
+			{
+				return new Vector3(v.x, v.y, v.z);
+			}
+
+			public static Vector3 ConvertToVector3(this Vector3<float> v)
 			{
 				return new Vector3(v.x, v.y, v.z);
 			}

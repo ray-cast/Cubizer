@@ -56,20 +56,23 @@ namespace Cubizer
 		[SerializeField]
 		public PhysicMaterial physicMaterial;
 
-		private readonly Queue<LiveMesh> _queue = new Queue<LiveMesh>();
-
 		public override void OnBuildChunk(ChunkDataContext context)
 		{
 			if (context.async)
 				StartCoroutine("BuildChunkWithCoroutine", context);
 			else
-				doBuildGameObject(context, doBuildBlocks(context));
+			{
+				LiveMesh mesh;
+				doBuildMesh(context, out mesh);
+				doBuildGameObject(context, mesh);
+			}
 		}
 
-		private LiveMesh doBuildBlocks(ChunkDataContext context)
+		private void doBuildMesh(ChunkDataContext context, out LiveMesh mesh)
 		{
+			mesh = new LiveMesh(context.faceCount * 4, context.faceCount * 6);
+
 			var writeCount = 0;
-			var mesh = new LiveMesh(context.faceCount * 4, context.faceCount * 6);
 
 			foreach (VoxelPrimitive it in context.model.GetEnumerator(this.material.GetInstanceID()))
 			{
@@ -102,8 +105,6 @@ namespace Cubizer
 					writeCount++;
 				}
 			}
-
-			return mesh;
 		}
 
 		private void doBuildGameObject(ChunkDataContext context, LiveMesh data)
@@ -137,23 +138,11 @@ namespace Cubizer
 
 		public IEnumerator BuildChunkWithCoroutine(ChunkDataContext context)
 		{
-			Func<Task> task = async () =>
-			{
-				await Task.Run(() =>
-				{
-					var data = doBuildBlocks(context);
+			var t = Task<LiveMesh>.Run(() => { LiveMesh mesh = null; doBuildMesh(context, out mesh); return mesh; });
 
-					lock (_queue)
-						_queue.Enqueue(data);
-				});
-			};
+			yield return new WaitWhile(() => !t.IsCompleted);
 
-			task();
-
-			yield return new WaitWhile(() => !(_queue.Count > 0));
-
-			lock (_queue)
-				doBuildGameObject(context, _queue.Dequeue());
+			doBuildGameObject(context, t.Result);
 		}
 	}
 }

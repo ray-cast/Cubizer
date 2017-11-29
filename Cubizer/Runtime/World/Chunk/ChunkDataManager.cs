@@ -47,35 +47,38 @@ namespace Cubizer
 
 		public void Set(int x, int y, int z, ChunkPrimer value)
 		{
-			if (_allocSize == 0)
-				this.Create(0xFF);
-
-			var index = HashInt(x, y, z) & _allocSize;
-			var entry = _data[index];
-
-			while (entry != null)
+			lock (this)
 			{
-				var pos = entry.position;
-				if (pos.x == x && pos.y == y && pos.z == z)
-				{
-					var element = _data[index].value;
-					if (element != value && element != null)
-						element.OnChunkDestroy();
+				if (_allocSize == 0)
+					this.Create(0xFF);
 
-					_data[index].value = value;
+				var index = HashInt(x, y, z) & _allocSize;
+				var entry = _data[index];
+
+				while (entry != null)
+				{
+					var pos = entry.position;
+					if (pos.x == x && pos.y == y && pos.z == z)
+					{
+						var element = _data[index].value;
+						if (element != value && element != null)
+							element.OnChunkDestroy();
+
+						_data[index].value = value;
+					}
+
+					index = (index + 1) & _allocSize;
+					entry = _data[index];
 				}
 
-				index = (index + 1) & _allocSize;
-				entry = _data[index];
-			}
+				if (value != null)
+				{
+					_data[index] = new ChunkDataNode<Vector3<int>, ChunkPrimer>(new Vector3<int>(x, y, z), value);
+					_count++;
 
-			if (value != null)
-			{
-				_data[index] = new ChunkDataNode<Vector3<int>, ChunkPrimer>(new Vector3<int>(x, y, z), value);
-				_count++;
-
-				if (_count >= _allocSize)
-					this.Grow();
+					if (_count >= _allocSize)
+						this.Grow();
+				}
 			}
 		}
 
@@ -131,15 +134,18 @@ namespace Cubizer
 
 		public void GC()
 		{
-			var map = new ChunkDataManager();
-			map.Create(this._allocSize);
+			lock (this)
+			{
+				var map = new ChunkDataManager();
+				map.Create(this._allocSize);
 
-			foreach (ChunkDataNode<Vector3<int>, ChunkPrimer> it in GetEnumerator())
-				map.Grow(it);
+				foreach (ChunkDataNode<Vector3<int>, ChunkPrimer> it in GetEnumerator())
+					map.Grow(it);
 
-			_count = map._count;
-			_allocSize = map._allocSize;
-			_data = map._data;
+				_count = map._count;
+				_allocSize = map._allocSize;
+				_data = map._data;
+			}
 		}
 
 		public IEnumerable GetEnumerator()

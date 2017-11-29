@@ -44,37 +44,40 @@ namespace Cubizer
 
 		public bool Set(int x, int y, int z, IBiomeData value)
 		{
-			if (_allocSize == 0)
-				this.Create(0xFF);
-
-			var index = HashInt(x, y, z) & _allocSize;
-			var entry = _data[index];
-
-			while (entry != null)
+			lock (this)
 			{
-				var pos = entry.position;
-				if (pos.x == x && pos.y == y && pos.z == z)
+				if (_allocSize == 0)
+					this.Create(0xFF);
+
+				var index = HashInt(x, y, z) & _allocSize;
+				var entry = _data[index];
+
+				while (entry != null)
 				{
-					_data[index].value = value;
+					var pos = entry.position;
+					if (pos.x == x && pos.y == y && pos.z == z)
+					{
+						_data[index].value = value;
+						return true;
+					}
+
+					index = (index + 1) & _allocSize;
+					entry = _data[index];
+				}
+
+				if (value != null)
+				{
+					_data[index] = new BiomeDataNode<Vector3<int>, IBiomeData>(new Vector3<int>(x, y, z), value);
+					_count++;
+
+					if (_count >= _allocSize)
+						this.Grow();
+
 					return true;
 				}
 
-				index = (index + 1) & _allocSize;
-				entry = _data[index];
+				return false;
 			}
-
-			if (value != null)
-			{
-				_data[index] = new BiomeDataNode<Vector3<int>, IBiomeData>(new Vector3<int>(x, y, z), value);
-				_count++;
-
-				if (_count >= _allocSize)
-					this.Grow();
-
-				return true;
-			}
-
-			return false;
 		}
 
 		public bool Set(Vector3<int> pos, IBiomeData value)
@@ -128,14 +131,17 @@ namespace Cubizer
 
 		public void GC()
 		{
-			var map = new BiomeDataManager(_allocSize);
+			lock (this)
+			{
+				var map = new BiomeDataManager(_allocSize);
 
-			foreach (var it in GetEnumerator())
-				map.Grow(it);
+				foreach (var it in GetEnumerator())
+					map.Grow(it);
 
-			_count = map._count;
-			_allocSize = map._allocSize;
-			_data = map._data;
+				_count = map._count;
+				_allocSize = map._allocSize;
+				_data = map._data;
+			}
 		}
 
 		public BiomeDataNodeEnumerable<Vector3<int>, IBiomeData> GetEnumerator()

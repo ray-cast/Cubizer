@@ -1,10 +1,13 @@
 ﻿namespace Cubizer
 {
-	public enum ThreadTaskState
+	namespace Threading
 	{
-		Quit,
-		Idle,
-		Busy,
-		Done,
-	};
+		public enum ThreadTaskState
+		{
+			Quit,
+			Idle,
+			Busy,
+			Done,
+		};
+	}
 }

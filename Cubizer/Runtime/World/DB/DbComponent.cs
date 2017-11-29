@@ -81,20 +81,14 @@ namespace Cubizer
 				_sqlite.loadChunk(chunk, chunk.position.x, chunk.position.y, chunk.position.z);
 		}
 
-		private async void OnAddBlockBefore(ChunkPrimer chunk, int x, int y, int z, VoxelMaterial voxel)
+		private void OnAddBlockBefore(ChunkPrimer chunk, int x, int y, int z, VoxelMaterial voxel)
 		{
-			await Task.Run(() =>
-			{
-				_sqlite.insertBlock(chunk.position.x, chunk.position.y, chunk.position.z, x, y, z, voxel.GetInstanceID());
-			});
+			Task.Run(() => { _sqlite.insertBlock(chunk.position.x, chunk.position.y, chunk.position.z, x, y, z, voxel.GetInstanceID()); });
 		}
 
-		private async void OnRemoveBlockBefore(ChunkPrimer chunk, int x, int y, int z, VoxelMaterial voxel)
+		private void OnRemoveBlockBefore(ChunkPrimer chunk, int x, int y, int z, VoxelMaterial voxel)
 		{
-			await Task.Run(() =>
-			{
-				_sqlite.insertBlock(chunk.position.x, chunk.position.y, chunk.position.z, x, y, z, 0);
-			});
+			Task.Run(() => { _sqlite.insertBlock(chunk.position.x, chunk.position.y, chunk.position.z, x, y, z, 0); });
 		}
 	}
 }
