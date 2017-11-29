@@ -5,7 +5,7 @@ namespace Cubizer
 {
 	public class VoxelModelList : IVoxelModel
 	{
-		public List<VoxelPrimitive> voxels;
+		public readonly List<VoxelPrimitive> voxels;
 
 		public VoxelModelList(List<VoxelPrimitive> array)
 		{
@@ -33,7 +33,7 @@ namespace Cubizer
 		public IEnumerable GetEnumerator()
 		{
 			if (voxels == null)
-				throw new System.ApplicationException("GetEnumerator: Empty data");
+				throw new System.NullReferenceException("GetEnumerator: Empty data");
 
 			return new VoxelModelListEnumerable(voxels);
 		}
@@ -41,7 +41,7 @@ namespace Cubizer
 		public IEnumerable GetEnumerator(int instanceID)
 		{
 			if (voxels == null)
-				throw new System.ApplicationException("GetEnumerator: Empty data");
+				throw new System.NullReferenceException("GetEnumerator: Empty data");
 
 			return new VoxelModelListIDEnumerable(voxels, instanceID);
 		}

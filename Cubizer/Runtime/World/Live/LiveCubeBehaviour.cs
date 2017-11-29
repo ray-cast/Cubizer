@@ -63,13 +63,10 @@ namespace Cubizer
 			if (context.async)
 				StartCoroutine("BuildChunkWithCoroutine", context);
 			else
-			{
-				var data = BuildBlocks(context);
-				BuildGameObject(context, data);
-			}
+				doBuildGameObject(context, doBuildBlocks(context));
 		}
 
-		private LiveMesh BuildBlocks(ChunkDataContext context)
+		private LiveMesh doBuildBlocks(ChunkDataContext context)
 		{
 			var writeCount = 0;
 			var mesh = new LiveMesh(context.faceCount * 4, context.faceCount * 6);
@@ -109,7 +106,7 @@ namespace Cubizer
 			return mesh;
 		}
 
-		private void BuildGameObject(ChunkDataContext context, LiveMesh data)
+		private void doBuildGameObject(ChunkDataContext context, LiveMesh data)
 		{
 			if (data.indices.Length > 0)
 			{
@@ -144,12 +141,10 @@ namespace Cubizer
 			{
 				await Task.Run(() =>
 				{
-					var data = BuildBlocks(context);
+					var data = doBuildBlocks(context);
 
 					lock (_queue)
-					{
 						_queue.Enqueue(data);
-					}
 				});
 			};
 
@@ -158,9 +153,7 @@ namespace Cubizer
 			yield return new WaitWhile(() => !(_queue.Count > 0));
 
 			lock (_queue)
-			{
-				BuildGameObject(context, _queue.Dequeue());
-			}
+				doBuildGameObject(context, _queue.Dequeue());
 		}
 	}
 }

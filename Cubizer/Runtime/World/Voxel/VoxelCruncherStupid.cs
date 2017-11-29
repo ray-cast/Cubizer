@@ -4,7 +4,7 @@ namespace Cubizer
 {
 	public class VoxelCruncherStupid : IVoxelCruncher
 	{
-		private static VoxelVisiableFaces faces = new VoxelVisiableFaces();
+		private readonly static VoxelVisiableFaces faces = new VoxelVisiableFaces();
 
 		public IVoxelModel CalcVoxelCruncher(VoxelData<VoxelMaterial> map)
 		{

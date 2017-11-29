@@ -6,7 +6,7 @@ namespace Cubizer
 		where _Tx : struct
 		where _Ty : class
 	{
-		private VoxelDataNode<_Tx, _Ty>[] _array;
+		private readonly VoxelDataNode<_Tx, _Ty>[] _array;
 
 		public VoxelDataNodeEnumerable(VoxelDataNode<_Tx, _Ty>[] array)
 		{

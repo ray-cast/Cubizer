@@ -6,11 +6,11 @@ namespace Cubizer
 {
 	public class VoxelCruncherGreedy : IVoxelCruncher
 	{
-		private static int[] x = new int[3] { 0, 0, 0 };
-		private static int[] q = new int[3] { 0, 0, 0 };
+		private readonly static int[] x = new int[3] { 0, 0, 0 };
+		private readonly static int[] q = new int[3] { 0, 0, 0 };
 
-		private static int[] du = new int[3] { 0, 0, 0 };
-		private static int[] dv = new int[3] { 0, 0, 0 };
+		private readonly static int[] du = new int[3] { 0, 0, 0 };
+		private readonly static int[] dv = new int[3] { 0, 0, 0 };
 
 		private static VoxelVisiableFaces faces = new VoxelVisiableFaces(false);
 

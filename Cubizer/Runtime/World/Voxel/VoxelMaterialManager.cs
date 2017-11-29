@@ -4,8 +4,8 @@ namespace Cubizer
 {
 	public sealed class VoxelMaterialManager : IVoxelMaterialManager
 	{
-		private List<VoxelMaterial> _lives = new List<VoxelMaterial>();
-		private Dictionary<string, int> _liveIndex = new Dictionary<string, int>();
+		private readonly List<VoxelMaterial> _lives = new List<VoxelMaterial>();
+		private readonly Dictionary<string, int> _liveIndex = new Dictionary<string, int>();
 
 		private static readonly VoxelMaterialManager _instance = new VoxelMaterialManager();
 

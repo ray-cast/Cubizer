@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Cubizer
+﻿namespace Cubizer
 {
 	public class ChunkDelegates
 	{

@@ -4,7 +4,7 @@ namespace Cubizer
 {
 	public class BiomeManagerComponent : CubizerComponent<BiomeManagerModels>
 	{
-		private string _name;
+		private readonly string _name;
 		private GameObject _biomeObject;
 
 		private bool _active;

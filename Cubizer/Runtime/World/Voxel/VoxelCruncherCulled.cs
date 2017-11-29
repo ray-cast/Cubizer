@@ -7,7 +7,7 @@ namespace Cubizer
 {
 	public class VoxelCruncherCulled : IVoxelCruncher
 	{
-		private static VoxelMaterial[] instanceID = new VoxelMaterial[6] { null, null, null, null, null, null };
+		private readonly static VoxelMaterial[] instanceID = new VoxelMaterial[6] { null, null, null, null, null, null };
 
 		public bool GetVisiableFaces(VoxelMaterial[,,] map, Vector3Int bound, int x, int y, int z, VoxelMaterial material, out VoxelVisiableFaces faces)
 		{

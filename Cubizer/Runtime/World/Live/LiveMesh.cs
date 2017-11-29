@@ -4,10 +4,10 @@ namespace Cubizer
 {
 	public class LiveMesh
 	{
-		public Vector3[] vertices;
-		public Vector3[] normals;
-		public Vector2[] uv;
-		public int[] indices;
+		public readonly Vector3[] vertices;
+		public readonly Vector3[] normals;
+		public readonly Vector2[] uv;
+		public readonly int[] indices;
 
 		public Mesh mesh
 		{

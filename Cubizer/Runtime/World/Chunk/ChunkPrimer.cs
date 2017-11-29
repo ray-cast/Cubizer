@@ -10,7 +10,7 @@ namespace Cubizer
 	public class ChunkPrimer
 	{
 		private readonly Vector3<int> _position;
-		private VoxelData<VoxelMaterial> _voxels;
+		private readonly VoxelData<VoxelMaterial> _voxels;
 
 		[NonSerialized]
 		private ChunkPrimerDelegates.OnChangeDelegate _onChunkChange;
@@ -42,7 +42,6 @@ namespace Cubizer
 
 		public VoxelData<VoxelMaterial> voxels
 		{
-			set { _voxels = value; }
 			get { return _voxels; }
 		}
 

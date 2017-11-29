@@ -8,7 +8,7 @@ namespace Cubizer
 	public sealed class LiveManagerComponent : CubizerComponent<LiveManagerModels>
 	{
 		private bool _active;
-		private string _name;
+		private readonly string _name;
 		private GameObject _biomeObject;
 
 		public override bool active

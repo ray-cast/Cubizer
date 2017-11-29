@@ -95,7 +95,12 @@ namespace Cubizer
 			if (_drawPickMaterial == null)
 				Debug.LogError("Please assign a mesh on the inspector");
 
-			_server.AddPlayerListener(this);
+			_server.Connection(this);
+		}
+
+		public void OnDestroy()
+		{
+			_server.Disconnect(this);
 		}
 
 		public void Reset()

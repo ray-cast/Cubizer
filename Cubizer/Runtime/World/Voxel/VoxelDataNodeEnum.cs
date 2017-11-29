@@ -7,7 +7,7 @@ namespace Cubizer
 		where _Ty : class
 	{
 		private int position = -1;
-		private VoxelDataNode<_Tx, _Ty>[] _array;
+		private readonly VoxelDataNode<_Tx, _Ty>[] _array;
 
 		public VoxelDataNodeEnum(VoxelDataNode<_Tx, _Ty>[] list)
 		{

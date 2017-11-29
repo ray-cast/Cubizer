@@ -18,12 +18,11 @@ namespace Cubizer
 		private BiomeManagerComponent _biomeManager;
 		private DbComponent _database;
 
-		private List<ICubizerComponent> _components;
+		private readonly List<ICubizerComponent> _components = new List<ICubizerComponent>();
 
-		private PlayerManagerModel _players;
-		private IVoxelMaterialManager _materialFactory;
-
-		private ChunkDelegates _events;
+		private readonly PlayerManagerModel _players = new PlayerManagerModel();
+		private readonly ChunkDelegates _events = new ChunkDelegates();
+		private readonly static IVoxelMaterialManager _materialFactory = VoxelMaterialManager.GetInstance();
 
 		public CubizerProfile profile
 		{
@@ -45,14 +44,20 @@ namespace Cubizer
 			get { return _chunkManager; }
 		}
 
-		public void AddPlayerListener(IPlayerListener player)
+		public void Connection(IPlayerListener player)
 		{
-			_players.settings.players.Add(player);
+			if (player != null)
+				_players.settings.players.Add(player);
+			else
+				throw new System.ArgumentNullException("Connection() fail");
 		}
 
-		public List<IPlayerListener> GetPlayerListeners()
+		public void Disconnect(IPlayerListener player)
 		{
-			return _players.settings.players;
+			if (player != null)
+				_players.settings.players.Remove(player);
+			else
+				throw new System.ArgumentNullException("Disconnect() fail");
 		}
 
 		#region delegate
@@ -135,11 +140,12 @@ namespace Cubizer
 
 		private T AddComponent<T>(T component) where T : ICubizerComponent
 		{
+			Debug.Assert(component != null);
 			_components.Add(component);
 			return component;
 		}
 
-		public IEnumerator UpdateComponentsWithCoroutine()
+		private IEnumerator UpdateComponentsWithCoroutine()
 		{
 			yield return new WaitForSeconds(profile.terrain.settings.repeatRate);
 
@@ -152,26 +158,18 @@ namespace Cubizer
 
 		#region events
 
-		public void Awake()
+		public void Start()
 		{
 			if (_profile == null)
 				Debug.LogError("Please drag a CubizerProfile into Inspector.");
 
-			_events = new ChunkDelegates();
-			_players = new PlayerManagerModel();
-		}
-
-		public void Start()
-		{
 			Debug.Assert(_profile.chunk.settings.chunkSize > 0);
 
 			_context = new CubizerContext();
 			_context.profile = _profile;
 			_context.behaviour = this;
-			_context.materialFactory = _materialFactory = VoxelMaterialManager.GetInstance();
+			_context.materialFactory = _materialFactory;
 			_context.players = _players;
-
-			_components = new List<ICubizerComponent>();
 
 			_lives = AddComponent(new LiveManagerComponent());
 			_lives.Init(_context, _profile.lives);
@@ -205,6 +203,8 @@ namespace Cubizer
 
 			_components.Clear();
 			_materialFactory.Dispose();
+
+			StopCoroutine("UpdateComponentsWithCoroutine");
 		}
 
 		#endregion events
