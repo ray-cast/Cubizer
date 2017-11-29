@@ -138,7 +138,7 @@ namespace Cubizer
 
 		public IEnumerator BuildChunkWithCoroutine(ChunkDataContext context)
 		{
-			var t = Task<LiveMesh>.Run(() => { LiveMesh mesh = null; doBuildMesh(context, out mesh); return mesh; });
+			var t = Task.Run(() => { LiveMesh mesh = null; doBuildMesh(context, out mesh); return mesh; });
 
 			yield return new WaitWhile(() => !t.IsCompleted);
 

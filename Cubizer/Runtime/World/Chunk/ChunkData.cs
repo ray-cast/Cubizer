@@ -102,7 +102,7 @@ namespace Cubizer
 			doBuildChunk(true);
 		}
 
-		public void Init(ChunkPrimer chunk, bool async)
+		public void Init(ChunkPrimer chunk)
 		{
 			Debug.Assert(_chunk == null);
 
@@ -110,10 +110,7 @@ namespace Cubizer
 			_chunk.dirty = _dirty = false;
 			_chunk.onChunkChange += OnBuildChunk;
 
-			if (async)
-				this.OnBuildChunkAsync();
-			else
-				this.OnBuildChunk();
+			this.OnBuildChunkAsync();
 		}
 	}
 }

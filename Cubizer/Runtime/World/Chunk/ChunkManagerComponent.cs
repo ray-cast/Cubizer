@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Runtime.Serialization.Formatters.Binary;
 
@@ -14,6 +15,7 @@ namespace Cubizer
 		private readonly string _name;
 		private GameObject _chunkObject;
 		private readonly ChunkDelegates _callbacks;
+		private Task[] _tasks;
 
 		private readonly ConcurrentQueue<ChunkPrimer> _deferredUpdater = new ConcurrentQueue<ChunkPrimer>();
 
@@ -64,6 +66,7 @@ namespace Cubizer
 		public override void OnEnable()
 		{
 			_chunkObject = new GameObject(_name);
+			_tasks = new Task[model.settings.chunkThreadNums];
 		}
 
 		public override void OnDisable()
@@ -356,7 +359,7 @@ namespace Cubizer
 					var gameObject = new GameObject("Chunk");
 					gameObject.transform.parent = _chunkObject.transform;
 					gameObject.transform.position = new Vector3(chunk.position.x, chunk.position.y, chunk.position.z) * model.settings.chunkSize;
-					gameObject.AddComponent<ChunkData>().Init(chunk, true);
+					gameObject.AddComponent<ChunkData>().Init(chunk);
 				}
 
 				return true;
@@ -412,7 +415,7 @@ namespace Cubizer
 			}
 		}
 
-		private bool UpdateCamera(IPlayerListener player, Vector3 translate, Plane[] planes, Vector2Int[] radius)
+		private Task UpdateCamera(IPlayerListener player, Vector3 translate, Plane[] planes, Vector2Int[] radius)
 		{
 			int x = CalculateChunkPosByWorld(translate.x);
 			int y = CalculateChunkPosByWorld(translate.y);
@@ -462,17 +465,12 @@ namespace Cubizer
 			}
 
 			if (start == bestScore)
-				return false;
+				return null;
 
-			Task.Run(() =>
-			{
-				this.CreateChunk(player, bestX, bestY, bestZ);
-			});
-
-			return true;
+			return _tasks[0] = Task.Run(() => { this.CreateChunk(player, bestX, bestY, bestZ); });
 		}
 
-		private void FetchResults()
+		private void UpdateResults()
 		{
 			ChunkPrimer chunk;
 			if (_deferredUpdater.TryDequeue(out chunk))
@@ -480,7 +478,7 @@ namespace Cubizer
 				var gameObject = new GameObject("Chunk");
 				gameObject.transform.parent = _chunkObject.transform;
 				gameObject.transform.position = chunk.position.ConvertToVector3() * context.profile.chunk.settings.chunkSize;
-				gameObject.AddComponent<ChunkData>().Init(chunk, true);
+				gameObject.AddComponent<ChunkData>().Init(chunk);
 			}
 		}
 
@@ -507,14 +505,20 @@ namespace Cubizer
 			foreach (var it in players)
 				UpdatePlayer(it);
 
-			this.FetchResults();
+			this.UpdateResults();
 
 			foreach (var it in players)
 			{
 				var translate = it.player.transform.position;
 				var planes = GeometryUtility.CalculateFrustumPlanes(it.player);
 
-				UpdateCamera(it, translate, planes, it.model.settings.chunkRadius);
+				for (int i = 0; i < _tasks.Length; i++)
+				{
+					if (!(_tasks[i] == null || _tasks[i].IsCompleted))
+						continue;
+
+					_tasks[i] = UpdateCamera(it, translate, planes, it.model.settings.chunkRadius);
+				}
 			}
 		}
 	}
