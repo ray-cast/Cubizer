@@ -11,8 +11,10 @@ namespace Cubizer
 {
 	public class ChunkManagerComponent : CubizerComponent<ChunkManagerModels>
 	{
+		private readonly string _name;
+		private GameObject _chunkObject;
 		private readonly ChunkDelegates _callbacks;
-		private readonly GameObject _chunkObject;
+
 		private readonly ConcurrentQueue<ChunkPrimer> _deferredUpdater = new ConcurrentQueue<ChunkPrimer>();
 
 		private bool _active;
@@ -54,19 +56,24 @@ namespace Cubizer
 
 		public ChunkManagerComponent(string name = "ServerChunks")
 		{
+			_name = name;
 			_active = true;
 			_callbacks = new ChunkDelegates();
-			_chunkObject = new GameObject(name);
 		}
 
-		~ChunkManagerComponent()
+		public override void OnEnable()
 		{
-			GameObject.Destroy(_chunkObject);
+			_chunkObject = new GameObject(_name);
 		}
 
 		public override void OnDisable()
 		{
-			this.DestroyChunks();
+			if (_chunkObject != null)
+			{
+				this.DestroyChunks();
+				GameObject.Destroy(_chunkObject);
+				_chunkObject = null;
+			}
 		}
 
 		public void CreateChunk(IPlayerListener player, int x, int y, int z)

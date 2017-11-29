@@ -5,8 +5,9 @@ namespace Cubizer
 {
 	public class BiomeManagerComponent : CubizerComponent<BiomeManagerModels>
 	{
-		private readonly GameObject _biomeObject;
-		private readonly List<IBiomeGenerator> _biomeGenerators;
+		private readonly string _name;
+		private GameObject _biomeObject;
+		private List<IBiomeGenerator> _biomeGenerators;
 		private bool _active;
 
 		public override bool active
@@ -41,13 +42,15 @@ namespace Cubizer
 
 		public BiomeManagerComponent(string name = "ServerBiomes")
 		{
+			_name = name;
 			_active = true;
-			_biomeObject = new GameObject(name);
-			_biomeGenerators = new List<IBiomeGenerator>();
 		}
 
 		public override void OnEnable()
 		{
+			_biomeObject = new GameObject(_name);
+			_biomeGenerators = new List<IBiomeGenerator>();
+
 			foreach (var it in model.settings.biomeGenerators)
 			{
 				if (it != null)
@@ -66,10 +69,17 @@ namespace Cubizer
 
 		public override void OnDisable()
 		{
-			GameObject.Destroy(_biomeObject);
+			if (_biomeObject != null)
+			{
+				GameObject.Destroy(_biomeObject);
+				_biomeObject = null;
+			}
 
 			if (_biomeGenerators != null)
+			{
 				_biomeGenerators.Clear();
+				_biomeGenerators = null;
+			}
 		}
 
 		public IBiomeData buildBiomeIfNotExist(int x, int y, int z)
