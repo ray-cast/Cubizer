@@ -59,7 +59,13 @@ namespace Cubizer
 		public override void OnBuildChunk(ChunkDataContext context)
 		{
 			if (context.async)
-				StartCoroutine("BuildChunkWithCoroutine", context);
+			{
+				var t = Task.Run(() => { LiveMesh mesh = null; doBuildMesh(context, out mesh); return mesh; });
+				t.GetAwaiter().OnCompleted(() =>
+				{
+					doBuildGameObject(context, t.Result);
+				});
+			}
 			else
 			{
 				LiveMesh mesh;
@@ -134,15 +140,6 @@ namespace Cubizer
 					meshCollider.material = physicMaterial;
 				}
 			}
-		}
-
-		public IEnumerator BuildChunkWithCoroutine(ChunkDataContext context)
-		{
-			var t = Task.Run(() => { LiveMesh mesh = null; doBuildMesh(context, out mesh); return mesh; });
-
-			yield return new WaitWhile(() => !t.IsCompleted);
-
-			doBuildGameObject(context, t.Result);
 		}
 	}
 }
