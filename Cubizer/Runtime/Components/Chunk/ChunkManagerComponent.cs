@@ -467,7 +467,7 @@ namespace Cubizer
 			if (start == bestScore)
 				return null;
 
-			return _tasks[0] = Task.Run(() => { this.CreateChunk(player, bestX, bestY, bestZ); });
+			return Task.Run(() => { this.CreateChunk(player, bestX, bestY, bestZ); });
 		}
 
 		private void UpdateResults()

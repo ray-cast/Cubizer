@@ -2,7 +2,7 @@
 {
 	public class BiomeDataNull : IBiomeData
 	{
-		public virtual ChunkPrimer OnBuildChunk(CubizerBehaviour terrain, int x, int y, int z)
+		public virtual ChunkPrimer OnBuildChunk(CubizerBehaviour context, int x, int y, int z)
 		{
 			return null;
 		}

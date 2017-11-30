@@ -4,6 +4,7 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
@@ -16,7 +17,7 @@ namespace Cubizer
 		private readonly TcpListener _listener;
 		private readonly List<ClientSession> _sessions;
 
-		private bool _isQuitRequest = false;
+		private Task _task;
 
 		public TcpRouter(string ip, int port)
 		{
@@ -31,12 +32,14 @@ namespace Cubizer
 			this.Dispose();
 		}
 
-		private void DispatchIncomingClient(TcpClient tcpClient)
+		private void DispatchIncomingClient(TcpClient tcpClient, CancellationToken cancellationToken)
 		{
 			try
 			{
+				Debug.Log($"Incoming connection from {tcpClient.Client.RemoteEndPoint}.");
+
 				var session = new ClientSession(tcpClient);
-				session.Start();
+				session.Start(cancellationToken);
 
 				_sessions.Add(session);
 			}
@@ -47,50 +50,60 @@ namespace Cubizer
 			}
 		}
 
-		public async Task Start()
+		public Task Start(CancellationToken cancellationToken)
 		{
-			try
+			Debug.Assert(_task == null);
+
+			_task = Task.Run(async () =>
 			{
-				Debug.Log("Starting Listener...");
-
-				_listener.Start();
-
-				while (!_isQuitRequest)
+				try
 				{
-					var tcpClient = await _listener.AcceptTcpClientAsync();
-					if (!_isQuitRequest)
-						this.DispatchIncomingClient(tcpClient);
-				}
+					Debug.Log("Starting Listener...");
 
-				Debug.Log("Stop Listener...");
-			}
-			catch (Exception e)
-			{
-				Debug.Log("This thread has a except：" + e.Message);
-				throw e;
-			}
-			finally
-			{
-				_listener.Stop();
-			}
+					cancellationToken.Register(Dispose);
+
+					_listener.Start();
+
+					while (!cancellationToken.IsCancellationRequested)
+						this.DispatchIncomingClient(await _listener.AcceptTcpClientAsync(), cancellationToken);
+
+					_listener.Stop();
+
+					Debug.Log("Stop Listener...");
+				}
+				catch (Exception e)
+				{
+					Debug.Log("This thread has a except：" + e.Message);
+					throw e;
+				}
+			});
+
+			return _task;
 		}
 
 		public void Dispose()
 		{
-			_isQuitRequest = true;
-
-			foreach (var sessions in _sessions)
-				sessions.Dispose();
-
-			using (TcpClient tcpClient = new TcpClient())
+			if (!_task.IsCompleted)
 			{
-				tcpClient.Connect(_address, _port);
+				foreach (var sessions in _sessions)
+					sessions.Dispose();
 
-				using (var stream = tcpClient.GetStream())
+				if (_listener.Server.IsBound)
 				{
-					Byte[] sendBytes = Encoding.ASCII.GetBytes("exit");
-					stream.Write(sendBytes, 0, sendBytes.Length);
+					using (TcpClient tcpClient = new TcpClient())
+					{
+						tcpClient.Connect(_address, _port);
+
+						using (var stream = tcpClient.GetStream())
+						{
+							Byte[] sendBytes = Encoding.ASCII.GetBytes("Exit");
+							stream.Write(sendBytes, 0, sendBytes.Length);
+						}
+					}
 				}
+
+				_task.Wait();
+				_task = null;
 			}
 		}
 	}

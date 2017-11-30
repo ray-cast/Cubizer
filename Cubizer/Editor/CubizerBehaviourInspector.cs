@@ -43,7 +43,7 @@ namespace Cubier
 
 			if (terrain.server != null)
 			{
-				if (!terrain.server.opened)
+				if (terrain.server.IsCancellationRequested)
 				{
 					if (GUILayout.Button("Create Server..."))
 						terrain.OpenServer();

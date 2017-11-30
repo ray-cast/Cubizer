@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
 
 namespace Cubizer
 {
@@ -7,13 +7,13 @@ namespace Cubizer
 		private bool _active = true;
 
 		private TcpRouter _tcpListener;
-		private Task _task;
+		private CancellationTokenSource _cancellationToken;
 
-		public bool opened
+		public bool IsCancellationRequested
 		{
 			get
 			{
-				return _tcpListener != null;
+				return _cancellationToken != null ? _cancellationToken.IsCancellationRequested : true;
 			}
 		}
 
@@ -44,6 +44,8 @@ namespace Cubizer
 			context.behaviour.events.OnRemoveBlockAfter += this.OnRemoveBlockAfter;
 			context.behaviour.events.OnOpenServer += this.OnOpenServer;
 			context.behaviour.events.OnCloseServer += this.OnCloseServer;
+			context.behaviour.events.OnPlayerConnection += this.OnConnection;
+			context.behaviour.events.OnPlayerDisconnect += this.OnDisconnect;
 		}
 
 		public override void OnDisable()
@@ -52,18 +54,19 @@ namespace Cubizer
 			context.behaviour.events.OnAddBlockAfter -= this.OnAddBlockAfter;
 			context.behaviour.events.OnRemoveBlockAfter -= this.OnRemoveBlockAfter;
 			context.behaviour.events.OnOpenServer -= this.OnOpenServer;
-			context.behaviour.events.OnCloseServer += this.OnCloseServer;
+			context.behaviour.events.OnCloseServer -= this.OnCloseServer;
+			context.behaviour.events.OnPlayerConnection -= this.OnConnection;
+			context.behaviour.events.OnPlayerDisconnect -= this.OnDisconnect;
 		}
 
 		private void OnOpenServer()
 		{
+			_cancellationToken = new CancellationTokenSource();
+
 			if (_tcpListener == null)
 			{
 				_tcpListener = new TcpRouter(model.settings.address, model.settings.port);
-				_task = Task.Run(async () =>
-				{
-					await _tcpListener.Start();
-				});
+				_tcpListener.Start(_cancellationToken.Token);
 			}
 			else
 			{
@@ -73,16 +76,24 @@ namespace Cubizer
 
 		private void OnCloseServer()
 		{
-			if (_tcpListener != null)
+			if (_cancellationToken != null)
 			{
-				_tcpListener.Dispose();
-				_tcpListener = null;
+				_cancellationToken.Cancel();
+				_cancellationToken = null;
 			}
+		}
 
-			if (!_task.IsCompleted)
+		private void OnConnection(IPlayer player)
+		{
+			if (!this.IsCancellationRequested)
 			{
-				_task.Wait();
-				_task = null;
+			}
+		}
+
+		private void OnDisconnect(IPlayer player)
+		{
+			if (!this.IsCancellationRequested)
+			{
 			}
 		}
 

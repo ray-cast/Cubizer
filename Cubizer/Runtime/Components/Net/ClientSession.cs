@@ -3,6 +3,7 @@
 using System;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Cubizer
@@ -11,6 +12,7 @@ namespace Cubizer
 	{
 		private bool _isQuitRequest = false;
 
+		private readonly byte[] buffer = new byte[8192];
 		private readonly TcpClient _tcpClient;
 
 		public ClientSession(TcpClient client)
@@ -20,43 +22,47 @@ namespace Cubizer
 
 		~ClientSession()
 		{
-			_isQuitRequest = true;
 			_tcpClient.Close();
 		}
 
-		public Task Start()
+		public Task Start(CancellationToken cancellationToken)
 		{
 			return Task.Run(async () =>
 			{
 				using (var stream = _tcpClient.GetStream())
 				{
-					byte[] buffer = new byte[8192];
-
-					while (!_isQuitRequest)
+					try
 					{
-						int byteRead = await stream.ReadAsync(buffer, 0, buffer.Length);
-						if (byteRead == 0)
+						do
 						{
-							Debug.Log("Disconnect...");
-							break;
+							await DispatchIncomingPacket(stream);
 						}
-
-						this.OnMessage(buffer, byteRead);
+						while (!cancellationToken.IsCancellationRequested);
+					}
+					catch (Exception e)
+					{
+						Debug.Log(e.Message);
 					}
 				}
 			});
 		}
 
-		public void Dispose()
+		private async Task DispatchIncomingPacket(NetworkStream stream)
 		{
-			_isQuitRequest = true;
-			_tcpClient.Dispose();
+			int byteRead = await stream.ReadAsync(buffer, 0, buffer.Length);
+			if (byteRead > 0)
+				DispatchIncomingPacket(buffer, byteRead);
 		}
 
-		public virtual void OnMessage(byte[] buffer, int length)
+		private void DispatchIncomingPacket(byte[] buffer, int length)
 		{
-			string msg = Encoding.Unicode.GetString(buffer, 0, length);
+			string msg = Encoding.ASCII.GetString(buffer, 0, length);
 			Debug.Log("Data：" + msg + ".Length:[" + length + "byte]");
+		}
+
+		public void Dispose()
+		{
+			_tcpClient.Dispose();
 		}
 	}
 }
