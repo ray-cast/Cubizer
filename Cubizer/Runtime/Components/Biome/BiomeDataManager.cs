@@ -129,6 +129,11 @@ namespace Cubizer
 			return _count == 0;
 		}
 
+		public int Count()
+		{
+			return _count;
+		}
+
 		public void GC()
 		{
 			lock (this)

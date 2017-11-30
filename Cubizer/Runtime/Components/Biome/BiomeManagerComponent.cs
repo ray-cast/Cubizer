@@ -35,7 +35,7 @@ namespace Cubizer
 			get { return _biomeObject != null ? _biomeObject.transform.childCount : 0; }
 		}
 
-		public IBiomeDataManager biomes
+		private IBiomeDataManager biomes
 		{
 			get { return model.settings.biomeManager; }
 		}
@@ -55,11 +55,9 @@ namespace Cubizer
 			{
 				if (it != null)
 				{
-					var gameObject = GameObject.Instantiate(it.gameObject);
-					gameObject.name = it.name;
-					gameObject.transform.parent = _biomeObject.transform;
-
-					var generator = gameObject.GetComponent<IBiomeGenerator>();
+					var generator = GameObject.Instantiate(it.gameObject).GetComponent<IBiomeGenerator>();
+					generator.gameObject.name = it.name;
+					generator.gameObject.transform.parent = _biomeObject.transform;
 					generator.Init(this.context);
 
 					_biomeGenerators.Add(generator);
@@ -92,7 +90,7 @@ namespace Cubizer
 
 			foreach (var it in _biomeGenerators)
 			{
-				biomeData = it.OnBuildBiome((short)x, (short)y, (short)z);
+				biomeData = it.OnBuildBiome(x, y, z);
 				if (biomeData != null)
 					break;
 			}
@@ -102,6 +100,17 @@ namespace Cubizer
 
 			model.settings.biomeManager.Set(x, y, z, biomeData);
 			return biomeData;
+		}
+
+		private void AutoGC()
+		{
+			if (this.biomes.Count() > model.settings.biomeNumLimits)
+				this.biomes.GC();
+		}
+
+		public override void Update()
+		{
+			this.AutoGC();
 		}
 	}
 }

@@ -2,7 +2,7 @@
 
 namespace Cubizer
 {
-	public interface IPlayerListener
+	public interface IPlayer
 	{
 		Camera player
 		{

@@ -20,6 +20,9 @@ namespace Cubizer
 			[SerializeField]
 			public List<IBiomeGenerator> biomeGenerators;
 
+			[SerializeField, Range(256, 8192)]
+			public int biomeNumLimits;
+
 			public static BiomeGeneratorSettings defaultSettings
 			{
 				get
@@ -28,7 +31,8 @@ namespace Cubizer
 					{
 						biomeNull = new BiomeDataNull(),
 						biomeManager = new BiomeDataManager(),
-						biomeGenerators = new List<IBiomeGenerator>()
+						biomeGenerators = new List<IBiomeGenerator>(),
+						biomeNumLimits = 4096
 					};
 				}
 			}

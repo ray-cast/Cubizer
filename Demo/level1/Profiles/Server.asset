@@ -31,6 +31,7 @@ MonoBehaviour:
     _settings:
       biomeGenerators:
       - {fileID: 114448704350713134, guid: 33e7fd7f6b831a344beddde85fc9d6f8, type: 2}
+      biomeNumLimits: 4096
   lives:
     _settings:
       lives:
@@ -52,3 +53,7 @@ MonoBehaviour:
       - {fileID: 114328574832605986, guid: f1fbbe9fd40a97944bf48d56834dfd2b, type: 2}
       - {fileID: 114328574832605986, guid: a3fc8deb7c43fe84e9b3a2cd23343184, type: 2}
       - {fileID: 114328574832605986, guid: b318477134dc81a4fb8274392167bb9d, type: 2}
+  network:
+    _settings:
+      address: 127.0.0.1
+      port: 10000

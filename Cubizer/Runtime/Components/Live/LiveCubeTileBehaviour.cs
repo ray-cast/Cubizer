@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -60,24 +59,36 @@ namespace Cubizer
 		[SerializeField]
 		public PhysicMaterial physicMaterial;
 
-		[NonSerialized]
-		private Queue<LiveMesh> _queue = new Queue<LiveMesh>();
+		private Task<LiveMesh> _task;
+
+		public void OnApplicationQuit()
+		{
+			if (_task != null)
+				_task.Wait();
+		}
 
 		public override void OnBuildChunk(ChunkDataContext context)
 		{
 			if (context.async)
-				StartCoroutine("BuildChunkWithCoroutine", context);
+			{
+				_task = Task.Run(() => { LiveMesh data; BuildBlocks(context, out data); return data; });
+				_task.GetAwaiter().OnCompleted(() =>
+				{
+					BuildGameObject(context, _task.Result);
+				});
+			}
 			else
 			{
-				var data = BuildBlocks(context);
+				LiveMesh data;
+				BuildBlocks(context, out data);
 				BuildGameObject(context, data);
 			}
 		}
 
-		private LiveMesh BuildBlocks(ChunkDataContext context)
+		private void BuildBlocks(ChunkDataContext context, out LiveMesh mesh)
 		{
 			var writeCount = 0;
-			var mesh = new LiveMesh(context.faceCount * 4, context.faceCount * 6);
+			mesh = new LiveMesh(context.faceCount * 4, context.faceCount * 6);
 
 			foreach (VoxelPrimitive it in context.model.GetEnumerator(this.material.GetInstanceID()))
 			{
@@ -119,8 +130,6 @@ namespace Cubizer
 					writeCount++;
 				}
 			}
-
-			return mesh;
 		}
 
 		private void BuildGameObject(ChunkDataContext context, LiveMesh data)
@@ -149,26 +158,6 @@ namespace Cubizer
 					meshCollider.sharedMesh = mesh;
 					meshCollider.material = physicMaterial;
 				}
-			}
-		}
-
-		public IEnumerator BuildChunkWithCoroutine(ChunkDataContext context)
-		{
-			Task.Run(() =>
-		   {
-			   var data = BuildBlocks(context);
-
-			   lock (_queue)
-			   {
-				   _queue.Enqueue(data);
-			   }
-		   });
-
-			yield return new WaitWhile(() => !(_queue.Count > 0));
-
-			lock (_queue)
-			{
-				BuildGameObject(context, _queue.Dequeue());
 			}
 		}
 	}

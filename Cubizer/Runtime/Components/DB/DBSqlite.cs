@@ -1,7 +1,7 @@
-﻿using System;
-using Mono.Data.Sqlite;
+﻿using UnityEngine;
 
-using UnityEngine;
+using System;
+using Mono.Data.Sqlite;
 
 namespace Cubizer
 {

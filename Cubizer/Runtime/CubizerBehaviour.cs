@@ -9,6 +9,37 @@ namespace Cubizer
 	[AddComponentMenu("Cubizer/CubizerBehaviour")]
 	public class CubizerBehaviour : MonoBehaviour
 	{
+		public class CubizerDelegates
+		{
+			public delegate void OnDestroyData(ChunkPrimer chunk);
+			public delegate void OnBlockEvent(ChunkPrimer chunk, int x, int y, int z, VoxelMaterial voxel);
+
+			public delegate void OnLoadDataBefore(int x, int y, int z, ref ChunkPrimer chunk);
+			public delegate void OnLoadDataAfter(ChunkPrimer chunk);
+
+			public delegate void OnConnectionPlayer(IPlayer player);
+			public delegate void OnDisconnectPlayer(IPlayer player);
+
+			public delegate void OnServerEvent();
+
+			public OnDestroyData OnDestroyChunk;
+
+			public OnLoadDataBefore OnLoadChunkBefore;
+			public OnLoadDataAfter OnLoadChunkAfter;
+
+			public OnBlockEvent OnAddBlockBefore;
+			public OnBlockEvent OnAddBlockAfter;
+
+			public OnBlockEvent OnRemoveBlockBefore;
+			public OnBlockEvent OnRemoveBlockAfter;
+
+			public OnConnectionPlayer OnPlayerConnection;
+			public OnDisconnectPlayer OnPlayerDisconnect;
+
+			public OnServerEvent OnOpenServer;
+			public OnServerEvent OnCloseServer;
+		}
+
 		[SerializeField]
 		private CubizerProfile _profile;
 		private CubizerContext _context;
@@ -17,11 +48,12 @@ namespace Cubizer
 		private ChunkManagerComponent _chunkManager;
 		private BiomeManagerComponent _biomeManager;
 		private DbComponent _database;
+		private ServerComponent _server;
 
 		private readonly List<ICubizerComponent> _components = new List<ICubizerComponent>();
 
 		private readonly PlayerManagerModel _players = new PlayerManagerModel();
-		private readonly ChunkDelegates _events = new ChunkDelegates();
+		private readonly CubizerDelegates _events = new CubizerDelegates();
 		private readonly static IVoxelMaterialManager _materialFactory = VoxelMaterialManager.GetInstance();
 
 		public CubizerProfile profile
@@ -29,7 +61,7 @@ namespace Cubizer
 			get { return _profile; }
 		}
 
-		public ChunkDelegates events
+		public CubizerDelegates events
 		{
 			get { return _events; }
 		}
@@ -44,21 +76,56 @@ namespace Cubizer
 			get { return _chunkManager; }
 		}
 
-		public void Connection(IPlayerListener player)
+		public ServerComponent server
 		{
-			if (player != null)
-				_players.settings.players.Add(player);
-			else
-				throw new System.ArgumentNullException("Connection() fail");
+			get { return _server; }
 		}
 
-		public void Disconnect(IPlayerListener player)
+		#region network
+
+		public void OpenServer()
+		{
+			if (this.events.OnOpenServer != null)
+				this.events.OnOpenServer();
+		}
+
+		public void CloseServer()
+		{
+			if (this.events.OnCloseServer != null)
+				this.events.OnCloseServer();
+		}
+
+		public void Connection(IPlayer player)
 		{
 			if (player != null)
-				_players.settings.players.Remove(player);
+			{
+				_players.settings.players.Add(player);
+
+				if (this.events.OnPlayerConnection != null)
+					this.events.OnPlayerConnection(player);
+			}
 			else
-				throw new System.ArgumentNullException("Disconnect() fail");
+			{
+				throw new System.ArgumentNullException("Connection() fail");
+			}
 		}
+
+		public void Disconnect(IPlayer player)
+		{
+			if (player != null)
+			{
+				_players.settings.players.Remove(player);
+
+				if (this.events.OnPlayerDisconnect != null)
+					this.events.OnPlayerDisconnect(player);
+			}
+			else
+			{
+				throw new System.ArgumentNullException("Disconnect() fail");
+			}
+		}
+
+		#endregion network
 
 		#region delegate
 
@@ -145,6 +212,12 @@ namespace Cubizer
 			return component;
 		}
 
+		private bool RemoveComponent<T>(T component) where T : ICubizerComponent
+		{
+			Debug.Assert(component != null);
+			return _components.Remove(component);
+		}
+
 		private IEnumerator UpdateComponentsWithCoroutine()
 		{
 			yield return new WaitForSeconds(profile.terrain.settings.repeatRate);
@@ -190,6 +263,9 @@ namespace Cubizer
 			_database = AddComponent(new DbComponent());
 			_database.Init(_context, _profile.database);
 
+			_server = AddComponent(new ServerComponent());
+			_server.Init(_context, _profile.network);
+
 			Math.Noise.simplex_seed(_profile.terrain.settings.seed);
 
 			this.EnableComponents();
@@ -199,6 +275,8 @@ namespace Cubizer
 
 		public void OnDestroy()
 		{
+			this.CloseServer();
+
 			this.DisableComponents();
 
 			_components.Clear();

@@ -1,8 +1,5 @@
 ﻿using UnityEngine;
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Cubizer
@@ -56,14 +53,22 @@ namespace Cubizer
 		[SerializeField]
 		public PhysicMaterial physicMaterial;
 
+		private Task<LiveMesh> _task;
+
+		public void OnApplicationQuit()
+		{
+			if (_task != null)
+				_task.Wait();
+		}
+
 		public override void OnBuildChunk(ChunkDataContext context)
 		{
 			if (context.async)
 			{
-				var t = Task.Run(() => { LiveMesh mesh = null; doBuildMesh(context, out mesh); return mesh; });
-				t.GetAwaiter().OnCompleted(() =>
+				_task = Task.Run(() => { LiveMesh mesh = null; doBuildMesh(context, out mesh); return mesh; });
+				_task.GetAwaiter().OnCompleted(() =>
 				{
-					doBuildGameObject(context, t.Result);
+					doBuildGameObject(context, _task.Result);
 				});
 			}
 			else

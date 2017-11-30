@@ -9,7 +9,7 @@ namespace Cubizer
 	{
 		private bool _active;
 		private readonly string _name;
-		private GameObject _biomeObject;
+		private GameObject _liveObject;
 
 		public override bool active
 		{
@@ -39,7 +39,7 @@ namespace Cubizer
 
 		public override void OnEnable()
 		{
-			_biomeObject = new GameObject(_name);
+			_liveObject = new GameObject(_name);
 			foreach (var it in model.settings.lives)
 			{
 				if (it == null)
@@ -47,17 +47,17 @@ namespace Cubizer
 
 				var gameObject = GameObject.Instantiate(it.gameObject);
 				gameObject.name = it.name;
-				gameObject.transform.parent = _biomeObject.transform;
+				gameObject.transform.parent = _liveObject.transform;
 				gameObject.GetComponent<LiveBehaviour>().material = context.materialFactory.CreateMaterial(it.name, it.settings);
 			}
 		}
 
 		public override void OnDisable()
 		{
-			if (_biomeObject != null)
+			if (_liveObject != null)
 			{
-				GameObject.Destroy(_biomeObject);
-				_biomeObject = null;
+				GameObject.Destroy(_liveObject);
+				_liveObject = null;
 			}
 		}
 	}

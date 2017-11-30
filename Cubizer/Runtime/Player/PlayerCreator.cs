@@ -6,10 +6,10 @@ namespace Cubizer
 {
 	[DisallowMultipleComponent]
 	[AddComponentMenu("Cubizer/PlayerCreator")]
-	public class PlayerCreator : MonoBehaviour, IPlayerListener
+	public class PlayerCreator : MonoBehaviour, IPlayer
 	{
 		[SerializeField]
-		private CubizerBehaviour _server;
+		private CubizerBehaviour _world;
 
 		[SerializeField]
 		private Camera _player;
@@ -80,10 +80,10 @@ namespace Cubizer
 
 		public void Start()
 		{
-			if (_server == null)
-				_server = GetComponent<CubizerBehaviour>();
+			if (_world == null)
+				_world = GetComponent<CubizerBehaviour>();
 
-			if (_server == null)
+			if (_world == null)
 				Debug.LogError("Please assign a server on the inspector.");
 
 			if (_player == null)
@@ -95,12 +95,12 @@ namespace Cubizer
 			if (_drawPickMaterial == null)
 				Debug.LogError("Please assign a mesh on the inspector");
 
-			_server.Connection(this);
+			_world.Connection(this);
 		}
 
 		public void OnDestroy()
 		{
-			_server.Disconnect(this);
+			_world.Disconnect(this);
 		}
 
 		public void Reset()
@@ -162,9 +162,9 @@ namespace Cubizer
 				var ray = _player.ScreenPointToRay(Input.mousePosition);
 				ray.origin = _player.transform.position;
 
-				if (_server.chunkManager.HitTestByRay(ray, _hitTestDistance, out chunk, out x, out y, out z))
+				if (_world.chunkManager.HitTestByRay(ray, _hitTestDistance, out chunk, out x, out y, out z))
 				{
-					var position = new Vector3(chunk.position.x, chunk.position.y, chunk.position.z) * _server.profile.chunk.settings.chunkSize + new Vector3(x, y, z);
+					var position = new Vector3(chunk.position.x, chunk.position.y, chunk.position.z) * _world.profile.chunk.settings.chunkSize + new Vector3(x, y, z);
 					Graphics.DrawMesh(mesh, position, Quaternion.identity, material, gameObject.layer, _player);
 				}
 			}
@@ -181,7 +181,7 @@ namespace Cubizer
 			{
 				var material = VoxelMaterialManager.GetInstance().GetMaterial(_block.name);
 				if (material != null)
-					_server.chunkManager.AddBlockByScreenPos(Input.mousePosition, _hitTestDistance, material);
+					_world.chunkManager.AddBlockByScreenPos(Input.mousePosition, _hitTestDistance, material);
 			}
 
 			yield return new WaitWhile(() => Input.GetMouseButton(1));
@@ -195,7 +195,7 @@ namespace Cubizer
 				yield break;
 
 			_isHitTesting = true;
-			_server.chunkManager.RemoveBlockByScreenPos(Input.mousePosition, _hitTestDistance);
+			_world.chunkManager.RemoveBlockByScreenPos(Input.mousePosition, _hitTestDistance);
 
 			yield return new WaitWhile(() => Input.GetMouseButton(0));
 

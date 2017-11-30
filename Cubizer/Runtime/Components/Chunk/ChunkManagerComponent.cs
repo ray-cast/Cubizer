@@ -79,7 +79,7 @@ namespace Cubizer
 			}
 		}
 
-		public void CreateChunk(IPlayerListener player, int x, int y, int z)
+		public void CreateChunk(IPlayer player, int x, int y, int z)
 		{
 			ChunkPrimer chunk = null;
 			if (_callbacks.OnLoadChunkBefore != null)
@@ -381,7 +381,7 @@ namespace Cubizer
 			}
 		}
 
-		private void UpdatePlayer(IPlayerListener player)
+		private void UpdatePlayer(IPlayer player)
 		{
 			var chunkX = CalculateChunkPosByWorld(player.player.transform.position.x);
 			var chunkY = CalculateChunkPosByWorld(player.player.transform.position.y);
@@ -415,7 +415,7 @@ namespace Cubizer
 			}
 		}
 
-		private Task UpdateCamera(IPlayerListener player, Vector3 translate, Plane[] planes, Vector2Int[] radius)
+		private Task UpdateCamera(IPlayer player, Vector3 translate, Plane[] planes, Vector2Int[] radius)
 		{
 			int x = CalculateChunkPosByWorld(translate.x);
 			int y = CalculateChunkPosByWorld(translate.y);
@@ -484,11 +484,8 @@ namespace Cubizer
 
 		private void AutoGC()
 		{
-			if (this.manager.Count() < model.settings.chunkNumLimits)
-				return;
-
-			this.manager.GC();
-			context.behaviour.biomeManager.biomes.GC();
+			if (this.manager.Count() > model.settings.chunkNumLimits)
+				this.manager.GC();
 		}
 
 		public override void Update()
