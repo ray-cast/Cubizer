@@ -1,10 +1,13 @@
-﻿namespace Cubizer
+﻿using System.Threading.Tasks;
+
+namespace Cubizer
 {
 	public class ServerComponent : CubizerComponent<ServerModels>
 	{
 		private bool _active = true;
 
 		private TcpRouter _tcpListener;
+		private Task _task;
 
 		public bool opened
 		{
@@ -57,7 +60,10 @@
 			if (_tcpListener == null)
 			{
 				_tcpListener = new TcpRouter(model.settings.address, model.settings.port);
-				_tcpListener.Start();
+				_task = Task.Run(async () =>
+				{
+					await _tcpListener.Start();
+				});
 			}
 			else
 			{
@@ -71,6 +77,12 @@
 			{
 				_tcpListener.Dispose();
 				_tcpListener = null;
+			}
+
+			if (!_task.IsCompleted)
+			{
+				_task.Wait();
+				_task = null;
 			}
 		}
 

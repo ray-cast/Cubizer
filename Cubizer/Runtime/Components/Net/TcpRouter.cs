@@ -16,7 +16,6 @@ namespace Cubizer
 		private readonly TcpListener _listener;
 		private readonly List<ClientSession> _sessions;
 
-		private Task _task;
 		private bool _isQuitRequest = false;
 
 		public TcpRouter(string ip, int port)
@@ -48,56 +47,50 @@ namespace Cubizer
 			}
 		}
 
-		public void Start()
+		public async Task Start()
 		{
-			_task = Task.Run(async () =>
+			try
 			{
-				try
+				Debug.Log("Starting Listener...");
+
+				_listener.Start();
+
+				while (!_isQuitRequest)
 				{
-					Debug.Log("Starting Listener...");
-
-					_listener.Start();
-
-					while (!_isQuitRequest)
-					{
-						var tcpClient = await _listener.AcceptTcpClientAsync();
-						if (!_isQuitRequest)
-							this.DispatchIncomingClient(tcpClient);
-					}
-
-					_listener.Stop();
-
-					Debug.Log("Stop Listener...");
+					var tcpClient = await _listener.AcceptTcpClientAsync();
+					if (!_isQuitRequest)
+						this.DispatchIncomingClient(tcpClient);
 				}
-				catch (Exception e)
-				{
-					Debug.Log("This thread has a except：" + e.Message);
-					throw e;
-				}
-			});
+
+				Debug.Log("Stop Listener...");
+			}
+			catch (Exception e)
+			{
+				Debug.Log("This thread has a except：" + e.Message);
+				throw e;
+			}
+			finally
+			{
+				_listener.Stop();
+			}
 		}
 
 		public void Dispose()
 		{
-			if (!_task.IsCompleted)
+			_isQuitRequest = true;
+
+			foreach (var sessions in _sessions)
+				sessions.Dispose();
+
+			using (TcpClient tcpClient = new TcpClient())
 			{
-				_isQuitRequest = true;
+				tcpClient.Connect(_address, _port);
 
-				foreach (var sessions in _sessions)
-					sessions.Dispose();
-
-				using (TcpClient tcpClient = new TcpClient())
+				using (var stream = tcpClient.GetStream())
 				{
-					tcpClient.Connect(_address, _port);
-
-					using (var stream = tcpClient.GetStream())
-					{
-						Byte[] sendBytes = Encoding.ASCII.GetBytes("exit");
-						stream.Write(sendBytes, 0, sendBytes.Length);
-					}
+					Byte[] sendBytes = Encoding.ASCII.GetBytes("exit");
+					stream.Write(sendBytes, 0, sendBytes.Length);
 				}
-
-				_task.Wait();
 			}
 		}
 	}
