@@ -10,8 +10,6 @@ namespace Cubizer
 {
 	public class ClientSession : IDisposable
 	{
-		private bool _isQuitRequest = false;
-
 		private readonly byte[] buffer = new byte[8192];
 		private readonly TcpClient _tcpClient;
 
@@ -33,11 +31,10 @@ namespace Cubizer
 				{
 					try
 					{
-						do
+						while (!cancellationToken.IsCancellationRequested)
 						{
 							await DispatchIncomingPacket(stream);
 						}
-						while (!cancellationToken.IsCancellationRequested);
 					}
 					catch (Exception e)
 					{
