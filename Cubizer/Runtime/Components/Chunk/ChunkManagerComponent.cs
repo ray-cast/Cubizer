@@ -21,7 +21,7 @@ namespace Cubizer
 
 		private bool _active;
 
-		public override bool active
+		public override bool Active
 		{
 			get
 			{
@@ -53,7 +53,7 @@ namespace Cubizer
 
 		private IChunkDataManager manager
 		{
-			get { return model.settings.chunkManager; }
+			get { return Model.settings.chunkManager; }
 		}
 
 		public ChunkManagerComponent(string name = "ServerChunks")
@@ -66,7 +66,7 @@ namespace Cubizer
 		public override void OnEnable()
 		{
 			_chunkObject = new GameObject(_name);
-			_tasks = new Task[model.settings.chunkThreadNums];
+			_tasks = new Task[Model.settings.chunkThreadNums];
 		}
 
 		public override void OnDisable()
@@ -87,16 +87,16 @@ namespace Cubizer
 
 			if (chunk == null)
 			{
-				IBiomeData biomeData = context.behaviour.biomeManager.buildBiomeIfNotExist(x, y, z);
+				IBiomeData biomeData = Context.behaviour.biomeManager.buildBiomeIfNotExist(x, y, z);
 				if (biomeData != null)
 				{
 					if (chunk == null)
-						chunk = biomeData.OnBuildChunk(this.context.behaviour, x, y, z);
+						chunk = biomeData.OnBuildChunk(this.Context.behaviour, x, y, z);
 				}
 			}
 
 			if (chunk == null)
-				chunk = new ChunkPrimer(model.settings.chunkSize, x, y, z);
+				chunk = new ChunkPrimer(Model.settings.chunkSize, x, y, z);
 
 			if (_callbacks.OnLoadChunkAfter != null)
 				_callbacks.OnLoadChunkAfter(chunk);
@@ -136,10 +136,10 @@ namespace Cubizer
 			int x = CalculateChunkPosByWorld(point.x);
 			int y = CalculateChunkPosByWorld(point.y);
 			int z = CalculateChunkPosByWorld(point.z);
-			var chunkPos = new Vector3(x, y, z) * model.settings.chunkSize;
+			var chunkPos = new Vector3(x, y, z) * Model.settings.chunkSize;
 
 			var transform = _chunkObject.transform;
-			var maxRadius = radius * model.settings.chunkSize;
+			var maxRadius = radius * Model.settings.chunkSize;
 
 			for (int i = 0; i < transform.childCount; i++)
 			{
@@ -198,7 +198,7 @@ namespace Cubizer
 
 		public short CalculateChunkPosByWorld(float x)
 		{
-			return (short)Mathf.FloorToInt(x / model.settings.chunkSize);
+			return (short)Mathf.FloorToInt(x / Model.settings.chunkSize);
 		}
 
 		private bool HitTestByRay(Ray ray, int hitDistance, out ChunkPrimer chunk, out byte outX, out byte outY, out byte outZ, out ChunkPrimer lastChunk, out byte lastX, out byte lastY, out byte lastZ)
@@ -214,9 +214,9 @@ namespace Cubizer
 				return false;
 
 			Vector3 origin = ray.origin;
-			origin.x -= chunk.position.x * model.settings.chunkSize;
-			origin.y -= chunk.position.y * model.settings.chunkSize;
-			origin.z -= chunk.position.z * model.settings.chunkSize;
+			origin.x -= chunk.position.x * Model.settings.chunkSize;
+			origin.y -= chunk.position.y * Model.settings.chunkSize;
+			origin.z -= chunk.position.z * Model.settings.chunkSize;
 
 			VoxelMaterial block = null;
 
@@ -230,12 +230,12 @@ namespace Cubizer
 					continue;
 
 				bool isOutOfChunk = false;
-				if (ix < 0) { ix = ix + model.settings.chunkSize; origin.x += model.settings.chunkSize; chunkX--; isOutOfChunk = true; }
-				if (iy < 0) { iy = iy + model.settings.chunkSize; origin.y += model.settings.chunkSize; chunkY--; isOutOfChunk = true; }
-				if (iz < 0) { iz = iz + model.settings.chunkSize; origin.z += model.settings.chunkSize; chunkZ--; isOutOfChunk = true; }
-				if (ix + 1 > model.settings.chunkSize) { ix = ix - model.settings.chunkSize; origin.x -= model.settings.chunkSize; chunkX++; isOutOfChunk = true; }
-				if (iy + 1 > model.settings.chunkSize) { iy = iy - model.settings.chunkSize; origin.y -= model.settings.chunkSize; chunkY++; isOutOfChunk = true; }
-				if (iz + 1 > model.settings.chunkSize) { iz = iz - model.settings.chunkSize; origin.z -= model.settings.chunkSize; chunkZ++; isOutOfChunk = true; }
+				if (ix < 0) { ix = ix + Model.settings.chunkSize; origin.x += Model.settings.chunkSize; chunkX--; isOutOfChunk = true; }
+				if (iy < 0) { iy = iy + Model.settings.chunkSize; origin.y += Model.settings.chunkSize; chunkY--; isOutOfChunk = true; }
+				if (iz < 0) { iz = iz + Model.settings.chunkSize; origin.z += Model.settings.chunkSize; chunkZ--; isOutOfChunk = true; }
+				if (ix + 1 > Model.settings.chunkSize) { ix = ix - Model.settings.chunkSize; origin.x -= Model.settings.chunkSize; chunkX++; isOutOfChunk = true; }
+				if (iy + 1 > Model.settings.chunkSize) { iy = iy - Model.settings.chunkSize; origin.y -= Model.settings.chunkSize; chunkY++; isOutOfChunk = true; }
+				if (iz + 1 > Model.settings.chunkSize) { iz = iz - Model.settings.chunkSize; origin.z -= Model.settings.chunkSize; chunkZ++; isOutOfChunk = true; }
 
 				lastX = outX;
 				lastY = outY;
@@ -358,7 +358,7 @@ namespace Cubizer
 				{
 					var gameObject = new GameObject("Chunk");
 					gameObject.transform.parent = _chunkObject.transform;
-					gameObject.transform.position = new Vector3(chunk.position.x, chunk.position.y, chunk.position.z) * model.settings.chunkSize;
+					gameObject.transform.position = new Vector3(chunk.position.x, chunk.position.y, chunk.position.z) * Model.settings.chunkSize;
 					gameObject.AddComponent<ChunkData>().Init(chunk);
 				}
 
@@ -387,7 +387,7 @@ namespace Cubizer
 			var chunkY = CalculateChunkPosByWorld(player.player.transform.position.y);
 			var chunkZ = CalculateChunkPosByWorld(player.player.transform.position.z);
 
-			var radius = model.settings.chunkUpdateRadius;
+			var radius = Model.settings.chunkUpdateRadius;
 			for (int dx = -radius; dx <= radius; dx++)
 			{
 				for (int dz = -radius; dz <= radius; dz++)
@@ -426,13 +426,13 @@ namespace Cubizer
 
 			int start = bestScore;
 
-			var chunkOffset = (Vector3.one * (model.settings.chunkSize - 1)) * 0.5f;
+			var chunkOffset = (Vector3.one * (Model.settings.chunkSize - 1)) * 0.5f;
 
 			for (int iy = radius[1].x; iy <= radius[1].y; iy++)
 			{
 				int dy = y + iy;
 
-				if (dy < model.settings.chunkHeightLimitLow || dy > model.settings.chunkHeightLimitHigh)
+				if (dy < Model.settings.chunkHeightLimitLow || dy > Model.settings.chunkHeightLimitHigh)
 					continue;
 
 				for (int ix = radius[0].x; ix <= radius[0].y; ix++)
@@ -447,9 +447,9 @@ namespace Cubizer
 						if (hit != null)
 							continue;
 
-						var p = chunkOffset + new Vector3(dx, dy, dz) * model.settings.chunkSize;
+						var p = chunkOffset + new Vector3(dx, dy, dz) * Model.settings.chunkSize;
 
-						int invisiable = GeometryUtility.TestPlanesAABB(planes, new Bounds(p, Vector3.one * model.settings.chunkSize)) ? 0 : 1;
+						int invisiable = GeometryUtility.TestPlanesAABB(planes, new Bounds(p, Vector3.one * Model.settings.chunkSize)) ? 0 : 1;
 						int distance = Mathf.Max(Mathf.Max(Mathf.Abs(ix), Mathf.Abs(iy)), Mathf.Abs(iz));
 						int score = (invisiable << 24) | distance;
 
@@ -477,25 +477,25 @@ namespace Cubizer
 			{
 				var gameObject = new GameObject("Chunk");
 				gameObject.transform.parent = _chunkObject.transform;
-				gameObject.transform.position = chunk.position.ConvertToVector3() * context.profile.chunk.settings.chunkSize;
+				gameObject.transform.position = chunk.position.ConvertToVector3() * Context.profile.chunk.settings.chunkSize;
 				gameObject.AddComponent<ChunkData>().Init(chunk);
 			}
 		}
 
 		private void AutoGC()
 		{
-			if (this.manager.Count() > model.settings.chunkNumLimits)
+			if (this.manager.Count() > Model.settings.chunkNumLimits)
 				this.manager.GC();
 		}
 
 		public override void Update()
 		{
-			if (this.count > model.settings.chunkNumLimits)
+			if (this.count > Model.settings.chunkNumLimits)
 				return;
 
 			this.AutoGC();
 
-			var players = context.players.settings.players;
+			var players = Context.players.settings.players;
 			foreach (var it in players)
 				DestroyChunk(it.player.transform.position, it.model.settings.chunkRadiusGC);
 

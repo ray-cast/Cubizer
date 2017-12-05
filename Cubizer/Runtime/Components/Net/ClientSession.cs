@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
 using System;
+using System.IO;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,56 +10,89 @@ namespace Cubizer
 {
 	public class ClientSession : IDisposable
 	{
-		private readonly byte[] buffer = new byte[8192];
 		private readonly TcpClient _tcpClient;
+		private readonly IServerProtocol _tcpProtocol;
+		private readonly byte[] buffer = new byte[8192];
 
-		public ClientSession(TcpClient client)
+		private Task _task;
+
+		public TcpClient Client
 		{
+			get
+			{
+				return _tcpClient;
+			}
+		}
+
+		public ClientSession(TcpClient client, IServerProtocol protocol)
+		{
+			Debug.Assert(client != null && protocol != null);
 			_tcpClient = client;
+			_tcpProtocol = protocol;
 		}
 
 		~ClientSession()
 		{
-			_tcpClient.Close();
+			this.Close();
 		}
 
-		public Task Start(CancellationToken cancellationToken)
+		public Task StartAsync(CancellationToken cancellationToken)
 		{
-			return Task.Run(async () =>
+			if (!_tcpClient.Connected)
+				return null;
+
+			_task = Task.Run(() =>
 			{
-				using (var stream = _tcpClient.GetStream())
+				try
 				{
-					try
+					using (var stream = _tcpClient.GetStream())
 					{
 						while (!cancellationToken.IsCancellationRequested)
-						{
-							await DispatchIncomingPacket(stream);
-						}
-					}
-					catch (Exception e)
-					{
-						Debug.Log(e.Message);
+							DispatchIncomingPacket(stream);
 					}
 				}
+				catch (Exception e)
+				{
+					_tcpClient.Close();
+					throw e;
+				}
 			});
+
+			return _task;
 		}
 
-		private async Task DispatchIncomingPacket(NetworkStream stream)
+		public void Close()
 		{
-			int byteRead = await stream.ReadAsync(buffer, 0, buffer.Length);
-			if (byteRead > 0)
-				DispatchIncomingPacket(buffer, byteRead);
-		}
-
-		private void DispatchIncomingPacket(byte[] buffer, int length)
-		{
-			string msg = Encoding.ASCII.GetString(buffer, 0, length);
-			Debug.Log("Data：" + msg + ".Length:[" + length + "byte]");
+			try
+			{
+				if (_task != null)
+					_task.Wait();
+			}
+			catch (Exception)
+			{
+			}
+			finally
+			{
+				_task = null;
+				_tcpClient.Dispose();
+			}
 		}
 
 		public void Dispose()
 		{
-			_tcpClient.Dispose();
+			this.Close();
+		}
+
+		private void DispatchIncomingPacket(NetworkStream stream)
+		{
+			int count = stream.Read(buffer, 0, buffer.Length);
+			if (count > 0)
+				DispatchIncomingPacket(stream, buffer, count);
+		}
+
+		private void DispatchIncomingPacket(NetworkStream stream, byte[] buffer, int length)
+		{
+			_tcpProtocol.DispatchIncomingPacket(stream, buffer, length);
 		}
 	}
 }

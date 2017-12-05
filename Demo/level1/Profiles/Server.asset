@@ -57,3 +57,5 @@ MonoBehaviour:
     _settings:
       address: 127.0.0.1
       port: 10000
+      sendTimeOut: 5000
+      receiveTimeout: 10000

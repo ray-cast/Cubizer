@@ -12,7 +12,7 @@ namespace Cubizer
 
 		private bool _active;
 
-		public override bool active
+		public override bool Active
 		{
 			get
 			{
@@ -39,34 +39,34 @@ namespace Cubizer
 
 		public override void OnEnable()
 		{
-			_dbUrl = model.settings.url;
+			_dbUrl = Model.settings.url;
 			if (string.IsNullOrEmpty(_dbUrl) || _dbUrl == "localhost")
 			{
 				_dbUrl = Application.persistentDataPath + "/";
 
 				if (string.IsNullOrEmpty(_dbUrl))
-					model.SetDefaultURL("localhost");
+					Model.SetDefaultURL("localhost");
 			}
 
-			_dbName = model.settings.name;
+			_dbName = Model.settings.name;
 			if (string.IsNullOrEmpty(_dbName))
 			{
 				_dbName = "cubizer.db";
-				model.SetDefaultName(_dbName);
+				Model.SetDefaultName(_dbName);
 			}
 
-			context.behaviour.events.OnLoadChunkAfter += this.OnLoadChunkDataAfter;
-			context.behaviour.events.OnAddBlockBefore += this.OnAddBlockBefore;
-			context.behaviour.events.OnRemoveBlockBefore += this.OnRemoveBlockBefore;
+			Context.behaviour.events.OnLoadChunkAfter += this.OnLoadChunkDataAfter;
+			Context.behaviour.events.OnAddBlockBefore += this.OnAddBlockBefore;
+			Context.behaviour.events.OnRemoveBlockBefore += this.OnRemoveBlockBefore;
 
 			_sqlite = new DbSqlite(_dbUrl + _dbName);
 		}
 
 		public override void OnDisable()
 		{
-			context.behaviour.events.OnLoadChunkAfter -= this.OnLoadChunkDataAfter;
-			context.behaviour.events.OnAddBlockBefore -= this.OnAddBlockBefore;
-			context.behaviour.events.OnRemoveBlockBefore -= this.OnRemoveBlockBefore;
+			Context.behaviour.events.OnLoadChunkAfter -= this.OnLoadChunkDataAfter;
+			Context.behaviour.events.OnAddBlockBefore -= this.OnAddBlockBefore;
+			Context.behaviour.events.OnRemoveBlockBefore -= this.OnRemoveBlockBefore;
 
 			if (_sqlite != null)
 			{

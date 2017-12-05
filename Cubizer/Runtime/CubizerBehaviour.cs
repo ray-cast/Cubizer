@@ -18,6 +18,7 @@ namespace Cubizer
 		private BiomeManagerComponent _biomeManager;
 		private DbComponent _database;
 		private ServerComponent _server;
+		private ClientComponent _client;
 
 		private readonly List<ICubizerComponent> _components = new List<ICubizerComponent>();
 
@@ -50,18 +51,9 @@ namespace Cubizer
 			get { return _server; }
 		}
 
-		#region network
-
-		public void OpenServer()
+		public ClientComponent client
 		{
-			if (this.events.OnOpenServer != null)
-				this.events.OnOpenServer();
-		}
-
-		public void CloseServer()
-		{
-			if (this.events.OnCloseServer != null)
-				this.events.OnCloseServer();
+			get { return _client; }
 		}
 
 		public void Connection(IPlayer player)
@@ -93,10 +85,6 @@ namespace Cubizer
 				throw new System.ArgumentNullException("Disconnect() fail");
 			}
 		}
-
-		#endregion network
-
-		#region delegate
 
 		private void OnLoadChunkDataBefore(int x, int y, int z, ref ChunkPrimer chunk)
 		{
@@ -140,16 +128,12 @@ namespace Cubizer
 				this.events.OnRemoveBlockAfter(chunk, x, y, z, voxel);
 		}
 
-		#endregion delegate
-
-		#region component
-
 		private void EnableComponents()
 		{
 			foreach (var component in _components)
 			{
 				var model = component.GetModel();
-				if (component.active && model != null)
+				if (component.Active && model != null)
 					component.OnEnable();
 			}
 		}
@@ -159,7 +143,7 @@ namespace Cubizer
 			foreach (var component in _components)
 			{
 				var model = component.GetModel();
-				if (component.active && model != null)
+				if (component.Active && model != null)
 					component.OnDisable();
 			}
 		}
@@ -169,7 +153,7 @@ namespace Cubizer
 			foreach (var component in _components)
 			{
 				var model = component.GetModel();
-				if (component.active && model != null)
+				if (component.Active && model != null)
 					component.Update();
 			}
 		}
@@ -195,10 +179,6 @@ namespace Cubizer
 
 			StartCoroutine("UpdateComponentsWithCoroutine");
 		}
-
-		#endregion component
-
-		#region events
 
 		public void Start()
 		{
@@ -235,6 +215,9 @@ namespace Cubizer
 			_server = AddComponent(new ServerComponent());
 			_server.Init(_context, _profile.network);
 
+			_client = AddComponent(new ClientComponent());
+			_client.Init(_context, _profile.network);
+
 			Math.Noise.simplex_seed(_profile.terrain.settings.seed);
 
 			this.EnableComponents();
@@ -244,8 +227,6 @@ namespace Cubizer
 
 		public void OnDestroy()
 		{
-			this.CloseServer();
-
 			this.DisableComponents();
 
 			_components.Clear();
@@ -253,7 +234,5 @@ namespace Cubizer
 
 			StopCoroutine("UpdateComponentsWithCoroutine");
 		}
-
-		#endregion events
 	}
 }

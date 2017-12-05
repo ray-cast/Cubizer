@@ -14,6 +14,6 @@ namespace Cubizer
 		public ChunkManagerModels chunk = new ChunkManagerModels();
 		public BiomeManagerModels biome = new BiomeManagerModels();
 		public LiveManagerModels lives = new LiveManagerModels();
-		public ServerModels network = new ServerModels();
+		public NetworkModels network = new NetworkModels();
 	}
 }

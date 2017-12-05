@@ -6,15 +6,15 @@ namespace Cubier
 	[CustomEditor(typeof(Cubizer.CubizerBehaviour))]
 	public class CubizerBehaviourInspector : Editor
 	{
-		private Cubizer.CubizerBehaviour terrain;
+		private Cubizer.CubizerBehaviour behaviour;
 
 		public override void OnInspectorGUI()
 		{
-			terrain = target as Cubizer.CubizerBehaviour;
+			behaviour = target as Cubizer.CubizerBehaviour;
 
 			base.DrawDefaultInspector();
 
-			if (terrain.chunkManager != null)
+			if (behaviour.chunkManager != null)
 			{
 				if (GUILayout.Button("Load Terrain..."))
 				{
@@ -22,7 +22,7 @@ namespace Cubier
 					if (SelectedPath.Length == 0)
 						return;
 
-					if (terrain.chunkManager.Load(SelectedPath))
+					if (behaviour.chunkManager.Load(SelectedPath))
 						Debug.Log("Your data of terrain was loaded successfully");
 					else
 						Debug.Log("load Failed");
@@ -34,24 +34,35 @@ namespace Cubier
 					if (SelectedPath.Length == 0)
 						return;
 
-					if (terrain.chunkManager.Save(SelectedPath))
+					if (behaviour.chunkManager.Save(SelectedPath))
 						Debug.Log("Your data of terrain was saved successfully");
 					else
 						Debug.Log("Save Failed");
 				}
 			}
 
-			if (terrain.server != null)
+			if (behaviour.server != null)
 			{
-				if (terrain.server.IsCancellationRequested)
+				if (behaviour.server.IsCancellationRequested)
 				{
 					if (GUILayout.Button("Create Server..."))
-						terrain.OpenServer();
+						behaviour.server.Open();
 				}
 				else
 				{
 					if (GUILayout.Button("Close Server..."))
-						terrain.CloseServer();
+						behaviour.server.Close();
+
+					if (behaviour.client.IsCancellationRequested)
+					{
+						if (GUILayout.Button("Connect Server..."))
+							behaviour.client.Connect();
+					}
+					else
+					{
+						if (GUILayout.Button("Disconnect Server..."))
+							behaviour.client.Disconnect();
+					}
 				}
 			}
 		}
