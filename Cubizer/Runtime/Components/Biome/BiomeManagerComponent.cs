@@ -30,12 +30,12 @@ namespace Cubizer
 			}
 		}
 
-		public int count
+		public int Count
 		{
 			get { return _biomeObject != null ? _biomeObject.transform.childCount : 0; }
 		}
 
-		private IBiomeDataManager biomes
+		private IBiomeDataManager Biomes
 		{
 			get { return Model.settings.biomeManager; }
 		}
@@ -80,12 +80,12 @@ namespace Cubizer
 			}
 		}
 
-		public IBiomeData buildBiomeIfNotExist(int x, int y, int z)
+		public IBiomeData BuildBiomeIfNotExist(int x, int y, int z)
 		{
 			Debug.Assert(Model.settings.biomeNull != null);
 
 			IBiomeData biomeData = null;
-			if (this.biomes.Get(x, y, z, out biomeData))
+			if (this.Biomes.Get(x, y, z, out biomeData))
 				return biomeData;
 
 			foreach (var it in _biomeGenerators)
@@ -104,8 +104,8 @@ namespace Cubizer
 
 		private void AutoGC()
 		{
-			if (this.biomes.Count() > Model.settings.biomeNumLimits)
-				this.biomes.GC();
+			if (this.Biomes.Count > Model.settings.biomeNumLimits)
+				this.Biomes.GC();
 		}
 
 		public override void Update()

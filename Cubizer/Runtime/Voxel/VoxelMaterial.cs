@@ -13,25 +13,25 @@ namespace Cubizer
 
 		private VoxelMaterialModels _model;
 
-		public string name
+		public string Name
 		{
 			get { return _name; }
 			set { _name = value; }
 		}
 
-		public bool is_transparent
+		public bool Transparent
 		{
 			get { return _model.transparent; }
 			set { _model.transparent = value; }
 		}
 
-		public bool is_merge
+		public bool CanMerge
 		{
 			get { return _model.merge; }
 			set { _model.merge = value; }
 		}
 
-		public object userdata
+		public object Userdata
 		{
 			get
 			{

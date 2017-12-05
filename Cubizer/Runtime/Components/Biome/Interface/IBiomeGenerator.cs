@@ -4,7 +4,7 @@ namespace Cubizer
 {
 	public abstract class IBiomeGenerator : MonoBehaviour
 	{
-		public abstract CubizerContext context
+		public abstract CubizerContext Context
 		{
 			get;
 		}

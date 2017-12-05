@@ -41,17 +41,17 @@ namespace Cubizer
 			}
 		}
 
-		public int count
+		public int Count
 		{
 			get { return _chunkObject != null ? _chunkObject.transform.childCount : 0; }
 		}
 
-		public ChunkDelegates callbacks
+		public ChunkDelegates Callbacks
 		{
 			get { return _callbacks; }
 		}
 
-		private IChunkDataManager manager
+		private IChunkDataManager Manager
 		{
 			get { return Model.settings.chunkManager; }
 		}
@@ -87,7 +87,7 @@ namespace Cubizer
 
 			if (chunk == null)
 			{
-				IBiomeData biomeData = Context.behaviour.biomeManager.buildBiomeIfNotExist(x, y, z);
+				IBiomeData biomeData = Context.behaviour.BiomeManager.BuildBiomeIfNotExist(x, y, z);
 				if (biomeData != null)
 				{
 					if (chunk == null)
@@ -101,9 +101,9 @@ namespace Cubizer
 			if (_callbacks.OnLoadChunkAfter != null)
 				_callbacks.OnLoadChunkAfter(chunk);
 
-			this.manager.Set(x, y, z, chunk);
+			this.Manager.Set(x, y, z, chunk);
 
-			if (chunk.voxels.count > 0)
+			if (chunk.Voxels.Count > 0)
 				_deferredUpdater.Enqueue(chunk);
 		}
 
@@ -122,7 +122,7 @@ namespace Cubizer
 					var chunk = child.GetComponent<ChunkData>();
 
 					if (_callbacks.OnDestroyChunk != null)
-						_callbacks.OnDestroyChunk(chunk.chunk);
+						_callbacks.OnDestroyChunk(chunk.Chunk);
 				}
 
 				GameObject.Destroy(child);
@@ -151,9 +151,9 @@ namespace Cubizer
 					var chunk = transformChild.GetComponent<ChunkData>();
 
 					if (_callbacks.OnDestroyChunk != null)
-						_callbacks.OnDestroyChunk(chunk.chunk);
+						_callbacks.OnDestroyChunk(chunk.Chunk);
 
-					this.manager.Set(chunk.chunk.position.x, chunk.chunk.position.y, chunk.chunk.position.z, null);
+					this.Manager.Set(chunk.Chunk.Position.x, chunk.Chunk.Position.y, chunk.Chunk.Position.z, null);
 
 					GameObject.Destroy(transformChild.gameObject);
 					break;
@@ -177,11 +177,11 @@ namespace Cubizer
 					var chunk = transformChild.GetComponent<ChunkData>();
 
 					if (_callbacks.OnDestroyChunk != null)
-						_callbacks.OnDestroyChunk(chunk.chunk);
+						_callbacks.OnDestroyChunk(chunk.Chunk);
 
 					GameObject.Destroy(transformChild.gameObject);
 
-					this.manager.Set(x, y, z, null);
+					this.Manager.Set(x, y, z, null);
 
 					break;
 				}
@@ -191,7 +191,7 @@ namespace Cubizer
 		public ChunkPrimer FindChunk(int x, int y, int z)
 		{
 			ChunkPrimer chunk;
-			if (manager.Get(x, y, z, out chunk))
+			if (Manager.Get(x, y, z, out chunk))
 				return chunk;
 			return null;
 		}
@@ -210,13 +210,13 @@ namespace Cubizer
 			lastChunk = null;
 			lastX = lastY = lastZ = outX = outY = outZ = 255;
 
-			if (!this.manager.Get(chunkX, chunkY, chunkZ, out chunk))
+			if (!this.Manager.Get(chunkX, chunkY, chunkZ, out chunk))
 				return false;
 
 			Vector3 origin = ray.origin;
-			origin.x -= chunk.position.x * Model.settings.chunkSize;
-			origin.y -= chunk.position.y * Model.settings.chunkSize;
-			origin.z -= chunk.position.z * Model.settings.chunkSize;
+			origin.x -= chunk.Position.x * Model.settings.chunkSize;
+			origin.y -= chunk.Position.y * Model.settings.chunkSize;
+			origin.z -= chunk.Position.z * Model.settings.chunkSize;
 
 			VoxelMaterial block = null;
 
@@ -249,7 +249,7 @@ namespace Cubizer
 						return false;
 				}
 
-				chunk.voxels.Get(ix, iy, iz, ref block);
+				chunk.Voxels.Get(ix, iy, iz, ref block);
 
 				origin += ray.direction;
 
@@ -298,8 +298,8 @@ namespace Cubizer
 				if (_callbacks.OnAddBlockBefore != null)
 					_callbacks.OnAddBlockBefore(chunk, lx, ly, lz, block);
 
-				chunk.voxels.Set(lx, ly, lz, block);
-				chunk.dirty = true;
+				chunk.Voxels.Set(lx, ly, lz, block);
+				chunk.Dirty = true;
 
 				if (_callbacks.OnAddBlockAfter != null)
 					_callbacks.OnAddBlockAfter(chunk, lx, ly, lz, block);
@@ -327,8 +327,8 @@ namespace Cubizer
 				if (_callbacks.OnRemoveBlockBefore != null)
 					_callbacks.OnRemoveBlockBefore(chunk, x, y, z, null);
 
-				chunk.voxels.Set(x, y, z, null);
-				chunk.dirty = true;
+				chunk.Voxels.Set(x, y, z, null);
+				chunk.Dirty = true;
 
 				if (_callbacks.OnRemoveBlockAfter != null)
 					_callbacks.OnRemoveBlockAfter(chunk, x, y, z, null);
@@ -350,15 +350,15 @@ namespace Cubizer
 		{
 			Debug.Assert(path != null);
 
-			if (this.manager.Load(path))
+			if (this.Manager.Load(path))
 			{
 				DestroyChunks(is_save);
 
-				foreach (ChunkPrimer chunk in this.manager.GetEnumerator())
+				foreach (ChunkPrimer chunk in this.Manager.GetEnumerator())
 				{
 					var gameObject = new GameObject("Chunk");
 					gameObject.transform.parent = _chunkObject.transform;
-					gameObject.transform.position = new Vector3(chunk.position.x, chunk.position.y, chunk.position.z) * Model.settings.chunkSize;
+					gameObject.transform.position = new Vector3(chunk.Position.x, chunk.Position.y, chunk.Position.z) * Model.settings.chunkSize;
 					gameObject.AddComponent<ChunkData>().Init(chunk);
 				}
 
@@ -375,7 +375,7 @@ namespace Cubizer
 			using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write))
 			{
 				var serializer = new BinaryFormatter();
-				serializer.Serialize(stream, this.manager);
+				serializer.Serialize(stream, this.Manager);
 
 				return true;
 			}
@@ -399,12 +399,12 @@ namespace Cubizer
 					var chunk = FindChunk(x, y, z);
 					if (chunk != null)
 					{
-						if (!chunk.dirty)
-							chunk.OnUpdate();
+						if (!chunk.Dirty)
+							chunk.InvokeOnUpdate();
 						else
 						{
-							chunk.OnChunkChange();
-							chunk.dirty = false;
+							chunk.InvokeOnChunkChange();
+							chunk.Dirty = false;
 						}
 					}
 					else
@@ -477,20 +477,20 @@ namespace Cubizer
 			{
 				var gameObject = new GameObject("Chunk");
 				gameObject.transform.parent = _chunkObject.transform;
-				gameObject.transform.position = chunk.position.ConvertToVector3() * Context.profile.chunk.settings.chunkSize;
+				gameObject.transform.position = chunk.Position.ConvertToVector3() * Context.profile.chunk.settings.chunkSize;
 				gameObject.AddComponent<ChunkData>().Init(chunk);
 			}
 		}
 
 		private void AutoGC()
 		{
-			if (this.manager.Count() > Model.settings.chunkNumLimits)
-				this.manager.GC();
+			if (this.Manager.Count > Model.settings.chunkNumLimits)
+				this.Manager.GC();
 		}
 
 		public override void Update()
 		{
-			if (this.count > Model.settings.chunkNumLimits)
+			if (this.Count > Model.settings.chunkNumLimits)
 				return;
 
 			this.AutoGC();

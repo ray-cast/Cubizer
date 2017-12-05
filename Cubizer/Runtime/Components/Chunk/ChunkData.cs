@@ -10,19 +10,19 @@ namespace Cubizer
 
 		private ChunkPrimer _chunk;
 
-		public override bool dirty
+		public override bool Dirty
 		{
 			get
 			{
 				return _dirty;
 			}
-			set
+			internal set
 			{
 				_dirty = value;
 			}
 		}
 
-		public override ChunkPrimer chunk
+		public override ChunkPrimer Chunk
 		{
 			get
 			{
@@ -33,23 +33,23 @@ namespace Cubizer
 				Debug.Assert(_chunk != value);
 
 				if (_chunk != null)
-					_chunk.onChunkChange -= OnBuildChunk;
+					_chunk.OnChunkChange -= OnBuildChunk;
 
 				_chunk = value;
 
 				if (_chunk != null)
-					_chunk.onChunkChange += OnBuildChunk;
+					_chunk.OnChunkChange += OnBuildChunk;
 			}
 		}
 
 		public void OnDrawGizmos()
 		{
-			if (chunk == null)
+			if (Chunk == null)
 				return;
 
-			if (chunk.voxels != null || chunk.voxels.count > 0)
+			if (Chunk.Voxels != null || Chunk.Voxels.Count > 0)
 			{
-				var bound = chunk.voxels.bound;
+				var bound = Chunk.Voxels.Bound;
 
 				Vector3 pos = transform.position;
 				pos.x += (bound.x - 1) * 0.5f;
@@ -66,7 +66,7 @@ namespace Cubizer
 			for (int i = 0; i < transform.childCount; i++)
 				Destroy(transform.GetChild(i).gameObject);
 
-			if (_chunk == null || _chunk.voxels.count == 0)
+			if (_chunk == null || _chunk.Voxels.Count == 0)
 				return;
 
 			var model = _chunk.CreateVoxelModel(VoxelCullMode.Culled);
@@ -82,7 +82,7 @@ namespace Cubizer
 					if (material == null)
 						continue;
 
-					var controller = material.userdata as ILiveBehaviour;
+					var controller = material.Userdata as ILiveBehaviour;
 					if (controller == null)
 						continue;
 
@@ -107,8 +107,8 @@ namespace Cubizer
 			Debug.Assert(_chunk == null);
 
 			_chunk = chunk;
-			_chunk.dirty = _dirty = false;
-			_chunk.onChunkChange += OnBuildChunk;
+			_chunk.Dirty = _dirty = false;
+			_chunk.OnChunkChange += OnBuildChunk;
 
 			this.OnBuildChunkAsync();
 		}

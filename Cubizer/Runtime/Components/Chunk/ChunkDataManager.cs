@@ -8,16 +8,17 @@ using Cubizer.Math;
 
 namespace Cubizer
 {
-	[Serializable]
+	using ChunkNode = ChunkDataNode<Vector3<int>, ChunkPrimer>;
+
 	public class ChunkDataManager : IChunkDataManager
 	{
 		private int _count = 0;
 		private int _allocSize = 0;
-		private ChunkDataNode<Vector3<int>, ChunkPrimer>[] _data;
+		private ChunkNode[] _data;
 
-		public int count { get { return _count; } }
+		public int Count { get { return _count; } }
 
-		public ChunkDataNode<Vector3<int>, ChunkPrimer>[] data
+		public ChunkNode[] Data
 		{
 			get { return _data; }
 		}
@@ -42,7 +43,7 @@ namespace Cubizer
 
 			_count = 0;
 			_allocSize = usage;
-			_data = new ChunkDataNode<Vector3<int>, ChunkPrimer>[_allocSize + 1];
+			_data = new ChunkNode[_allocSize + 1];
 		}
 
 		public void Set(int x, int y, int z, ChunkPrimer value)
@@ -62,7 +63,7 @@ namespace Cubizer
 					{
 						var element = _data[index].value;
 						if (element != value && element != null)
-							element.OnChunkDestroy();
+							element.InvokeOnChunkDestroy();
 
 						_data[index].value = value;
 					}
@@ -73,7 +74,7 @@ namespace Cubizer
 
 				if (value != null)
 				{
-					_data[index] = new ChunkDataNode<Vector3<int>, ChunkPrimer>(new Vector3<int>(x, y, z), value);
+					_data[index] = new ChunkNode(new Vector3<int>(x, y, z), value);
 					_count++;
 
 					if (_count >= _allocSize)
@@ -127,11 +128,6 @@ namespace Cubizer
 			return _count == 0;
 		}
 
-		public int Count()
-		{
-			return _count;
-		}
-
 		public void GC()
 		{
 			lock (this)
@@ -139,7 +135,7 @@ namespace Cubizer
 				var map = new ChunkDataManager();
 				map.Create(this._allocSize);
 
-				foreach (ChunkDataNode<Vector3<int>, ChunkPrimer> it in GetEnumerator())
+				foreach (ChunkNode it in GetEnumerator())
 					map.Grow(it);
 
 				_count = map._count;
@@ -155,31 +151,15 @@ namespace Cubizer
 
 		public bool Save(string path)
 		{
-			using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write))
-			{
-				var serializer = new BinaryFormatter();
-				serializer.Serialize(stream, this);
-
-				return true;
-			}
+			throw new NotImplementedException();
 		}
 
 		public bool Load(string path)
 		{
-			using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
-			{
-				var serializer = new BinaryFormatter();
-				var _new = serializer.Deserialize(stream) as ChunkDataManager;
-
-				this._count = _new._count;
-				this._allocSize = _new._allocSize;
-				this._data = _new.data;
-
-				return true;
-			}
+			throw new NotImplementedException();
 		}
 
-		private bool Grow(ChunkDataNode<Vector3<int>, ChunkPrimer> data)
+		private bool Grow(ChunkNode data)
 		{
 			var pos = data.position;
 			var index = HashInt(pos.x, pos.y, pos.z) & _allocSize;
@@ -207,7 +187,7 @@ namespace Cubizer
 			var map = new ChunkDataManager();
 			map.Create(this._allocSize << 1 | 1);
 
-			foreach (ChunkDataNode<Vector3<int>, ChunkPrimer> it in GetEnumerator())
+			foreach (ChunkNode it in GetEnumerator())
 				map.Grow(it);
 
 			_count = map._count;

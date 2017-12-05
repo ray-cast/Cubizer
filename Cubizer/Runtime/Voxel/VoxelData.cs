@@ -6,11 +6,9 @@ using Cubizer.Math;
 
 namespace Cubizer
 {
-	[Serializable]
 	public class VoxelData<_Element>
 		where _Element : class
 	{
-		[NonSerialized]
 		private VoxelData<_Element> _parent;
 
 		private int _count;
@@ -18,9 +16,9 @@ namespace Cubizer
 		private Vector3<int> _bound;
 		private VoxelDataNode<Vector3<System.Byte>, _Element>[] _data;
 
-		public int count { get { return _count; } }
-		public Vector3<int> bound { get { return _bound; } }
-		public VoxelData<_Element> parent { set { _parent = value; } get { return _parent; } }
+		public int Count { get { return _count; } }
+		public Vector3<int> Bound { get { return _bound; } }
+		public VoxelData<_Element> Parent { internal set { _parent = value; } get { return _parent; } }
 
 		public VoxelData(Vector3<int> bound)
 		{
@@ -153,26 +151,6 @@ namespace Cubizer
 				throw new System.ApplicationException("GetEnumerator: Empty data");
 
 			return new VoxelDataNodeEnumerable<Vector3<System.Byte>, _Element>(_data);
-		}
-
-		public static bool Save(string path, VoxelData<_Element> map)
-		{
-			UnityEngine.Debug.Assert(map != null);
-
-			var stream = new FileStream(path, FileMode.Create, FileAccess.Write);
-			var serializer = new BinaryFormatter();
-
-			serializer.Serialize(stream, map);
-			stream.Close();
-
-			return true;
-		}
-
-		public static VoxelData<_Element> Load(string path)
-		{
-			var serializer = new BinaryFormatter();
-			var loadFile = new FileStream(path, FileMode.Open, FileAccess.Read);
-			return serializer.Deserialize(loadFile) as VoxelData<_Element>;
 		}
 
 		private bool Grow(VoxelDataNode<Vector3<System.Byte>, _Element> data)

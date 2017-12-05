@@ -55,18 +55,18 @@ namespace Cubizer
 				Model.SetDefaultName(_dbName);
 			}
 
-			Context.behaviour.events.OnLoadChunkAfter += this.OnLoadChunkDataAfter;
-			Context.behaviour.events.OnAddBlockBefore += this.OnAddBlockBefore;
-			Context.behaviour.events.OnRemoveBlockBefore += this.OnRemoveBlockBefore;
+			Context.behaviour.Events.OnLoadChunkAfter += this.OnLoadChunkDataAfter;
+			Context.behaviour.Events.OnAddBlockBefore += this.OnAddBlockBefore;
+			Context.behaviour.Events.OnRemoveBlockBefore += this.OnRemoveBlockBefore;
 
 			_sqlite = new DbSqlite(_dbUrl + _dbName);
 		}
 
 		public override void OnDisable()
 		{
-			Context.behaviour.events.OnLoadChunkAfter -= this.OnLoadChunkDataAfter;
-			Context.behaviour.events.OnAddBlockBefore -= this.OnAddBlockBefore;
-			Context.behaviour.events.OnRemoveBlockBefore -= this.OnRemoveBlockBefore;
+			Context.behaviour.Events.OnLoadChunkAfter -= this.OnLoadChunkDataAfter;
+			Context.behaviour.Events.OnAddBlockBefore -= this.OnAddBlockBefore;
+			Context.behaviour.Events.OnRemoveBlockBefore -= this.OnRemoveBlockBefore;
 
 			if (_sqlite != null)
 			{
@@ -78,17 +78,17 @@ namespace Cubizer
 		private void OnLoadChunkDataAfter(ChunkPrimer chunk)
 		{
 			if (chunk != null)
-				_sqlite.loadChunk(chunk, chunk.position.x, chunk.position.y, chunk.position.z);
+				_sqlite.loadChunk(chunk, chunk.Position.x, chunk.Position.y, chunk.Position.z);
 		}
 
 		private void OnAddBlockBefore(ChunkPrimer chunk, int x, int y, int z, VoxelMaterial voxel)
 		{
-			Task.Run(() => { _sqlite.insertBlock(chunk.position.x, chunk.position.y, chunk.position.z, x, y, z, voxel.GetInstanceID()); });
+			Task.Run(() => { _sqlite.insertBlock(chunk.Position.x, chunk.Position.y, chunk.Position.z, x, y, z, voxel.GetInstanceID()); });
 		}
 
 		private void OnRemoveBlockBefore(ChunkPrimer chunk, int x, int y, int z, VoxelMaterial voxel)
 		{
-			Task.Run(() => { _sqlite.insertBlock(chunk.position.x, chunk.position.y, chunk.position.z, x, y, z, 0); });
+			Task.Run(() => { _sqlite.insertBlock(chunk.Position.x, chunk.Position.y, chunk.Position.z, x, y, z, 0); });
 		}
 	}
 }

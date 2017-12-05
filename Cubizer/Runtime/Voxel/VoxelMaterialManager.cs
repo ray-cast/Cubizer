@@ -32,8 +32,8 @@ namespace Cubizer
 
 			var newMaterial = new VoxelMaterial(name, models, _lives.Count + 1)
 			{
-				is_merge = models.merge,
-				is_transparent = models.transparent
+				CanMerge = models.merge,
+				Transparent = models.transparent
 			};
 
 			_liveIndex.Add(name, _lives.Count + 1);

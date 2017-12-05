@@ -49,7 +49,7 @@ namespace Cubizer
 		{
 			_materials = new BasicObjectsMaterials();
 
-			var materialFactor = context.materialFactory;
+			var materialFactor = Context.materialFactory;
 			if (_materialDirt != null)
 				_materials.dirt = materialFactor.GetMaterial(_materialDirt.GetComponent<LiveBehaviour>().name);
 			if (_materialGrass != null)

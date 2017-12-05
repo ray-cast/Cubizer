@@ -23,7 +23,7 @@ namespace Cubizer
 
 		private bool _dirty;
 
-		public bool dirty
+		public bool Dirty
 		{
 			get
 			{
@@ -35,44 +35,26 @@ namespace Cubizer
 			}
 		}
 
-		public Vector3<int> position
+		public Vector3<int> Position
 		{
 			get { return _position; }
 		}
 
-		public VoxelData<VoxelMaterial> voxels
+		public VoxelData<VoxelMaterial> Voxels
 		{
 			get { return _voxels; }
 		}
 
-		public ChunkPrimerDelegates.OnChangeDelegate onChunkChange
+		public ChunkPrimerDelegates.OnChangeDelegate OnChunkChange
 		{
 			set { _onChunkChange = value; }
 			get { return _onChunkChange; }
 		}
 
-		public ChunkPrimerDelegates.OnDestroyDelegate onChunkDestroy
+		public ChunkPrimerDelegates.OnDestroyDelegate OnChunkDestroy
 		{
 			set { _onChunkDestroy = value; }
 			get { return _onChunkDestroy; }
-		}
-
-		public void OnChunkChange()
-		{
-			if (_onChunkChange != null)
-				_onChunkChange.Invoke();
-		}
-
-		public void OnChunkDestroy()
-		{
-			if (_onChunkDestroy != null)
-				_onChunkDestroy.Invoke();
-		}
-
-		public void OnUpdate()
-		{
-			if (_onUpdate != null)
-				_onUpdate.Invoke();
 		}
 
 		public ChunkPrimer(Vector3<int> bound)
@@ -119,13 +101,13 @@ namespace Cubizer
 			switch (mode)
 			{
 				case VoxelCullMode.Stupid:
-					return new VoxelCruncherStupid().CalcVoxelCruncher(this.voxels);
+					return new VoxelCruncherStupid().CalcVoxelCruncher(this.Voxels);
 
 				case VoxelCullMode.Culled:
-					return new VoxelCruncherCulled().CalcVoxelCruncher(this.voxels);
+					return new VoxelCruncherCulled().CalcVoxelCruncher(this.Voxels);
 
 				case VoxelCullMode.Greedy:
-					return new VoxelCruncherGreedy().CalcVoxelCruncher(this.voxels);
+					return new VoxelCruncherGreedy().CalcVoxelCruncher(this.Voxels);
 
 				default:
 					throw new System.Exception("Bad VoxelCullMode");
@@ -151,6 +133,24 @@ namespace Cubizer
 			}
 
 			return true;
+		}
+
+		public void InvokeOnChunkChange()
+		{
+			if (_onChunkChange != null)
+				_onChunkChange.Invoke();
+		}
+
+		public void InvokeOnChunkDestroy()
+		{
+			if (_onChunkDestroy != null)
+				_onChunkDestroy.Invoke();
+		}
+
+		public void InvokeOnUpdate()
+		{
+			if (_onUpdate != null)
+				_onUpdate.Invoke();
 		}
 	}
 }

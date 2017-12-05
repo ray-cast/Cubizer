@@ -16,7 +16,7 @@ namespace Cubizer
 		{
 			foreach (var it in voxels)
 			{
-				int facesCount = it.faces.count;
+				int facesCount = it.faces.Count;
 				if (facesCount > 0)
 				{
 					var id = it.material.GetInstanceID();

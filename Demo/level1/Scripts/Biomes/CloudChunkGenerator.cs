@@ -13,15 +13,15 @@
 
 		public ChunkPrimer OnCreateChunk(CubizerBehaviour terrain, int x, int y, int z)
 		{
-			var map = new ChunkPrimer(terrain.profile.chunk.settings.chunkSize, (short)x, (short)y, (short)z);
+			var map = new ChunkPrimer(terrain.Profile.chunk.settings.chunkSize, (short)x, (short)y, (short)z);
 
-			int offsetX = x * map.voxels.bound.x;
-			int offsetY = y * map.voxels.bound.y;
-			int offsetZ = z * map.voxels.bound.z;
+			int offsetX = x * map.Voxels.Bound.x;
+			int offsetY = y * map.Voxels.Bound.y;
+			int offsetZ = z * map.Voxels.Bound.z;
 
-			for (int ix = 0; ix < map.voxels.bound.x; ix++)
+			for (int ix = 0; ix < map.Voxels.Bound.x; ix++)
 			{
-				for (int iz = 0; iz < map.voxels.bound.y; iz++)
+				for (int iz = 0; iz < map.Voxels.Bound.y; iz++)
 				{
 					int dx = offsetX + ix;
 					int dz = offsetZ + iz;
@@ -31,7 +31,7 @@
 						int dy = offsetY + iy;
 
 						if (Math.Noise.simplex3(dx * 0.01f, dy * 0.1f, dz * 0.01f, 8, 0.5f, 2) > _params.thresholdCloud)
-							map.voxels.Set((byte)ix, (byte)iy, (byte)iz, _materials.cloud);
+							map.Voxels.Set((byte)ix, (byte)iy, (byte)iz, _materials.cloud);
 					}
 				}
 			}

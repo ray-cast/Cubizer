@@ -8,7 +8,7 @@ namespace Cubizer
 
 		public IVoxelModel CalcVoxelCruncher(VoxelData<VoxelMaterial> map)
 		{
-			var crunchers = new List<VoxelPrimitive>(map.count);
+			var crunchers = new List<VoxelPrimitive>(map.Count);
 
 			foreach (var it in map.GetEnumerator())
 			{

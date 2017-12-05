@@ -21,18 +21,18 @@ namespace Cubizer
 			if (y < bound.y - 1) instanceID[3] = map[x, (byte)(y + 1), z];
 			if (z < bound.z - 1) instanceID[5] = map[x, y, (byte)(z + 1)];
 
-			if (material.is_transparent)
+			if (material.Transparent)
 			{
-				var name = material.name;
+				var name = material.Name;
 
-				faces.left = (instanceID[0] == null) ? true : instanceID[0].name != name ? true : false;
-				faces.right = (instanceID[1] == null) ? true : instanceID[1].name != name ? true : false;
-				faces.bottom = (instanceID[2] == null) ? true : instanceID[2].name != name ? true : false;
-				faces.top = (instanceID[3] == null) ? true : instanceID[3].name != name ? true : false;
-				faces.front = (instanceID[4] == null) ? true : instanceID[4].name != name ? true : false;
-				faces.back = (instanceID[5] == null) ? true : instanceID[5].name != name ? true : false;
+				faces.left = (instanceID[0] == null) ? true : instanceID[0].Name != name ? true : false;
+				faces.right = (instanceID[1] == null) ? true : instanceID[1].Name != name ? true : false;
+				faces.bottom = (instanceID[2] == null) ? true : instanceID[2].Name != name ? true : false;
+				faces.top = (instanceID[3] == null) ? true : instanceID[3].Name != name ? true : false;
+				faces.front = (instanceID[4] == null) ? true : instanceID[4].Name != name ? true : false;
+				faces.back = (instanceID[5] == null) ? true : instanceID[5].Name != name ? true : false;
 
-				if (material.is_merge)
+				if (material.CanMerge)
 				{
 					if (x == 0) faces.left = false;
 					if (z == 0) faces.front = false;
@@ -42,28 +42,28 @@ namespace Cubizer
 			}
 			else
 			{
-				faces.left = (instanceID[0] == null) ? true : instanceID[0].is_transparent ? true : false;
-				faces.right = (instanceID[1] == null) ? true : instanceID[1].is_transparent ? true : false;
-				faces.bottom = (instanceID[2] == null) ? true : instanceID[2].is_transparent ? true : false;
-				faces.top = (instanceID[3] == null) ? true : instanceID[3].is_transparent ? true : false;
-				faces.front = (instanceID[4] == null) ? true : instanceID[4].is_transparent ? true : false;
-				faces.back = (instanceID[5] == null) ? true : instanceID[5].is_transparent ? true : false;
+				faces.left = (instanceID[0] == null) ? true : instanceID[0].Transparent ? true : false;
+				faces.right = (instanceID[1] == null) ? true : instanceID[1].Transparent ? true : false;
+				faces.bottom = (instanceID[2] == null) ? true : instanceID[2].Transparent ? true : false;
+				faces.top = (instanceID[3] == null) ? true : instanceID[3].Transparent ? true : false;
+				faces.front = (instanceID[4] == null) ? true : instanceID[4].Transparent ? true : false;
+				faces.back = (instanceID[5] == null) ? true : instanceID[5].Transparent ? true : false;
 			}
 
-			if (!material.is_merge)
-				faces = new VoxelVisiableFaces(faces.any);
+			if (!material.CanMerge)
+				faces = new VoxelVisiableFaces(faces.Any);
 
-			return faces.any;
+			return faces.Any;
 		}
 
 		public IVoxelModel CalcVoxelCruncher(VoxelData<VoxelMaterial> voxels)
 		{
-			var map = new VoxelMaterial[voxels.bound.x, voxels.bound.y, voxels.bound.z];
+			var map = new VoxelMaterial[voxels.Bound.x, voxels.Bound.y, voxels.Bound.z];
 
-			for (int i = 0; i < voxels.bound.x; ++i)
+			for (int i = 0; i < voxels.Bound.x; ++i)
 			{
-				for (int j = 0; j < voxels.bound.y; ++j)
-					for (int k = 0; k < voxels.bound.z; ++k)
+				for (int j = 0; j < voxels.Bound.y; ++j)
+					for (int k = 0; k < voxels.Bound.z; ++k)
 						map[i, j, k] = null;
 			}
 
@@ -71,7 +71,7 @@ namespace Cubizer
 				map[it.position.x, it.position.y, it.position.z] = it.value;
 
 			var crunchers = new List<VoxelPrimitive>();
-			var bound = new Vector3Int(voxels.bound.x, voxels.bound.y, voxels.bound.z);
+			var bound = new Vector3Int(voxels.Bound.x, voxels.Bound.y, voxels.Bound.z);
 
 			foreach (var it in voxels.GetEnumerator())
 			{

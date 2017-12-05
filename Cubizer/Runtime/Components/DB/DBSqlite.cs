@@ -103,9 +103,9 @@ namespace Cubizer
 							var zz = dbReader.GetByte(2);
 							var ww = dbReader.GetByte(3);
 							if (ww > 0)
-								chunk.voxels.Set(xx, yy, zz, VoxelMaterialManager.GetInstance().GetMaterial(ww));
+								chunk.Voxels.Set(xx, yy, zz, VoxelMaterialManager.GetInstance().GetMaterial(ww));
 							else
-								chunk.voxels.Set(xx, yy, zz, null);
+								chunk.Voxels.Set(xx, yy, zz, null);
 						}
 					}
 				}

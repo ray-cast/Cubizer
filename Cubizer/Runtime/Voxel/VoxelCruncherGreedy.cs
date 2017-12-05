@@ -48,7 +48,7 @@ namespace Cubizer
 							{
 								if (a == null)
 								{
-									if (!b.is_transparent)
+									if (!b.Transparent)
 									{
 										mask2[n] = true;
 										mask[n++] = b;
@@ -60,7 +60,7 @@ namespace Cubizer
 								}
 								else if (b == null)
 								{
-									if (!edge || !a.is_transparent)
+									if (!edge || !a.Transparent)
 									{
 										mask2[n] = false;
 										mask[n++] = a;
@@ -72,8 +72,8 @@ namespace Cubizer
 								}
 								else
 								{
-									mask2[n] = b.is_transparent ? false : true;
-									mask[n++] = b.is_transparent ? a : b;
+									mask2[n] = b.Transparent ? false : true;
+									mask[n++] = b.Transparent ? a : b;
 								}
 							}
 							else
@@ -171,12 +171,12 @@ namespace Cubizer
 
 		public IVoxelModel CalcVoxelCruncher(VoxelData<VoxelMaterial> voxels)
 		{
-			var map = new VoxelMaterial[voxels.bound.x, voxels.bound.y, voxels.bound.z];
+			var map = new VoxelMaterial[voxels.Bound.x, voxels.Bound.y, voxels.Bound.z];
 
-			for (int i = 0; i < voxels.bound.x; ++i)
+			for (int i = 0; i < voxels.Bound.x; ++i)
 			{
-				for (int j = 0; j < voxels.bound.y; ++j)
-					for (int k = 0; k < voxels.bound.z; ++k)
+				for (int j = 0; j < voxels.Bound.y; ++j)
+					for (int k = 0; k < voxels.Bound.z; ++k)
 						map[i, j, k] = null;
 			}
 
@@ -186,7 +186,7 @@ namespace Cubizer
 			Bounds bound = new Bounds();
 			foreach (var it in voxels.GetEnumerator())
 			{
-				if (it.value.is_merge)
+				if (it.value.CanMerge)
 				{
 					bound.Encapsulate(new Vector3(it.position.x, it.position.y, it.position.z));
 					map[it.position.x, it.position.y, it.position.z] = it.value;
@@ -196,9 +196,9 @@ namespace Cubizer
 			}
 
 			var max = bound.max;
-			max.x = System.Math.Min(max.x + 1, voxels.bound.x);
-			max.y = System.Math.Min(max.y + 2, voxels.bound.y);
-			max.z = System.Math.Min(max.z + 1, voxels.bound.z);
+			max.x = System.Math.Min(max.x + 1, voxels.Bound.x);
+			max.y = System.Math.Min(max.y + 2, voxels.Bound.y);
+			max.z = System.Math.Min(max.z + 1, voxels.Bound.z);
 			bound.max = max;
 
 			CalcVoxelCruncher(map, bound, ref crunchers);

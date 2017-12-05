@@ -9,7 +9,7 @@
 		public bool back;
 		public bool front;
 
-		public bool any
+		public bool Any
 		{
 			get
 			{
@@ -17,7 +17,7 @@
 			}
 		}
 
-		public int count
+		public int Count
 		{
 			get
 			{

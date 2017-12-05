@@ -36,7 +36,7 @@ namespace Cubizer
 
 		public void BuildTree(ChunkPrimer map, byte ix, byte iz, byte h)
 		{
-			map.voxels.Set(ix, h, iz, _materials.trees[random.Next(0, _materials.trees.Length - 1)]);
+			map.Voxels.Set(ix, h, iz, _materials.trees[random.Next(0, _materials.trees.Length - 1)]);
 		}
 
 		public void BuildGrass(ChunkPrimer map, byte ix, byte iz, int dx, int dz, VoxelMaterial main, out float f, out byte h)
@@ -53,7 +53,7 @@ namespace Cubizer
 					UnityEngine.Random.InitState(ix ^ iz * h);
 
 					for (byte iy = 0; iy < h; iy++)
-						map.voxels.Set(ix, iy, iz, random.Next() > _params.thresholdSand ? _materials.grass : _materials.sand);
+						map.Voxels.Set(ix, iy, iz, random.Next() > _params.thresholdSand ? _materials.grass : _materials.sand);
 				}
 				else
 				{
@@ -61,14 +61,14 @@ namespace Cubizer
 					if (h < waterHeight)
 					{
 						for (byte iy = 0; iy < h; iy++)
-							map.voxels.Set(ix, iy, iz, _materials.dirt);
+							map.Voxels.Set(ix, iy, iz, _materials.dirt);
 					}
 					else
 					{
 						for (byte iy = 0; iy < h - 1; iy++)
-							map.voxels.Set(ix, iy, iz, _materials.dirt);
+							map.Voxels.Set(ix, iy, iz, _materials.dirt);
 
-						map.voxels.Set(ix, (byte)(h - 1), iz, main);
+						map.Voxels.Set(ix, (byte)(h - 1), iz, main);
 					}
 				}
 			}
@@ -76,15 +76,15 @@ namespace Cubizer
 
 		public ChunkPrimer Buildland(CubizerBehaviour terrain, int x, int y, int z, VoxelMaterial main)
 		{
-			var size = terrain.profile.chunk.settings.chunkSize;
+			var size = terrain.Profile.chunk.settings.chunkSize;
 			var map = new ChunkPrimer(size, x, y, z, size * size * _params.floorBase);
 
-			int offsetX = x * map.voxels.bound.x;
-			int offsetZ = z * map.voxels.bound.z;
+			int offsetX = x * map.Voxels.Bound.x;
+			int offsetZ = z * map.Voxels.Bound.z;
 
-			for (byte ix = 0; ix < map.voxels.bound.x; ix++)
+			for (byte ix = 0; ix < map.Voxels.Bound.x; ix++)
 			{
-				for (byte iz = 0; iz < map.voxels.bound.z; iz++)
+				for (byte iz = 0; iz < map.Voxels.Bound.z; iz++)
 				{
 					int dx = offsetX + ix;
 					int dz = offsetZ + iz;
@@ -96,12 +96,12 @@ namespace Cubizer
 					if (_params.isGenWater && h <= waterHeight)
 					{
 						for (byte iy = h; iy <= waterHeight; iy++)
-							map.voxels.Set(ix, iy, iz, _materials.water);
+							map.Voxels.Set(ix, iy, iz, _materials.water);
 					}
 					else
 					{
 						if (f > waterHeight && f < (waterHeight + 0.1))
-							map.voxels.Set(ix, (byte)(h - 1), iz, _materials.sand);
+							map.Voxels.Set(ix, (byte)(h - 1), iz, _materials.sand);
 
 						if (_params.isGenWeed && Noise.simplex2(
 								_params.weeds.loopX * dx,
@@ -110,7 +110,7 @@ namespace Cubizer
 								_params.weeds.persistence,
 								_params.weeds.lacunarity) > _params.weeds.threshold)
 						{
-							map.voxels.Set(ix, h, iz, _materials.weed[random.Next(0, _materials.weed.Length - 1)]);
+							map.Voxels.Set(ix, h, iz, _materials.weed[random.Next(0, _materials.weed.Length - 1)]);
 						}
 						else if (_params.isGenFlower && Noise.simplex2(
 								_params.flowers.loopX * dx,
@@ -119,11 +119,11 @@ namespace Cubizer
 								_params.flowers.persistence,
 								_params.flowers.lacunarity) > _params.flowers.threshold)
 						{
-							map.voxels.Set(ix, h, iz, _materials.flower[random.Next(0, _materials.flower.Length - 1)]);
+							map.Voxels.Set(ix, h, iz, _materials.flower[random.Next(0, _materials.flower.Length - 1)]);
 						}
-						else if (_params.isGenTree && h < map.voxels.bound.y - 8)
+						else if (_params.isGenTree && h < map.Voxels.Bound.y - 8)
 						{
-							if (ix > 3 && ix < map.voxels.bound.y - 3 && iz > 3 && iz < map.voxels.bound.y - 3)
+							if (ix > 3 && ix < map.Voxels.Bound.y - 3 && iz > 3 && iz < map.Voxels.Bound.y - 3)
 							{
 								if (Noise.simplex2(
 									_params.tree.loopX * dx,
@@ -145,15 +145,15 @@ namespace Cubizer
 
 		public ChunkPrimer buildObsidian(CubizerBehaviour terrain, int x, int y, int z)
 		{
-			var size = terrain.profile.chunk.settings.chunkSize;
+			var size = terrain.Profile.chunk.settings.chunkSize;
 			var map = new ChunkPrimer(size, x, y, z, size * size * 8);
 
-			for (byte ix = 0; ix < map.voxels.bound.x; ix++)
+			for (byte ix = 0; ix < map.Voxels.Bound.x; ix++)
 			{
-				for (byte iz = 0; iz < map.voxels.bound.z; iz++)
+				for (byte iz = 0; iz < map.Voxels.Bound.z; iz++)
 				{
 					for (byte iy = 0; iy < 8; iy++)
-						map.voxels.Set(ix, iy, iz, _materials.obsidian);
+						map.Voxels.Set(ix, iy, iz, _materials.obsidian);
 				}
 			}
 

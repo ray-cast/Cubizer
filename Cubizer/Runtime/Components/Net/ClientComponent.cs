@@ -41,16 +41,16 @@ namespace Cubizer
 
 		public override void OnEnable()
 		{
-			Context.behaviour.events.OnLoadChunkAfter += this.OnLoadChunkDataAfter;
-			Context.behaviour.events.OnAddBlockAfter += this.OnAddBlockAfter;
-			Context.behaviour.events.OnRemoveBlockAfter += this.OnRemoveBlockAfter;
+			Context.behaviour.Events.OnLoadChunkAfter += this.OnLoadChunkDataAfter;
+			Context.behaviour.Events.OnAddBlockAfter += this.OnAddBlockAfter;
+			Context.behaviour.Events.OnRemoveBlockAfter += this.OnRemoveBlockAfter;
 		}
 
 		public override void OnDisable()
 		{
-			Context.behaviour.events.OnLoadChunkAfter -= this.OnLoadChunkDataAfter;
-			Context.behaviour.events.OnAddBlockAfter -= this.OnAddBlockAfter;
-			Context.behaviour.events.OnRemoveBlockAfter -= this.OnRemoveBlockAfter;
+			Context.behaviour.Events.OnLoadChunkAfter -= this.OnLoadChunkDataAfter;
+			Context.behaviour.Events.OnAddBlockAfter -= this.OnAddBlockAfter;
+			Context.behaviour.Events.OnRemoveBlockAfter -= this.OnRemoveBlockAfter;
 		}
 
 		public bool Connect()
@@ -77,7 +77,7 @@ namespace Cubizer
 						return false;
 					}
 
-					_client.Start(_cancellationToken.Token);
+					_client.Start(_cancellationToken.Token).GetAwaiter().OnCompleted(() => { _client = null; }); ;
 				}
 				catch (System.Exception e)
 				{

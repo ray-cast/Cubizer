@@ -22,8 +22,8 @@ namespace Cubizer
 
 				if (_material != null)
 				{
-					_material.is_merge = value.merge;
-					_material.is_transparent = value.transparent;
+					_material.CanMerge = value.merge;
+					_material.Transparent = value.transparent;
 				}
 			}
 		}
@@ -37,7 +37,7 @@ namespace Cubizer
 			internal set
 			{
 				if (value != null)
-					value.userdata = this;
+					value.Userdata = this;
 				_material = value;
 			}
 		}

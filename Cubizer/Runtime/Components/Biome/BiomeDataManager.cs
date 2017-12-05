@@ -6,7 +6,6 @@ using Cubizer.Math;
 
 namespace Cubizer
 {
-	[Serializable]
 	public class BiomeDataManager : IBiomeDataManager
 	{
 		private int _count;
@@ -14,7 +13,7 @@ namespace Cubizer
 
 		private BiomeDataNode<Vector3<int>, IBiomeData>[] _data;
 
-		public int count
+		public int Count
 		{
 			get { return _count; }
 		}
@@ -129,11 +128,6 @@ namespace Cubizer
 			return _count == 0;
 		}
 
-		public int Count()
-		{
-			return _count;
-		}
-
 		public void GC()
 		{
 			lock (this)
@@ -156,27 +150,12 @@ namespace Cubizer
 
 		public bool Save(string path)
 		{
-			using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write))
-			{
-				var serializer = new BinaryFormatter();
-				serializer.Serialize(stream, this);
-
-				return true;
-			}
+			throw new NotImplementedException();
 		}
 
 		public bool Load(string path)
 		{
-			using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
-			{
-				var _new = new BinaryFormatter().Deserialize(stream) as BiomeDataManager;
-
-				this._count = _new._count;
-				this._data = _new._data;
-				this._allocSize = _new._allocSize;
-
-				return true;
-			}
+			throw new NotImplementedException();
 		}
 
 		private bool Grow(BiomeDataNode<Vector3<int>, IBiomeData> data)
