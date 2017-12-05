@@ -23,7 +23,7 @@ namespace Cubizer
 				var map = ChunkPrimer.Load(SelectedPath);
 				if (map != null)
 				{
-					data.Chunk = map;
+					data.chunk = map;
 					data.OnBuildChunkAsync();
 
 					Debug.Log("Your data of chunk was loaded successfully");
@@ -40,7 +40,7 @@ namespace Cubizer
 				if (SelectedPath.Length == 0)
 					return;
 
-				var map = data.Chunk;
+				var map = data.chunk;
 				if (map != null)
 				{
 					if (ChunkPrimer.Save(SelectedPath, map))

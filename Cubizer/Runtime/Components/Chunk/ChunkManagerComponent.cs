@@ -13,15 +13,16 @@ namespace Cubizer
 	public class ChunkManagerComponent : CubizerComponent<ChunkManagerModels>
 	{
 		private readonly string _name;
-		private GameObject _chunkObject;
 		private readonly ChunkDelegates _callbacks;
+
+		private GameObject _chunkObject;
 		private Task[] _tasks;
 
 		private readonly ConcurrentQueue<ChunkPrimer> _deferredUpdater = new ConcurrentQueue<ChunkPrimer>();
 
 		private bool _active;
 
-		public override bool Active
+		public override bool active
 		{
 			get
 			{
@@ -41,19 +42,19 @@ namespace Cubizer
 			}
 		}
 
-		public int Count
+		public int count
 		{
 			get { return _chunkObject != null ? _chunkObject.transform.childCount : 0; }
 		}
 
-		public ChunkDelegates Callbacks
+		public ChunkDelegates callbacks
 		{
 			get { return _callbacks; }
 		}
 
-		private IChunkDataManager Manager
+		private IChunkDataManager manager
 		{
-			get { return Model.settings.chunkManager; }
+			get { return model.settings.chunkManager; }
 		}
 
 		public ChunkManagerComponent(string name = "ServerChunks")
@@ -66,7 +67,7 @@ namespace Cubizer
 		public override void OnEnable()
 		{
 			_chunkObject = new GameObject(_name);
-			_tasks = new Task[Model.settings.chunkThreadNums];
+			_tasks = new Task[model.settings.chunkThreadNums];
 		}
 
 		public override void OnDisable()
@@ -87,23 +88,23 @@ namespace Cubizer
 
 			if (chunk == null)
 			{
-				IBiomeData biomeData = Context.behaviour.BiomeManager.BuildBiomeIfNotExist(x, y, z);
+				IBiomeData biomeData = context.behaviour.biomeManager.BuildBiomeIfNotExist(x, y, z);
 				if (biomeData != null)
 				{
 					if (chunk == null)
-						chunk = biomeData.OnBuildChunk(this.Context.behaviour, x, y, z);
+						chunk = biomeData.OnBuildChunk(this.context.behaviour, x, y, z);
 				}
 			}
 
 			if (chunk == null)
-				chunk = new ChunkPrimer(Model.settings.chunkSize, x, y, z);
+				chunk = new ChunkPrimer(model.settings.chunkSize, x, y, z);
 
 			if (_callbacks.OnLoadChunkAfter != null)
 				_callbacks.OnLoadChunkAfter(chunk);
 
-			this.Manager.Set(x, y, z, chunk);
+			this.manager.Set(x, y, z, chunk);
 
-			if (chunk.Voxels.Count > 0)
+			if (chunk.voxels.Count > 0)
 				_deferredUpdater.Enqueue(chunk);
 		}
 
@@ -122,7 +123,7 @@ namespace Cubizer
 					var chunk = child.GetComponent<ChunkData>();
 
 					if (_callbacks.OnDestroyChunk != null)
-						_callbacks.OnDestroyChunk(chunk.Chunk);
+						_callbacks.OnDestroyChunk(chunk.chunk);
 				}
 
 				GameObject.Destroy(child);
@@ -136,10 +137,10 @@ namespace Cubizer
 			int x = CalculateChunkPosByWorld(point.x);
 			int y = CalculateChunkPosByWorld(point.y);
 			int z = CalculateChunkPosByWorld(point.z);
-			var chunkPos = new Vector3(x, y, z) * Model.settings.chunkSize;
+			var chunkPos = new Vector3(x, y, z) * model.settings.chunkSize;
 
 			var transform = _chunkObject.transform;
-			var maxRadius = radius * Model.settings.chunkSize;
+			var maxRadius = radius * model.settings.chunkSize;
 
 			for (int i = 0; i < transform.childCount; i++)
 			{
@@ -151,9 +152,9 @@ namespace Cubizer
 					var chunk = transformChild.GetComponent<ChunkData>();
 
 					if (_callbacks.OnDestroyChunk != null)
-						_callbacks.OnDestroyChunk(chunk.Chunk);
+						_callbacks.OnDestroyChunk(chunk.chunk);
 
-					this.Manager.Set(chunk.Chunk.Position.x, chunk.Chunk.Position.y, chunk.Chunk.Position.z, null);
+					this.manager.Set(chunk.chunk.position.x, chunk.chunk.position.y, chunk.chunk.position.z, null);
 
 					GameObject.Destroy(transformChild.gameObject);
 					break;
@@ -177,11 +178,11 @@ namespace Cubizer
 					var chunk = transformChild.GetComponent<ChunkData>();
 
 					if (_callbacks.OnDestroyChunk != null)
-						_callbacks.OnDestroyChunk(chunk.Chunk);
+						_callbacks.OnDestroyChunk(chunk.chunk);
 
 					GameObject.Destroy(transformChild.gameObject);
 
-					this.Manager.Set(x, y, z, null);
+					this.manager.Set(x, y, z, null);
 
 					break;
 				}
@@ -191,14 +192,14 @@ namespace Cubizer
 		public ChunkPrimer FindChunk(int x, int y, int z)
 		{
 			ChunkPrimer chunk;
-			if (Manager.Get(x, y, z, out chunk))
+			if (manager.Get(x, y, z, out chunk))
 				return chunk;
 			return null;
 		}
 
 		public short CalculateChunkPosByWorld(float x)
 		{
-			return (short)Mathf.FloorToInt(x / Model.settings.chunkSize);
+			return (short)Mathf.FloorToInt(x / model.settings.chunkSize);
 		}
 
 		private bool HitTestByRay(Ray ray, int hitDistance, out ChunkPrimer chunk, out byte outX, out byte outY, out byte outZ, out ChunkPrimer lastChunk, out byte lastX, out byte lastY, out byte lastZ)
@@ -210,13 +211,13 @@ namespace Cubizer
 			lastChunk = null;
 			lastX = lastY = lastZ = outX = outY = outZ = 255;
 
-			if (!this.Manager.Get(chunkX, chunkY, chunkZ, out chunk))
+			if (!this.manager.Get(chunkX, chunkY, chunkZ, out chunk))
 				return false;
 
 			Vector3 origin = ray.origin;
-			origin.x -= chunk.Position.x * Model.settings.chunkSize;
-			origin.y -= chunk.Position.y * Model.settings.chunkSize;
-			origin.z -= chunk.Position.z * Model.settings.chunkSize;
+			origin.x -= chunk.position.x * model.settings.chunkSize;
+			origin.y -= chunk.position.y * model.settings.chunkSize;
+			origin.z -= chunk.position.z * model.settings.chunkSize;
 
 			VoxelMaterial block = null;
 
@@ -230,12 +231,12 @@ namespace Cubizer
 					continue;
 
 				bool isOutOfChunk = false;
-				if (ix < 0) { ix = ix + Model.settings.chunkSize; origin.x += Model.settings.chunkSize; chunkX--; isOutOfChunk = true; }
-				if (iy < 0) { iy = iy + Model.settings.chunkSize; origin.y += Model.settings.chunkSize; chunkY--; isOutOfChunk = true; }
-				if (iz < 0) { iz = iz + Model.settings.chunkSize; origin.z += Model.settings.chunkSize; chunkZ--; isOutOfChunk = true; }
-				if (ix + 1 > Model.settings.chunkSize) { ix = ix - Model.settings.chunkSize; origin.x -= Model.settings.chunkSize; chunkX++; isOutOfChunk = true; }
-				if (iy + 1 > Model.settings.chunkSize) { iy = iy - Model.settings.chunkSize; origin.y -= Model.settings.chunkSize; chunkY++; isOutOfChunk = true; }
-				if (iz + 1 > Model.settings.chunkSize) { iz = iz - Model.settings.chunkSize; origin.z -= Model.settings.chunkSize; chunkZ++; isOutOfChunk = true; }
+				if (ix < 0) { ix = ix + model.settings.chunkSize; origin.x += model.settings.chunkSize; chunkX--; isOutOfChunk = true; }
+				if (iy < 0) { iy = iy + model.settings.chunkSize; origin.y += model.settings.chunkSize; chunkY--; isOutOfChunk = true; }
+				if (iz < 0) { iz = iz + model.settings.chunkSize; origin.z += model.settings.chunkSize; chunkZ--; isOutOfChunk = true; }
+				if (ix + 1 > model.settings.chunkSize) { ix = ix - model.settings.chunkSize; origin.x -= model.settings.chunkSize; chunkX++; isOutOfChunk = true; }
+				if (iy + 1 > model.settings.chunkSize) { iy = iy - model.settings.chunkSize; origin.y -= model.settings.chunkSize; chunkY++; isOutOfChunk = true; }
+				if (iz + 1 > model.settings.chunkSize) { iz = iz - model.settings.chunkSize; origin.z -= model.settings.chunkSize; chunkZ++; isOutOfChunk = true; }
 
 				lastX = outX;
 				lastY = outY;
@@ -249,7 +250,7 @@ namespace Cubizer
 						return false;
 				}
 
-				chunk.Voxels.Get(ix, iy, iz, ref block);
+				chunk.voxels.Get(ix, iy, iz, ref block);
 
 				origin += ray.direction;
 
@@ -298,8 +299,8 @@ namespace Cubizer
 				if (_callbacks.OnAddBlockBefore != null)
 					_callbacks.OnAddBlockBefore(chunk, lx, ly, lz, block);
 
-				chunk.Voxels.Set(lx, ly, lz, block);
-				chunk.Dirty = true;
+				chunk.voxels.Set(lx, ly, lz, block);
+				chunk.dirty = true;
 
 				if (_callbacks.OnAddBlockAfter != null)
 					_callbacks.OnAddBlockAfter(chunk, lx, ly, lz, block);
@@ -327,8 +328,8 @@ namespace Cubizer
 				if (_callbacks.OnRemoveBlockBefore != null)
 					_callbacks.OnRemoveBlockBefore(chunk, x, y, z, null);
 
-				chunk.Voxels.Set(x, y, z, null);
-				chunk.Dirty = true;
+				chunk.voxels.Set(x, y, z, null);
+				chunk.dirty = true;
 
 				if (_callbacks.OnRemoveBlockAfter != null)
 					_callbacks.OnRemoveBlockAfter(chunk, x, y, z, null);
@@ -350,15 +351,15 @@ namespace Cubizer
 		{
 			Debug.Assert(path != null);
 
-			if (this.Manager.Load(path))
+			if (this.manager.Load(path))
 			{
 				DestroyChunks(is_save);
 
-				foreach (ChunkPrimer chunk in this.Manager.GetEnumerator())
+				foreach (ChunkPrimer chunk in this.manager.GetEnumerator())
 				{
 					var gameObject = new GameObject("Chunk");
 					gameObject.transform.parent = _chunkObject.transform;
-					gameObject.transform.position = new Vector3(chunk.Position.x, chunk.Position.y, chunk.Position.z) * Model.settings.chunkSize;
+					gameObject.transform.position = new Vector3(chunk.position.x, chunk.position.y, chunk.position.z) * model.settings.chunkSize;
 					gameObject.AddComponent<ChunkData>().Init(chunk);
 				}
 
@@ -375,7 +376,7 @@ namespace Cubizer
 			using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write))
 			{
 				var serializer = new BinaryFormatter();
-				serializer.Serialize(stream, this.Manager);
+				serializer.Serialize(stream, this.manager);
 
 				return true;
 			}
@@ -387,7 +388,7 @@ namespace Cubizer
 			var chunkY = CalculateChunkPosByWorld(player.player.transform.position.y);
 			var chunkZ = CalculateChunkPosByWorld(player.player.transform.position.z);
 
-			var radius = Model.settings.chunkUpdateRadius;
+			var radius = model.settings.chunkUpdateRadius;
 			for (int dx = -radius; dx <= radius; dx++)
 			{
 				for (int dz = -radius; dz <= radius; dz++)
@@ -399,12 +400,12 @@ namespace Cubizer
 					var chunk = FindChunk(x, y, z);
 					if (chunk != null)
 					{
-						if (!chunk.Dirty)
+						if (!chunk.dirty)
 							chunk.InvokeOnUpdate();
 						else
 						{
 							chunk.InvokeOnChunkChange();
-							chunk.Dirty = false;
+							chunk.dirty = false;
 						}
 					}
 					else
@@ -426,13 +427,13 @@ namespace Cubizer
 
 			int start = bestScore;
 
-			var chunkOffset = (Vector3.one * (Model.settings.chunkSize - 1)) * 0.5f;
+			var chunkOffset = (Vector3.one * (model.settings.chunkSize - 1)) * 0.5f;
 
 			for (int iy = radius[1].x; iy <= radius[1].y; iy++)
 			{
 				int dy = y + iy;
 
-				if (dy < Model.settings.chunkHeightLimitLow || dy > Model.settings.chunkHeightLimitHigh)
+				if (dy < model.settings.chunkHeightLimitLow || dy > model.settings.chunkHeightLimitHigh)
 					continue;
 
 				for (int ix = radius[0].x; ix <= radius[0].y; ix++)
@@ -447,9 +448,9 @@ namespace Cubizer
 						if (hit != null)
 							continue;
 
-						var p = chunkOffset + new Vector3(dx, dy, dz) * Model.settings.chunkSize;
+						var p = chunkOffset + new Vector3(dx, dy, dz) * model.settings.chunkSize;
 
-						int invisiable = GeometryUtility.TestPlanesAABB(planes, new Bounds(p, Vector3.one * Model.settings.chunkSize)) ? 0 : 1;
+						int invisiable = GeometryUtility.TestPlanesAABB(planes, new Bounds(p, Vector3.one * model.settings.chunkSize)) ? 0 : 1;
 						int distance = Mathf.Max(Mathf.Max(Mathf.Abs(ix), Mathf.Abs(iy)), Mathf.Abs(iz));
 						int score = (invisiable << 24) | distance;
 
@@ -477,25 +478,25 @@ namespace Cubizer
 			{
 				var gameObject = new GameObject("Chunk");
 				gameObject.transform.parent = _chunkObject.transform;
-				gameObject.transform.position = chunk.Position.ConvertToVector3() * Context.profile.chunk.settings.chunkSize;
+				gameObject.transform.position = chunk.position.ConvertToVector3() * context.profile.chunk.settings.chunkSize;
 				gameObject.AddComponent<ChunkData>().Init(chunk);
 			}
 		}
 
 		private void AutoGC()
 		{
-			if (this.Manager.Count > Model.settings.chunkNumLimits)
-				this.Manager.GC();
+			if (this.manager.count > model.settings.chunkNumLimits)
+				this.manager.GC();
 		}
 
 		public override void Update()
 		{
-			if (this.Count > Model.settings.chunkNumLimits)
+			if (this.count > model.settings.chunkNumLimits)
 				return;
 
 			this.AutoGC();
 
-			var players = Context.players.settings.players;
+			var players = context.players.settings.players;
 			foreach (var it in players)
 				DestroyChunk(it.player.transform.position, it.model.settings.chunkRadiusGC);
 

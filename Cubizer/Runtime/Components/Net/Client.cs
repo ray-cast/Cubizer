@@ -22,7 +22,7 @@ namespace Cubizer
 		private int _sendTimeout = 0;
 		private int _receiveTimeout = 0;
 
-		public int SendTimeout
+		public int sendTimeout
 		{
 			set
 			{
@@ -36,7 +36,7 @@ namespace Cubizer
 			}
 		}
 
-		public int ReceiveTimeout
+		public int receiveTimeout
 		{
 			set
 			{
@@ -50,7 +50,7 @@ namespace Cubizer
 			}
 		}
 
-		public bool Connected
+		public bool connected
 		{
 			get
 			{

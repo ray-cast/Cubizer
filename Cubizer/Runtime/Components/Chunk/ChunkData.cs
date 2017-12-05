@@ -10,7 +10,7 @@ namespace Cubizer
 
 		private ChunkPrimer _chunk;
 
-		public override bool Dirty
+		public override bool dirty
 		{
 			get
 			{
@@ -22,7 +22,7 @@ namespace Cubizer
 			}
 		}
 
-		public override ChunkPrimer Chunk
+		public override ChunkPrimer chunk
 		{
 			get
 			{
@@ -44,12 +44,12 @@ namespace Cubizer
 
 		public void OnDrawGizmos()
 		{
-			if (Chunk == null)
+			if (chunk == null)
 				return;
 
-			if (Chunk.Voxels != null || Chunk.Voxels.Count > 0)
+			if (chunk.voxels != null || chunk.voxels.Count > 0)
 			{
-				var bound = Chunk.Voxels.Bound;
+				var bound = chunk.voxels.Bound;
 
 				Vector3 pos = transform.position;
 				pos.x += (bound.x - 1) * 0.5f;
@@ -66,7 +66,7 @@ namespace Cubizer
 			for (int i = 0; i < transform.childCount; i++)
 				Destroy(transform.GetChild(i).gameObject);
 
-			if (_chunk == null || _chunk.Voxels.Count == 0)
+			if (_chunk == null || _chunk.voxels.Count == 0)
 				return;
 
 			var model = _chunk.CreateVoxelModel(VoxelCullMode.Culled);
@@ -107,7 +107,7 @@ namespace Cubizer
 			Debug.Assert(_chunk == null);
 
 			_chunk = chunk;
-			_chunk.Dirty = _dirty = false;
+			_chunk.dirty = _dirty = false;
 			_chunk.OnChunkChange += OnBuildChunk;
 
 			this.OnBuildChunkAsync();

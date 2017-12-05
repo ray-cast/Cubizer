@@ -8,7 +8,7 @@ using UnityEditor;
 
 namespace Cubizer
 {
-	class CubizerModelEditor 
+	internal class CubizerModelEditor
 	{
 		public CubizerModel target { get; internal set; }
 		public SerializedProperty serializedProperty { get; internal set; }
@@ -17,7 +17,6 @@ namespace Cubizer
 		protected SerializedProperty m_EnabledProperty;
 
 		internal bool alwaysEnabled = false;
-		internal CubizerProfile profile;
 		internal CubizerInspector inspector;
 
 		internal void OnPreEnable()
@@ -41,7 +40,7 @@ namespace Cubizer
 			GUILayout.Space(5);
 		}
 
-		void Reset()
+		private void Reset()
 		{
 			var obj = serializedProperty.serializedObject;
 			Undo.RecordObject(obj.targetObject, "Reset");

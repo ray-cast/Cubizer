@@ -14,7 +14,7 @@ namespace Cubier
 
 			base.DrawDefaultInspector();
 
-			if (behaviour.ChunkManager != null)
+			if (behaviour.chunkManager != null)
 			{
 				if (GUILayout.Button("Load Terrain..."))
 				{
@@ -22,7 +22,7 @@ namespace Cubier
 					if (SelectedPath.Length == 0)
 						return;
 
-					if (behaviour.ChunkManager.Load(SelectedPath))
+					if (behaviour.chunkManager.Load(SelectedPath))
 						Debug.Log("Your data of terrain was loaded successfully");
 					else
 						Debug.Log("load Failed");
@@ -34,34 +34,34 @@ namespace Cubier
 					if (SelectedPath.Length == 0)
 						return;
 
-					if (behaviour.ChunkManager.Save(SelectedPath))
+					if (behaviour.chunkManager.Save(SelectedPath))
 						Debug.Log("Your data of terrain was saved successfully");
 					else
 						Debug.Log("Save Failed");
 				}
 			}
 
-			if (behaviour.Server != null)
+			if (behaviour.server != null)
 			{
-				if (behaviour.Server.IsCancellationRequested)
+				if (behaviour.server.isCancellationRequested)
 				{
 					if (GUILayout.Button("Create Server..."))
-						behaviour.Server.Open();
+						behaviour.server.Open();
 				}
 				else
 				{
 					if (GUILayout.Button("Close Server..."))
-						behaviour.Server.Close();
+						behaviour.server.Close();
 
-					if (behaviour.Client.IsCancellationRequested)
+					if (behaviour.client.isCancellationRequested)
 					{
 						if (GUILayout.Button("Connect Server..."))
-							behaviour.Client.Connect();
+							behaviour.client.Connect();
 					}
 					else
 					{
 						if (GUILayout.Button("Disconnect Server..."))
-							behaviour.Client.Disconnect();
+							behaviour.client.Disconnect();
 					}
 				}
 			}

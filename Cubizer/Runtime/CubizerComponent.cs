@@ -5,9 +5,9 @@ namespace Cubizer
 {
 	internal interface ICubizerComponent
 	{
-		bool Active { get; }
+		bool active { get; }
 
-		CubizerContext Context { get; }
+		CubizerContext context { get; }
 
 		void OnEnable();
 		void OnDisable();
@@ -20,30 +20,30 @@ namespace Cubizer
 	public abstract class CubizerComponent<T> : ICubizerComponent
 		where T : CubizerModel
 	{
-		public abstract bool Active
+		public abstract bool active
 		{
 			get; set;
 		}
 
-		public virtual CubizerContext Context
+		public virtual CubizerContext context
 		{
 			get; internal set;
 		}
 
-		public virtual T Model
+		public virtual T model
 		{
 			get; internal set;
 		}
 
 		public virtual void Init(CubizerContext _context, T _model)
 		{
-			Model = _model;
-			Context = _context;
+			model = _model;
+			context = _context;
 		}
 
 		public virtual CubizerModel GetModel()
 		{
-			return Model;
+			return model;
 		}
 
 		public virtual void OnEnable()

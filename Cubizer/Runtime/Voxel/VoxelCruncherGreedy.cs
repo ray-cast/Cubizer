@@ -48,7 +48,7 @@ namespace Cubizer
 							{
 								if (a == null)
 								{
-									if (!b.Transparent)
+									if (!b.is_transparent)
 									{
 										mask2[n] = true;
 										mask[n++] = b;
@@ -60,7 +60,7 @@ namespace Cubizer
 								}
 								else if (b == null)
 								{
-									if (!edge || !a.Transparent)
+									if (!edge || !a.is_transparent)
 									{
 										mask2[n] = false;
 										mask[n++] = a;
@@ -72,8 +72,8 @@ namespace Cubizer
 								}
 								else
 								{
-									mask2[n] = b.Transparent ? false : true;
-									mask[n++] = b.Transparent ? a : b;
+									mask2[n] = b.is_transparent ? false : true;
+									mask[n++] = b.is_transparent ? a : b;
 								}
 							}
 							else
@@ -186,7 +186,7 @@ namespace Cubizer
 			Bounds bound = new Bounds();
 			foreach (var it in voxels.GetEnumerator())
 			{
-				if (it.value.CanMerge)
+				if (it.value.canMerge)
 				{
 					bound.Encapsulate(new Vector3(it.position.x, it.position.y, it.position.z));
 					map[it.position.x, it.position.y, it.position.z] = it.value;

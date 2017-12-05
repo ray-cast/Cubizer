@@ -16,9 +16,9 @@ namespace Cubizer
 		private int _allocSize = 0;
 		private ChunkNode[] _data;
 
-		public int Count { get { return _count; } }
+		public int count { get { return _count; } }
 
-		public ChunkNode[] Data
+		public ChunkNode[] data
 		{
 			get { return _data; }
 		}

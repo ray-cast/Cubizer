@@ -2,7 +2,7 @@
 {
 	public interface IBiomeDataManager
 	{
-		int Count { get; }
+		int count { get; }
 
 		bool Load(string path);
 		bool Save(string path);

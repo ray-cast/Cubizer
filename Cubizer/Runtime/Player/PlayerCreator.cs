@@ -162,9 +162,9 @@ namespace Cubizer
 				var ray = _player.ScreenPointToRay(Input.mousePosition);
 				ray.origin = _player.transform.position;
 
-				if (_world.ChunkManager.HitTestByRay(ray, _hitTestDistance, out chunk, out x, out y, out z))
+				if (_world.chunkManager.HitTestByRay(ray, _hitTestDistance, out chunk, out x, out y, out z))
 				{
-					var position = new Vector3(chunk.Position.x, chunk.Position.y, chunk.Position.z) * _world.Profile.chunk.settings.chunkSize + new Vector3(x, y, z);
+					var position = new Vector3(chunk.position.x, chunk.position.y, chunk.position.z) * _world.profile.chunk.settings.chunkSize + new Vector3(x, y, z);
 					Graphics.DrawMesh(mesh, position, Quaternion.identity, material, gameObject.layer, _player);
 				}
 			}
@@ -181,7 +181,7 @@ namespace Cubizer
 			{
 				var material = VoxelMaterialManager.GetInstance().GetMaterial(_block.name);
 				if (material != null)
-					_world.ChunkManager.AddBlockByScreenPos(Input.mousePosition, _hitTestDistance, material);
+					_world.chunkManager.AddBlockByScreenPos(Input.mousePosition, _hitTestDistance, material);
 			}
 
 			yield return new WaitWhile(() => Input.GetMouseButton(1));
@@ -195,7 +195,7 @@ namespace Cubizer
 				yield break;
 
 			_isHitTesting = true;
-			_world.ChunkManager.RemoveBlockByScreenPos(Input.mousePosition, _hitTestDistance);
+			_world.chunkManager.RemoveBlockByScreenPos(Input.mousePosition, _hitTestDistance);
 
 			yield return new WaitWhile(() => Input.GetMouseButton(0));
 

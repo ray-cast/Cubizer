@@ -10,7 +10,7 @@ namespace Cubizer
 		private List<IBiomeGenerator> _biomeGenerators;
 		private bool _active;
 
-		public override bool Active
+		public override bool active
 		{
 			get
 			{
@@ -37,7 +37,7 @@ namespace Cubizer
 
 		private IBiomeDataManager Biomes
 		{
-			get { return Model.settings.biomeManager; }
+			get { return model.settings.biomeManager; }
 		}
 
 		public BiomeManagerComponent(string name = "ServerBiomes")
@@ -51,14 +51,14 @@ namespace Cubizer
 			_biomeObject = new GameObject(_name);
 			_biomeGenerators = new List<IBiomeGenerator>();
 
-			foreach (var it in Model.settings.biomeGenerators)
+			foreach (var it in model.settings.biomeGenerators)
 			{
 				if (it != null)
 				{
 					var generator = GameObject.Instantiate(it.gameObject).GetComponent<IBiomeGenerator>();
 					generator.gameObject.name = it.name;
 					generator.gameObject.transform.parent = _biomeObject.transform;
-					generator.Init(this.Context);
+					generator.Init(this.context);
 
 					_biomeGenerators.Add(generator);
 				}
@@ -82,7 +82,7 @@ namespace Cubizer
 
 		public IBiomeData BuildBiomeIfNotExist(int x, int y, int z)
 		{
-			Debug.Assert(Model.settings.biomeNull != null);
+			Debug.Assert(model.settings.biomeNull != null);
 
 			IBiomeData biomeData = null;
 			if (this.Biomes.Get(x, y, z, out biomeData))
@@ -96,15 +96,15 @@ namespace Cubizer
 			}
 
 			if (biomeData == null)
-				biomeData = Model.settings.biomeNull;
+				biomeData = model.settings.biomeNull;
 
-			Model.settings.biomeManager.Set(x, y, z, biomeData);
+			model.settings.biomeManager.Set(x, y, z, biomeData);
 			return biomeData;
 		}
 
 		private void AutoGC()
 		{
-			if (this.Biomes.Count > Model.settings.biomeNumLimits)
+			if (this.Biomes.count > model.settings.biomeNumLimits)
 				this.Biomes.GC();
 		}
 

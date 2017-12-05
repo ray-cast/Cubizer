@@ -83,7 +83,7 @@ namespace Cubizer
 			}
 		}
 
-		public void loadChunk(ChunkPrimer chunk, int x, int y, int z)
+		public void LoadChunk(ChunkPrimer chunk, int x, int y, int z)
 		{
 			using (var _dbCommandLoadBlocks = _dbConnection.CreateCommand())
 			{
@@ -103,16 +103,16 @@ namespace Cubizer
 							var zz = dbReader.GetByte(2);
 							var ww = dbReader.GetByte(3);
 							if (ww > 0)
-								chunk.Voxels.Set(xx, yy, zz, VoxelMaterialManager.GetInstance().GetMaterial(ww));
+								chunk.voxels.Set(xx, yy, zz, VoxelMaterialManager.GetInstance().GetMaterial(ww));
 							else
-								chunk.Voxels.Set(xx, yy, zz, null);
+								chunk.voxels.Set(xx, yy, zz, null);
 						}
 					}
 				}
 			}
 		}
 
-		public void insertBlock(int x, int y, int z, int xx, int yy, int zz, int ww)
+		public void InsertBlock(int x, int y, int z, int xx, int yy, int zz, int ww)
 		{
 			using (var _dbCommandInsertBlock = _dbConnection.CreateCommand())
 			{

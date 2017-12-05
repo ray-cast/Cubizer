@@ -23,7 +23,7 @@ namespace Cubizer
 
 		private bool _dirty;
 
-		public bool Dirty
+		public bool dirty
 		{
 			get
 			{
@@ -35,12 +35,12 @@ namespace Cubizer
 			}
 		}
 
-		public Vector3<int> Position
+		public Vector3<int> position
 		{
 			get { return _position; }
 		}
 
-		public VoxelData<VoxelMaterial> Voxels
+		public VoxelData<VoxelMaterial> voxels
 		{
 			get { return _voxels; }
 		}
@@ -101,13 +101,13 @@ namespace Cubizer
 			switch (mode)
 			{
 				case VoxelCullMode.Stupid:
-					return new VoxelCruncherStupid().CalcVoxelCruncher(this.Voxels);
+					return new VoxelCruncherStupid().CalcVoxelCruncher(this.voxels);
 
 				case VoxelCullMode.Culled:
-					return new VoxelCruncherCulled().CalcVoxelCruncher(this.Voxels);
+					return new VoxelCruncherCulled().CalcVoxelCruncher(this.voxels);
 
 				case VoxelCullMode.Greedy:
-					return new VoxelCruncherGreedy().CalcVoxelCruncher(this.Voxels);
+					return new VoxelCruncherGreedy().CalcVoxelCruncher(this.voxels);
 
 				default:
 					throw new System.Exception("Bad VoxelCullMode");

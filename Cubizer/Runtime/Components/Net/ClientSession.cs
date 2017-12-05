@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 
 using System;
-using System.IO;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,7 +15,7 @@ namespace Cubizer
 
 		private Task _task;
 
-		public TcpClient Client
+		public TcpClient client
 		{
 			get
 			{

@@ -9,7 +9,7 @@ namespace Cubizer
 		private ServerTcpRouter _tcpListener;
 		private CancellationTokenSource _cancellationToken;
 
-		public override bool Active
+		public override bool active
 		{
 			get
 			{
@@ -29,7 +29,7 @@ namespace Cubizer
 			}
 		}
 
-		public bool IsCancellationRequested
+		public bool isCancellationRequested
 		{
 			get
 			{
@@ -37,39 +37,39 @@ namespace Cubizer
 			}
 		}
 
-		public int Count
+		public int count
 		{
 			get
 			{
-				return _tcpListener != null ? _tcpListener.Count : 0;
+				return _tcpListener != null ? _tcpListener.count : 0;
 			}
 		}
 
 		public override void OnEnable()
 		{
-			Context.behaviour.Events.OnLoadChunkAfter += this.OnLoadChunkDataAfter;
-			Context.behaviour.Events.OnAddBlockAfter += this.OnAddBlockAfter;
-			Context.behaviour.Events.OnRemoveBlockAfter += this.OnRemoveBlockAfter;
+			context.behaviour.events.OnLoadChunkAfter += this.OnLoadChunkDataAfter;
+			context.behaviour.events.OnAddBlockAfter += this.OnAddBlockAfter;
+			context.behaviour.events.OnRemoveBlockAfter += this.OnRemoveBlockAfter;
 		}
 
 		public override void OnDisable()
 		{
-			Context.behaviour.Events.OnLoadChunkAfter -= this.OnLoadChunkDataAfter;
-			Context.behaviour.Events.OnAddBlockAfter -= this.OnAddBlockAfter;
-			Context.behaviour.Events.OnRemoveBlockAfter -= this.OnRemoveBlockAfter;
+			context.behaviour.events.OnLoadChunkAfter -= this.OnLoadChunkDataAfter;
+			context.behaviour.events.OnAddBlockAfter -= this.OnAddBlockAfter;
+			context.behaviour.events.OnRemoveBlockAfter -= this.OnRemoveBlockAfter;
 
 			this.Close();
 		}
 
 		public void Open()
 		{
-			if (IsCancellationRequested)
+			if (isCancellationRequested)
 			{
 				_cancellationToken = new CancellationTokenSource();
 
-				_tcpListener = new ServerTcpRouter(Model.settings.server.protocol, Model.settings.network.address, Model.settings.network.port);
-				_tcpListener.SendTimeout = Model.settings.server.sendTimeOut;
-				_tcpListener.ReceiveTimeout = Model.settings.server.receiveTimeout;
+				_tcpListener = new ServerTcpRouter(model.settings.server.protocol, model.settings.network.address, model.settings.network.port);
+				_tcpListener.sendTimeout = model.settings.server.sendTimeOut;
+				_tcpListener.receiveTimeout = model.settings.server.receiveTimeout;
 				_tcpListener.Start(_cancellationToken.Token).GetAwaiter().OnCompleted(() => { _tcpListener = null; });
 			}
 			else

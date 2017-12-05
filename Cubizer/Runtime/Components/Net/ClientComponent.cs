@@ -11,7 +11,7 @@ namespace Cubizer
 		private CancellationTokenSource _cancellationToken;
 		private Task _task;
 
-		public override bool Active
+		public override bool active
 		{
 			get
 			{
@@ -31,7 +31,7 @@ namespace Cubizer
 			}
 		}
 
-		public bool IsCancellationRequested
+		public bool isCancellationRequested
 		{
 			get
 			{
@@ -41,27 +41,27 @@ namespace Cubizer
 
 		public override void OnEnable()
 		{
-			Context.behaviour.Events.OnLoadChunkAfter += this.OnLoadChunkDataAfter;
-			Context.behaviour.Events.OnAddBlockAfter += this.OnAddBlockAfter;
-			Context.behaviour.Events.OnRemoveBlockAfter += this.OnRemoveBlockAfter;
+			context.behaviour.events.OnLoadChunkAfter += this.OnLoadChunkDataAfter;
+			context.behaviour.events.OnAddBlockAfter += this.OnAddBlockAfter;
+			context.behaviour.events.OnRemoveBlockAfter += this.OnRemoveBlockAfter;
 		}
 
 		public override void OnDisable()
 		{
-			Context.behaviour.Events.OnLoadChunkAfter -= this.OnLoadChunkDataAfter;
-			Context.behaviour.Events.OnAddBlockAfter -= this.OnAddBlockAfter;
-			Context.behaviour.Events.OnRemoveBlockAfter -= this.OnRemoveBlockAfter;
+			context.behaviour.events.OnLoadChunkAfter -= this.OnLoadChunkDataAfter;
+			context.behaviour.events.OnAddBlockAfter -= this.OnAddBlockAfter;
+			context.behaviour.events.OnRemoveBlockAfter -= this.OnRemoveBlockAfter;
 		}
 
 		public bool Connect()
 		{
-			if (IsCancellationRequested)
+			if (isCancellationRequested)
 			{
 				_cancellationToken = new CancellationTokenSource();
 
-				_client = new Client(Model.settings.client.protocol, Model.settings.network.address, Model.settings.network.port);
-				_client.SendTimeout = Model.settings.client.sendTimeOut;
-				_client.ReceiveTimeout = Model.settings.client.receiveTimeout;
+				_client = new Client(model.settings.client.protocol, model.settings.network.address, model.settings.network.port);
+				_client.sendTimeout = model.settings.client.sendTimeOut;
+				_client.receiveTimeout = model.settings.client.receiveTimeout;
 
 				try
 				{
@@ -85,7 +85,7 @@ namespace Cubizer
 					throw e;
 				}
 
-				return _client.Connected;
+				return _client.connected;
 			}
 			else
 			{

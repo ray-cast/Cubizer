@@ -6,12 +6,12 @@ namespace Cubizer
 	[DisallowMultipleComponent]
 	public abstract class IChunkData : MonoBehaviour
 	{
-		public abstract bool Dirty
+		public abstract bool dirty
 		{
 			get; internal set;
 		}
 
-		public abstract ChunkPrimer Chunk
+		public abstract ChunkPrimer chunk
 		{
 			get; set;
 		}

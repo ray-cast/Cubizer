@@ -13,15 +13,15 @@
 
 		public ChunkPrimer OnCreateChunk(CubizerBehaviour terrain, int x, int y, int z)
 		{
-			var size = terrain.Profile.chunk.settings.chunkSize;
+			var size = terrain.profile.chunk.settings.chunkSize;
 			var map = new ChunkPrimer(size, x, y, z, size * size * _params.floorBase);
 
-			for (byte ix = 0; ix < map.Voxels.Bound.x; ix++)
+			for (byte ix = 0; ix < map.voxels.Bound.x; ix++)
 			{
-				for (byte iz = 0; iz < map.Voxels.Bound.z; iz++)
+				for (byte iz = 0; iz < map.voxels.Bound.z; iz++)
 				{
 					for (byte iy = 0; iy < _params.floorBase; iy++)
-						map.Voxels.Set(ix, iy, iz, _materials.grass);
+						map.voxels.Set(ix, iy, iz, _materials.grass);
 				}
 			}
 

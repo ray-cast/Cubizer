@@ -24,7 +24,7 @@ namespace Cubizer
 		private int _sendTimeout = 0;
 		private int _receiveTimeout = 0;
 
-		public int Count
+		public int count
 		{
 			get
 			{
@@ -32,28 +32,28 @@ namespace Cubizer
 			}
 		}
 
-		public int SendTimeout
+		public int sendTimeout
 		{
 			set
 			{
 				if (_sendTimeout != value)
 				{
 					foreach (var it in _sessions)
-						it.Client.SendTimeout = value;
+						it.client.SendTimeout = value;
 
 					_sendTimeout = value;
 				}
 			}
 		}
 
-		public int ReceiveTimeout
+		public int receiveTimeout
 		{
 			set
 			{
 				if (_receiveTimeout != value)
 				{
 					foreach (var it in _sessions)
-						it.Client.ReceiveTimeout = value;
+						it.client.ReceiveTimeout = value;
 
 					_receiveTimeout = value;
 				}
@@ -162,8 +162,8 @@ namespace Cubizer
 					_onIncomingClient.Invoke();
 
 				var session = new ClientSession(tcpClient, _protocol);
-				session.Client.SendTimeout = _sendTimeout;
-				session.Client.ReceiveTimeout = _receiveTimeout;
+				session.client.SendTimeout = _sendTimeout;
+				session.client.ReceiveTimeout = _receiveTimeout;
 				session.StartAsync(cancellationToken);
 
 				_sessions.Add(session);
@@ -174,7 +174,7 @@ namespace Cubizer
 		{
 			foreach (var it in _sessions)
 			{
-				if (!it.Client.Connected)
+				if (!it.client.Connected)
 					_sessions.Remove(it);
 			}
 		}

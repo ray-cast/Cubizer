@@ -13,7 +13,7 @@ namespace Cubizer
 
 		private BiomeDataNode<Vector3<int>, IBiomeData>[] _data;
 
-		public int Count
+		public int count
 		{
 			get { return _count; }
 		}

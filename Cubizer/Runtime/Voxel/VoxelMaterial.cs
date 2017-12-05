@@ -19,13 +19,13 @@ namespace Cubizer
 			set { _name = value; }
 		}
 
-		public bool Transparent
+		public bool is_transparent
 		{
 			get { return _model.transparent; }
 			set { _model.transparent = value; }
 		}
 
-		public bool CanMerge
+		public bool canMerge
 		{
 			get { return _model.merge; }
 			set { _model.merge = value; }

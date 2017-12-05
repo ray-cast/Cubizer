@@ -4,7 +4,7 @@ namespace Cubizer
 {
 	public interface IChunkDataManager
 	{
-		int Count { get; }
+		int count { get; }
 
 		bool Load(string path);
 		bool Save(string path);

@@ -11,7 +11,7 @@ namespace Cubizer
 		private readonly string _name;
 		private GameObject _liveObject;
 
-		public override bool Active
+		public override bool active
 		{
 			get
 			{
@@ -40,15 +40,15 @@ namespace Cubizer
 		public override void OnEnable()
 		{
 			_liveObject = new GameObject(_name);
-			foreach (var it in Model.settings.lives)
+			foreach (var it in model.settings.lives)
 			{
 				if (it == null)
-					throw new NullReferenceException("Missing of index:" + Model.settings.lives.IndexOf(null));
+					throw new NullReferenceException("Missing of index:" + model.settings.lives.IndexOf(null));
 
 				var gameObject = GameObject.Instantiate(it.gameObject);
 				gameObject.name = it.name;
 				gameObject.transform.parent = _liveObject.transform;
-				gameObject.GetComponent<LiveBehaviour>().material = Context.materialFactory.CreateMaterial(it.name, it.settings);
+				gameObject.GetComponent<LiveBehaviour>().material = context.materialFactory.CreateMaterial(it.name, it.settings);
 			}
 		}
 

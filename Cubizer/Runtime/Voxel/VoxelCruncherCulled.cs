@@ -21,7 +21,7 @@ namespace Cubizer
 			if (y < bound.y - 1) instanceID[3] = map[x, (byte)(y + 1), z];
 			if (z < bound.z - 1) instanceID[5] = map[x, y, (byte)(z + 1)];
 
-			if (material.Transparent)
+			if (material.is_transparent)
 			{
 				var name = material.Name;
 
@@ -32,7 +32,7 @@ namespace Cubizer
 				faces.front = (instanceID[4] == null) ? true : instanceID[4].Name != name ? true : false;
 				faces.back = (instanceID[5] == null) ? true : instanceID[5].Name != name ? true : false;
 
-				if (material.CanMerge)
+				if (material.canMerge)
 				{
 					if (x == 0) faces.left = false;
 					if (z == 0) faces.front = false;
@@ -42,15 +42,15 @@ namespace Cubizer
 			}
 			else
 			{
-				faces.left = (instanceID[0] == null) ? true : instanceID[0].Transparent ? true : false;
-				faces.right = (instanceID[1] == null) ? true : instanceID[1].Transparent ? true : false;
-				faces.bottom = (instanceID[2] == null) ? true : instanceID[2].Transparent ? true : false;
-				faces.top = (instanceID[3] == null) ? true : instanceID[3].Transparent ? true : false;
-				faces.front = (instanceID[4] == null) ? true : instanceID[4].Transparent ? true : false;
-				faces.back = (instanceID[5] == null) ? true : instanceID[5].Transparent ? true : false;
+				faces.left = (instanceID[0] == null) ? true : instanceID[0].is_transparent ? true : false;
+				faces.right = (instanceID[1] == null) ? true : instanceID[1].is_transparent ? true : false;
+				faces.bottom = (instanceID[2] == null) ? true : instanceID[2].is_transparent ? true : false;
+				faces.top = (instanceID[3] == null) ? true : instanceID[3].is_transparent ? true : false;
+				faces.front = (instanceID[4] == null) ? true : instanceID[4].is_transparent ? true : false;
+				faces.back = (instanceID[5] == null) ? true : instanceID[5].is_transparent ? true : false;
 			}
 
-			if (!material.CanMerge)
+			if (!material.canMerge)
 				faces = new VoxelVisiableFaces(faces.Any);
 
 			return faces.Any;

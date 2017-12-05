@@ -22,8 +22,8 @@ namespace Cubizer
 
 				if (_material != null)
 				{
-					_material.CanMerge = value.merge;
-					_material.Transparent = value.transparent;
+					_material.canMerge = value.merge;
+					_material.is_transparent = value.transparent;
 				}
 			}
 		}

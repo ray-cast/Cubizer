@@ -4,7 +4,7 @@
 	{
 		private CubizerContext _context;
 
-		public override CubizerContext Context
+		public override CubizerContext context
 		{
 			get { return _context; }
 		}
