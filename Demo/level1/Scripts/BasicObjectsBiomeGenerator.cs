@@ -47,6 +47,8 @@ namespace Cubizer
 
 		public void Start()
 		{
+			Math.Noise.simplex_seed(context.profile.terrain.settings.seed);
+
 			_materials = new BasicObjectsMaterials();
 
 			var materialFactor = context.materialFactory;

@@ -50,8 +50,6 @@ namespace Cubizer
 			{
 				if (_params.isGenGrass && _params.isGenSand)
 				{
-					UnityEngine.Random.InitState(ix ^ iz * h);
-
 					for (byte iy = 0; iy < h; iy++)
 						map.voxels.Set(ix, iy, iz, random.Next() > _params.thresholdSand ? _materials.grass : _materials.sand);
 				}

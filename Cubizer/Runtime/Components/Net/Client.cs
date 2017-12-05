@@ -34,6 +34,10 @@ namespace Cubizer
 					_sendTimeout = value;
 				}
 			}
+			get
+			{
+				return _sendTimeout;
+			}
 		}
 
 		public int receiveTimeout
@@ -47,6 +51,10 @@ namespace Cubizer
 
 					_receiveTimeout = value;
 				}
+			}
+			get
+			{
+				return _receiveTimeout;
 			}
 		}
 

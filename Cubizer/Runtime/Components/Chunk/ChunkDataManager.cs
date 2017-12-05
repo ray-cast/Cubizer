@@ -1,8 +1,6 @@
 ﻿using System;
-using System.IO;
 using System.Collections;
 using System.Diagnostics;
-using System.Runtime.Serialization.Formatters.Binary;
 
 using Cubizer.Math;
 

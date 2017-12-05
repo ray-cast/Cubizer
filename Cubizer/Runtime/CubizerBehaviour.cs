@@ -171,6 +171,22 @@ namespace Cubizer
 			return _components.Remove(component);
 		}
 
+		private ICubizerComponent GetCubizerComponent(System.Type type)
+		{
+			foreach (var component in _components)
+			{
+				if (component.GetType() == type)
+					return component;
+			}
+
+			return null;
+		}
+
+		private ICubizerComponent GetCubizerComponent<T>() where T : ICubizerComponent
+		{
+			return GetCubizerComponent(typeof(T));
+		}
+
 		private IEnumerator UpdateComponentsWithCoroutine()
 		{
 			yield return new WaitForSeconds(profile.terrain.settings.repeatRate);
@@ -217,8 +233,6 @@ namespace Cubizer
 
 			_client = AddComponent(new ClientComponent());
 			_client.Init(_context, _profile.network);
-
-			Math.Noise.simplex_seed(_profile.terrain.settings.seed);
 
 			this.EnableComponents();
 
