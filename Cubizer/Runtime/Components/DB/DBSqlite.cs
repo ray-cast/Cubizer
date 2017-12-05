@@ -5,7 +5,7 @@ using Mono.Data.Sqlite;
 
 namespace Cubizer
 {
-	public class DbSqlite : IDisposable
+	public class DbSqlite : IDbManager
 	{
 		private string _path;
 
@@ -35,7 +35,7 @@ namespace Cubizer
 
 		~DbSqlite()
 		{
-			this.Dispose();
+			Close();
 		}
 
 		public void OpenDB(string path)
@@ -63,7 +63,7 @@ namespace Cubizer
 			}
 		}
 
-		public void Dispose()
+		public void Close()
 		{
 			if (_dbConnection != null)
 			{
@@ -72,6 +72,11 @@ namespace Cubizer
 
 				Debug.Log("Disconnected from db :" + _path);
 			}
+		}
+
+		public void Dispose()
+		{
+			this.Close();
 		}
 
 		public void ExecuteNonQuery(string sqlquery)

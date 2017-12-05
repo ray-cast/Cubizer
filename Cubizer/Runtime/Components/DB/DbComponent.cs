@@ -8,7 +8,7 @@ namespace Cubizer
 		private string _dbUrl;
 		private string _dbName;
 
-		private DbSqlite _sqlite;
+		private IDbManager _dbManager;
 
 		private bool _active;
 
@@ -59,7 +59,7 @@ namespace Cubizer
 			context.behaviour.events.OnAddBlockBefore += this.OnAddBlockBefore;
 			context.behaviour.events.OnRemoveBlockBefore += this.OnRemoveBlockBefore;
 
-			_sqlite = new DbSqlite(_dbUrl + _dbName);
+			_dbManager = new DbSqlite(_dbUrl + _dbName);
 		}
 
 		public override void OnDisable()
@@ -68,27 +68,33 @@ namespace Cubizer
 			context.behaviour.events.OnAddBlockBefore -= this.OnAddBlockBefore;
 			context.behaviour.events.OnRemoveBlockBefore -= this.OnRemoveBlockBefore;
 
-			if (_sqlite != null)
+			if (_dbManager != null)
 			{
-				_sqlite.Dispose();
-				_sqlite = null;
+				_dbManager.Dispose();
+				_dbManager = null;
 			}
 		}
 
 		private void OnLoadChunkDataAfter(ChunkPrimer chunk)
 		{
 			if (chunk != null)
-				_sqlite.LoadChunk(chunk, chunk.position.x, chunk.position.y, chunk.position.z);
+				_dbManager.LoadChunk(chunk, chunk.position.x, chunk.position.y, chunk.position.z);
 		}
 
 		private void OnAddBlockBefore(ChunkPrimer chunk, int x, int y, int z, VoxelMaterial voxel)
 		{
-			Task.Run(() => { _sqlite.InsertBlock(chunk.position.x, chunk.position.y, chunk.position.z, x, y, z, voxel.GetInstanceID()); });
+			Task.Run(() =>
+			{
+				_dbManager.InsertBlock(chunk.position.x, chunk.position.y, chunk.position.z, x, y, z, voxel.GetInstanceID());
+			});
 		}
 
 		private void OnRemoveBlockBefore(ChunkPrimer chunk, int x, int y, int z, VoxelMaterial voxel)
 		{
-			Task.Run(() => { _sqlite.InsertBlock(chunk.position.x, chunk.position.y, chunk.position.z, x, y, z, 0); });
+			Task.Run(() =>
+			{
+				_dbManager.InsertBlock(chunk.position.x, chunk.position.y, chunk.position.z, x, y, z, 0);
+			});
 		}
 	}
 }
