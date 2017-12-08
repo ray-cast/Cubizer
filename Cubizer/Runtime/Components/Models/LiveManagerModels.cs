@@ -18,7 +18,10 @@ namespace Cubizer
 			{
 				get
 				{
-					return new LiveSettings();
+					return new LiveSettings
+					{
+						lives = new List<ILiveBehaviour>()
+					};
 				}
 			}
 		}

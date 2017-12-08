@@ -8,24 +8,23 @@ namespace Cubizer
 		private readonly string _name;
 		private GameObject _biomeObject;
 		private List<IBiomeGenerator> _biomeGenerators;
-		private bool _active;
 
 		public override bool active
 		{
 			get
 			{
-				return _active;
+				return model.enabled;
 			}
 			set
 			{
-				if (_active != value)
+				if (model.enabled != value)
 				{
 					if (value)
 						this.OnEnable();
 					else
 						this.OnDisable();
 
-					_active = value;
+					model.enabled = value;
 				}
 			}
 		}
@@ -43,7 +42,6 @@ namespace Cubizer
 		public BiomeManagerComponent(string name = "ServerBiomes")
 		{
 			_name = name;
-			_active = true;
 		}
 
 		public override void OnEnable()

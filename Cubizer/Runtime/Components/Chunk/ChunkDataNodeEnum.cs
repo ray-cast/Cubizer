@@ -2,7 +2,7 @@
 
 namespace Cubizer
 {
-	public class ChunkDataNodeEnum<_Tx, _Ty> : IEnumerator
+	public sealed class ChunkDataNodeEnum<_Tx, _Ty> : IEnumerator
 		where _Tx : struct
 		where _Ty : class
 	{

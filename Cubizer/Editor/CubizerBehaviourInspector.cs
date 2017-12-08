@@ -52,17 +52,20 @@ namespace Cubier
 				{
 					if (GUILayout.Button("Close Server..."))
 						behaviour.server.Close();
+				}
+			}
 
-					if (behaviour.client.isCancellationRequested)
-					{
-						if (GUILayout.Button("Connect Server..."))
-							behaviour.client.Connect();
-					}
-					else
-					{
-						if (GUILayout.Button("Disconnect Server..."))
-							behaviour.client.Disconnect();
-					}
+			if (behaviour.client != null)
+			{
+				if (behaviour.client.isCancellationRequested)
+				{
+					if (GUILayout.Button("Connect Server..."))
+						behaviour.client.Connect();
+				}
+				else
+				{
+					if (GUILayout.Button("Disconnect Server..."))
+						behaviour.client.Disconnect();
 				}
 			}
 		}

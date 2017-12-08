@@ -2,7 +2,7 @@
 
 namespace Cubizer
 {
-	public class ServerProtocolNull : IServerProtocol
+	public sealed class ServerProtocolNull : IServerProtocol
 	{
 		public bool DispatchIncomingPacket(NetworkStream stream, byte[] buffer, int length)
 		{

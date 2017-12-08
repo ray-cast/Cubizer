@@ -1,6 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Collections;
 using System.Diagnostics;
+using System.Runtime.Serialization.Formatters.Binary;
 
 using Cubizer.Math;
 
@@ -8,6 +10,7 @@ namespace Cubizer
 {
 	using ChunkNode = ChunkDataNode<Vector3<int>, ChunkPrimer>;
 
+	[Serializable]
 	public class ChunkDataManager : IChunkDataManager
 	{
 		private int _count = 0;
@@ -149,12 +152,25 @@ namespace Cubizer
 
 		public bool Save(string path)
 		{
-			throw new NotImplementedException();
+			using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write))
+			{
+				var serializer = new BinaryFormatter();
+				serializer.Serialize(stream, this);
+				return true;
+			}
 		}
 
 		public bool Load(string path)
 		{
-			throw new NotImplementedException();
+			using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
+			{
+				var _new = new BinaryFormatter().Deserialize(stream) as ChunkDataManager;
+				_count = _new.count;
+				_data = _new._data;
+				_allocSize = _new._allocSize;
+
+				return true;
+			}
 		}
 
 		private bool Grow(ChunkNode data)

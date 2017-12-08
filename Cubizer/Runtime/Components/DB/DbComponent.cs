@@ -10,50 +10,35 @@ namespace Cubizer
 
 		private IDbManager _dbManager;
 
-		private bool _active;
-
 		public override bool active
 		{
 			get
 			{
-				return _active;
+				return model.enabled;
 			}
 			set
 			{
-				if (_active != value)
+				if (model.enabled != value)
 				{
 					if (value)
 						this.OnEnable();
 					else
 						this.OnDisable();
 
-					_active = value;
+					model.enabled = value;
 				}
 			}
-		}
-
-		public DbComponent()
-		{
-			_active = true;
 		}
 
 		public override void OnEnable()
 		{
 			_dbUrl = model.settings.url;
 			if (string.IsNullOrEmpty(_dbUrl) || _dbUrl == "localhost")
-			{
 				_dbUrl = Application.persistentDataPath + "/";
-
-				if (string.IsNullOrEmpty(_dbUrl))
-					model.SetDefaultURL("localhost");
-			}
 
 			_dbName = model.settings.name;
 			if (string.IsNullOrEmpty(_dbName))
-			{
 				_dbName = "cubizer.db";
-				model.SetDefaultName(_dbName);
-			}
 
 			context.behaviour.events.OnLoadChunkAfter += this.OnLoadChunkDataAfter;
 			context.behaviour.events.OnAddBlockBefore += this.OnAddBlockBefore;
@@ -78,7 +63,7 @@ namespace Cubizer
 		private void OnLoadChunkDataAfter(ChunkPrimer chunk)
 		{
 			if (chunk != null)
-				_dbManager.LoadChunk(chunk, chunk.position.x, chunk.position.y, chunk.position.z);
+				_dbManager.LoadChunk(chunk);
 		}
 
 		private void OnAddBlockBefore(ChunkPrimer chunk, int x, int y, int z, VoxelMaterial voxel)

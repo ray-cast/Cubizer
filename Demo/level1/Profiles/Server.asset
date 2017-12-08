@@ -12,14 +12,17 @@ MonoBehaviour:
   m_Name: Server
   m_EditorClassIdentifier: 
   terrain:
+    _enabled: 1
     _settings:
       seed: 255
       repeatRate: 0.016666668
   database:
+    _enabled: 1
     _settings:
       url: localhost
       name: cubizer.db
   chunk:
+    _enabled: 1
     _settings:
       chunkSize: 24
       chunkHeightLimitLow: -10
@@ -28,11 +31,13 @@ MonoBehaviour:
       chunkUpdateRadius: 1
       chunkThreadNums: 1
   biome:
+    _enabled: 1
     _settings:
       biomeGenerators:
       - {fileID: 114448704350713134, guid: 33e7fd7f6b831a344beddde85fc9d6f8, type: 2}
       biomeNumLimits: 4096
   lives:
+    _enabled: 1
     _settings:
       lives:
       - {fileID: 114985089927386156, guid: bd46c21763c8a9d49bba1b6f681cef37, type: 2}
@@ -54,8 +59,14 @@ MonoBehaviour:
       - {fileID: 114328574832605986, guid: a3fc8deb7c43fe84e9b3a2cd23343184, type: 2}
       - {fileID: 114328574832605986, guid: b318477134dc81a4fb8274392167bb9d, type: 2}
   network:
+    _enabled: 1
     _settings:
-      address: 127.0.0.1
-      port: 10000
-      sendTimeOut: 5000
-      receiveTimeout: 10000
+      network:
+        address: 127.0.0.1
+        port: 10000
+      client:
+        sendTimeOut: 5000
+        receiveTimeout: 10000
+      server:
+        sendTimeOut: 5000
+        receiveTimeout: 10000

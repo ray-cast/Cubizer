@@ -2,7 +2,7 @@
 
 namespace Cubizer
 {
-	public class VoxelDataNodeEnumerable<_Tx, _Ty> : IEnumerable
+	public sealed class VoxelDataNodeEnumerable<_Tx, _Ty> : IEnumerable
 		where _Tx : struct
 		where _Ty : class
 	{

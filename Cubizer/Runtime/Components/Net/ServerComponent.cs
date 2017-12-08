@@ -1,8 +1,12 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
+using System.Net.Sockets;
+
+using UnityEngine;
 
 namespace Cubizer
 {
-	public class ServerComponent : CubizerComponent<NetworkModels>
+	public sealed class ServerComponent : CubizerComponent<NetworkModels>
 	{
 		private bool _active = true;
 
@@ -67,10 +71,23 @@ namespace Cubizer
 			{
 				_cancellationToken = new CancellationTokenSource();
 
-				_tcpListener = new ServerTcpRouter(model.settings.server.protocol, model.settings.network.address, model.settings.network.port);
-				_tcpListener.sendTimeout = model.settings.server.sendTimeOut;
-				_tcpListener.receiveTimeout = model.settings.server.receiveTimeout;
-				_tcpListener.Start(_cancellationToken.Token).GetAwaiter().OnCompleted(() => { _tcpListener = null; });
+				try
+				{
+					_tcpListener = new ServerTcpRouter(model.settings.server.protocol, model.settings.network.address, model.settings.network.port);
+					_tcpListener.sendTimeout = model.settings.server.sendTimeOut;
+					_tcpListener.receiveTimeout = model.settings.server.receiveTimeout;
+					_tcpListener.events.onStartTcpListener += OnStartTcpListener;
+					_tcpListener.events.onStopTcpListener += OnStopTcpListener;
+					_tcpListener.events.onIncomingClient += OnIncomingClient;
+					_tcpListener.events.onIncomingClientSession += OnIncomingClientSession;
+					_tcpListener.events.onOutcomingClientSession += OnOutcomingClientSession;
+					_tcpListener.Start(_cancellationToken.Token).GetAwaiter().OnCompleted(() => { _tcpListener = null; });
+				}
+				catch (Exception e)
+				{
+					_cancellationToken = new CancellationTokenSource();
+					throw e;
+				}
 			}
 			else
 			{
@@ -99,10 +116,29 @@ namespace Cubizer
 		{
 		}
 
-		public override void Update()
+		private void OnStartTcpListener()
 		{
-			if (_tcpListener != null)
-				_tcpListener.Update();
+			Debug.Log("Starting server listener...");
+		}
+
+		private void OnStopTcpListener()
+		{
+			Debug.Log("Stop server listener...");
+		}
+
+		private void OnIncomingClient(TcpClient client)
+		{
+			Debug.Log($"Incoming connection of client from {client.Client.RemoteEndPoint}.");
+		}
+
+		private void OnIncomingClientSession(ClientSession session)
+		{
+			Debug.Log($"Incoming connection of client session from {session.client.Client.RemoteEndPoint}.");
+		}
+
+		private void OnOutcomingClientSession(ClientSession session)
+		{
+			Debug.Log($"Outcoming connection of clisent session.");
 		}
 	}
 }

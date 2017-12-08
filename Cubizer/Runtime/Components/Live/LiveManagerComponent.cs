@@ -7,7 +7,6 @@ namespace Cubizer
 	[Serializable]
 	public sealed class LiveManagerComponent : CubizerComponent<LiveManagerModels>
 	{
-		private bool _active;
 		private readonly string _name;
 		private GameObject _liveObject;
 
@@ -15,18 +14,18 @@ namespace Cubizer
 		{
 			get
 			{
-				return _active;
+				return model.enabled;
 			}
 			set
 			{
-				if (_active != value)
+				if (model.enabled != value)
 				{
 					if (value)
 						this.OnEnable();
 					else
 						this.OnDisable();
 
-					_active = value;
+					model.enabled = value;
 				}
 			}
 		}
@@ -34,7 +33,6 @@ namespace Cubizer
 		public LiveManagerComponent(string name = "ServerEntities")
 		{
 			_name = name;
-			_active = true;
 		}
 
 		public override void OnEnable()

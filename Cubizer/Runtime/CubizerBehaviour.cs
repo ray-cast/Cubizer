@@ -62,8 +62,8 @@ namespace Cubizer
 			{
 				_players.settings.players.Add(player);
 
-				if (this.events.OnPlayerConnection != null)
-					this.events.OnPlayerConnection(player);
+				if (_events.OnPlayerConnection != null)
+					_events.OnPlayerConnection(player);
 			}
 			else
 			{
@@ -77,8 +77,8 @@ namespace Cubizer
 			{
 				_players.settings.players.Remove(player);
 
-				if (this.events.OnPlayerDisconnect != null)
-					this.events.OnPlayerDisconnect(player);
+				if (_events.OnPlayerDisconnect != null)
+					_events.OnPlayerDisconnect(player);
 			}
 			else
 			{
@@ -88,44 +88,44 @@ namespace Cubizer
 
 		private void OnLoadChunkDataBefore(int x, int y, int z, ref ChunkPrimer chunk)
 		{
-			if (this.events.OnLoadChunkBefore != null)
-				this.events.OnLoadChunkBefore(x, y, z, ref chunk);
+			if (_events.OnLoadChunkBefore != null)
+				_events.OnLoadChunkBefore(x, y, z, ref chunk);
 		}
 
 		private void OnLoadChunkDataAfter(ChunkPrimer chunk)
 		{
-			if (this.events.OnLoadChunkAfter != null)
-				this.events.OnLoadChunkAfter(chunk);
+			if (_events.OnLoadChunkAfter != null)
+				_events.OnLoadChunkAfter(chunk);
 		}
 
 		private void OnDestroyChunkData(ChunkPrimer chunk)
 		{
-			if (this.events.OnDestroyChunk != null)
-				this.events.OnDestroyChunk(chunk);
+			if (_events.OnDestroyChunk != null)
+				_events.OnDestroyChunk(chunk);
 		}
 
 		private void OnAddBlockBefore(ChunkPrimer chunk, int x, int y, int z, VoxelMaterial voxel)
 		{
-			if (this.events.OnAddBlockBefore != null)
-				this.events.OnAddBlockBefore(chunk, x, y, z, voxel);
+			if (_events.OnAddBlockBefore != null)
+				_events.OnAddBlockBefore(chunk, x, y, z, voxel);
 		}
 
 		private void OnAddBlockAfter(ChunkPrimer chunk, int x, int y, int z, VoxelMaterial voxel)
 		{
-			if (this.events.OnAddBlockAfter != null)
-				this.events.OnAddBlockAfter(chunk, x, y, z, voxel);
+			if (_events.OnAddBlockAfter != null)
+				_events.OnAddBlockAfter(chunk, x, y, z, voxel);
 		}
 
 		private void OnRemoveBlockBefore(ChunkPrimer chunk, int x, int y, int z, VoxelMaterial voxel)
 		{
-			if (this.events.OnRemoveBlockBefore != null)
-				this.events.OnRemoveBlockBefore(chunk, x, y, z, voxel);
+			if (_events.OnRemoveBlockBefore != null)
+				_events.OnRemoveBlockBefore(chunk, x, y, z, voxel);
 		}
 
 		private void OnRemoveBlockAfter(ChunkPrimer chunk, int x, int y, int z, VoxelMaterial voxel)
 		{
-			if (this.events.OnRemoveBlockAfter != null)
-				this.events.OnRemoveBlockAfter(chunk, x, y, z, voxel);
+			if (_events.OnRemoveBlockAfter != null)
+				_events.OnRemoveBlockAfter(chunk, x, y, z, voxel);
 		}
 
 		private void EnableComponents()
@@ -169,6 +169,17 @@ namespace Cubizer
 		{
 			Debug.Assert(component != null);
 			return _components.Remove(component);
+		}
+
+		private ICubizerComponent GetCubizerComponent(string name)
+		{
+			foreach (var component in _components)
+			{
+				if (component.GetType().Name == name)
+					return component;
+			}
+
+			return null;
 		}
 
 		private ICubizerComponent GetCubizerComponent(System.Type type)

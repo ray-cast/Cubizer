@@ -2,7 +2,7 @@
 
 namespace Cubizer
 {
-	public class BiomeDataNodeEnum<_Tx, _Ty> : IEnumerator
+	public sealed class BiomeDataNodeEnum<_Tx, _Ty> : IEnumerator
 		where _Tx : struct
 		where _Ty : class
 	{

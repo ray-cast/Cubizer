@@ -10,16 +10,16 @@ using System.Collections.Generic;
 
 namespace Cubizer
 {
-	public class ServerTcpRouter : IDisposable
+	public sealed class ServerTcpRouter : IDisposable
 	{
 		private readonly int _port;
 		private readonly IPAddress _address;
 		private readonly TcpListener _listener;
-		private readonly List<ClientSession> _sessions;
+		private readonly List<ClientSession> _sessions = new List<ClientSession>();
 		private readonly IServerProtocol _protocol;
+		private readonly ServerTcpDelegates _events = new ServerTcpDelegates();
 
 		private Task _task;
-		private Action _onIncomingClient;
 
 		private int _sendTimeout = 0;
 		private int _receiveTimeout = 0;
@@ -28,7 +28,7 @@ namespace Cubizer
 		{
 			get
 			{
-				return _sessions != null ? _sessions.Count : 0;
+				return _sessions.Count;
 			}
 		}
 
@@ -60,6 +60,14 @@ namespace Cubizer
 			}
 		}
 
+		public ServerTcpDelegates events
+		{
+			get
+			{
+				return _events;
+			}
+		}
+
 		public ServerTcpRouter(IServerProtocol protocol, string ip, int port)
 		{
 			Debug.Assert(protocol != null && !string.IsNullOrEmpty(ip));
@@ -68,7 +76,6 @@ namespace Cubizer
 			_address = IPAddress.Parse(ip);
 			_protocol = protocol;
 			_listener = new TcpListener(_address, _port);
-			_sessions = new List<ClientSession>();
 		}
 
 		~ServerTcpRouter()
@@ -86,27 +93,24 @@ namespace Cubizer
 			{
 				try
 				{
-					Debug.Log("Starting server listener...");
+					if (_events.onStartTcpListener != null)
+						_events.onStartTcpListener.Invoke();
 
 					_listener.Start();
 
 					while (!cancellationToken.IsCancellationRequested)
-						this.DispatchIncomingClient(await _listener.AcceptTcpClientAsync(), cancellationToken);
-
-					_listener.Stop();
+						DispatchIncomingClient(await _listener.AcceptTcpClientAsync(), cancellationToken);
 				}
 				finally
 				{
-					Debug.Log("Stop server listener...");
+					if (_events.onStopTcpListener != null)
+						_events.onStopTcpListener.Invoke();
+
+					_listener.Stop();
 				}
 			});
 
 			return _task;
-		}
-
-		public void OnIncomingClient(Action continuation)
-		{
-			_onIncomingClient = continuation;
 		}
 
 		public void Close()
@@ -151,32 +155,33 @@ namespace Cubizer
 
 		private void DispatchIncomingClient(TcpClient tcpClient, CancellationToken cancellationToken)
 		{
-			Debug.Log($"Incoming connection from {tcpClient.Client.RemoteEndPoint}.");
-
 			if (cancellationToken.IsCancellationRequested)
 				return;
 
 			if (tcpClient.Connected)
 			{
-				if (_onIncomingClient != null)
-					_onIncomingClient.Invoke();
+				if (_events.onIncomingClient != null)
+					_events.onIncomingClient.Invoke(tcpClient);
 
 				var session = new ClientSession(tcpClient, _protocol);
 				session.client.SendTimeout = _sendTimeout;
 				session.client.ReceiveTimeout = _receiveTimeout;
+				session.OnCompletion(OnCompletionSession);
 				session.StartAsync(cancellationToken);
 
-				_sessions.Add(session);
+				if (_events.onIncomingClientSession != null)
+					_events.onIncomingClientSession.Invoke(session);
+
+				lock (_sessions) _sessions.Add(session);
 			}
 		}
 
-		public void Update()
+		private void OnCompletionSession(ClientSession clientSession)
 		{
-			foreach (var it in _sessions)
-			{
-				if (!it.client.Connected)
-					_sessions.Remove(it);
-			}
+			if (_events.onOutcomingClientSession != null)
+				_events.onOutcomingClientSession.Invoke(clientSession);
+
+			lock (_sessions) _sessions.Remove(clientSession);
 		}
 	}
 }

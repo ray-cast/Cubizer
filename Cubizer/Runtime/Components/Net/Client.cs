@@ -22,6 +22,8 @@ namespace Cubizer
 		private int _sendTimeout = 0;
 		private int _receiveTimeout = 0;
 
+		public ClientDelegates _events = new ClientDelegates();
+
 		public int sendTimeout
 		{
 			set
@@ -66,6 +68,14 @@ namespace Cubizer
 			}
 		}
 
+		public ClientDelegates events
+		{
+			get
+			{
+				return _events;
+			}
+		}
+
 		public Client(IClientProtocol protocal, string ip, int port)
 		{
 			Debug.Assert(protocal != null);
@@ -91,11 +101,11 @@ namespace Cubizer
 
 				return _tcpClient.Connected;
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 				_tcpClient.Close();
 				_tcpClient = null;
-				throw e;
+				return false;
 			}
 		}
 
@@ -147,26 +157,26 @@ namespace Cubizer
 			if (!_tcpClient.Connected)
 				throw new InvalidOperationException("Please connect the server before login");
 
-			cancellationToken.Register(Loginout);
-
 			_tcpTask = Task.Run(() =>
 			{
 				if (!_tcpClient.Connected)
 					throw new InvalidOperationException("Please connect the server before login");
 
-				try
+				using (var stream = _tcpClient.GetStream())
 				{
-					Debug.Log("Starting client listener...");
-
-					using (var stream = _tcpClient.GetStream())
+					try
 					{
+						if (_events.onStartClientListener != null)
+							_events.onStartClientListener.Invoke();
+
 						while (!cancellationToken.IsCancellationRequested)
 							DispatchIncomingPacket(stream);
 					}
-				}
-				finally
-				{
-					Debug.Log("Stop client listener...");
+					finally
+					{
+						if (_events.onStopClientListener != null)
+							_events.onStopClientListener.Invoke();
+					}
 				}
 			});
 

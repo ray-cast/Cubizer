@@ -3,7 +3,7 @@
 namespace Cubizer
 {
 	[Serializable]
-	public class ChunkDataNode<_Tx, _Ty>
+	public sealed class ChunkDataNode<_Tx, _Ty>
 		where _Tx : struct
 		where _Ty : class
 	{

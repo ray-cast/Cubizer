@@ -118,5 +118,14 @@ namespace Cubizer
 		{
 			_settings = Settings.defaultSettings;
 		}
+
+		public override void OnValidate()
+		{
+			if (string.IsNullOrEmpty(_settings.network.address))
+				_settings.network.address = "127.0.0.1";
+
+			if (_settings.network.port == 0)
+				_settings.network.port = 10000;
+		}
 	}
 }

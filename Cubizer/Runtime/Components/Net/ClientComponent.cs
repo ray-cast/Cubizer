@@ -1,32 +1,32 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
+using UnityEngine;
+
 namespace Cubizer
 {
 	public class ClientComponent : CubizerComponent<NetworkModels>
 	{
-		private Client _client;
-
-		private bool _active = true;
-		private CancellationTokenSource _cancellationToken;
 		private Task _task;
+		private Client _client;
+		private CancellationTokenSource _cancellationToken;
 
 		public override bool active
 		{
 			get
 			{
-				return _active;
+				return model.enabled;
 			}
 			set
 			{
-				if (_active != value)
+				if (model.enabled != value)
 				{
 					if (value)
 						this.OnEnable();
 					else
 						this.OnDisable();
 
-					_active = value;
+					model.enabled = value;
 				}
 			}
 		}
@@ -57,14 +57,16 @@ namespace Cubizer
 		{
 			if (isCancellationRequested)
 			{
-				_cancellationToken = new CancellationTokenSource();
-
-				_client = new Client(model.settings.client.protocol, model.settings.network.address, model.settings.network.port);
-				_client.sendTimeout = model.settings.client.sendTimeOut;
-				_client.receiveTimeout = model.settings.client.receiveTimeout;
-
 				try
 				{
+					_cancellationToken = new CancellationTokenSource();
+
+					_client = new Client(model.settings.client.protocol, model.settings.network.address, model.settings.network.port);
+					_client.sendTimeout = model.settings.client.sendTimeOut;
+					_client.receiveTimeout = model.settings.client.receiveTimeout;
+					_client.events.onStartClientListener = OnStartClientListener;
+					_client.events.onStopClientListener = OnStopClientListener;
+
 					if (!_client.Connect())
 					{
 						_cancellationToken.Cancel();
@@ -77,15 +79,15 @@ namespace Cubizer
 						return false;
 					}
 
-					_client.Start(_cancellationToken.Token).GetAwaiter().OnCompleted(() => { _client = null; }); ;
+					_client.Start(_cancellationToken.Token);
+
+					return _client.connected;
 				}
 				catch (System.Exception e)
 				{
 					_cancellationToken.Cancel();
 					throw e;
 				}
-
-				return _client.connected;
 			}
 			else
 			{
@@ -97,6 +99,7 @@ namespace Cubizer
 		{
 			if (_cancellationToken != null)
 			{
+				_cancellationToken.Token.Register(_client.Loginout);
 				_cancellationToken.Cancel();
 				_cancellationToken = null;
 			}
@@ -112,6 +115,18 @@ namespace Cubizer
 
 		private void OnRemoveBlockAfter(ChunkPrimer chunk, int x, int y, int z, VoxelMaterial voxel)
 		{
+		}
+
+		private void OnStartClientListener()
+		{
+			Debug.Log("Starting client listener...");
+		}
+
+		private void OnStopClientListener()
+		{
+			Debug.Log("Stop client listener...");
+
+			_cancellationToken.Cancel();
 		}
 	}
 }

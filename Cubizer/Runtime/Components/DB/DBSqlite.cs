@@ -88,8 +88,12 @@ namespace Cubizer
 			}
 		}
 
-		public void LoadChunk(ChunkPrimer chunk, int x, int y, int z)
+		public void LoadChunk(ChunkPrimer chunk)
 		{
+			var x = chunk.position.x;
+			var y = chunk.position.y;
+			var z = chunk.position.z;
+
 			using (var _dbCommandLoadBlocks = _dbConnection.CreateCommand())
 			{
 				_dbCommandLoadBlocks.CommandText = queryLoadBlocks;
@@ -114,6 +118,31 @@ namespace Cubizer
 						}
 					}
 				}
+			}
+		}
+
+		public void SaveChunk(ChunkPrimer chunk)
+		{
+			var x = chunk.position.x;
+			var y = chunk.position.y;
+			var z = chunk.position.z;
+
+			using (var _dbCommandSaveBlock = _dbConnection.CreateCommand())
+			{
+				string query = "";
+
+				foreach (var it in chunk.voxels.GetEnumerator())
+				{
+					var xx = it.position.x;
+					var yy = it.position.y;
+					var zz = it.position.z;
+					var ww = it.value.GetInstanceID();
+
+					query += $"insert or replace into block (x, y, z, xx, yy, zz, ww) values ({x}, {y}, {z}, {xx}, {yy}, {zz}, {ww});";
+				}
+
+				_dbCommandSaveBlock.CommandText = query;
+				_dbCommandSaveBlock.ExecuteNonQuery();
 			}
 		}
 

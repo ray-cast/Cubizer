@@ -1,19 +1,21 @@
 ﻿using UnityEngine;
 
 using System;
+using System.IO;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Cubizer
 {
-	public class ClientSession : IDisposable
+	public sealed class ClientSession : IDisposable
 	{
 		private readonly TcpClient _tcpClient;
 		private readonly IServerProtocol _tcpProtocol;
 		private readonly byte[] buffer = new byte[8192];
 
 		private Task _task;
+		private ServerTcpDelegates.OnOutcomingClientSession _onCompletion;
 
 		public TcpClient client
 		{
@@ -35,6 +37,26 @@ namespace Cubizer
 			this.Close();
 		}
 
+		public void Start(CancellationToken cancellationToken)
+		{
+			if (!_tcpClient.Connected)
+				return;
+
+			using (var stream = _tcpClient.GetStream())
+			{
+				try
+				{
+					while (!cancellationToken.IsCancellationRequested)
+						DispatchIncomingPacket(stream);
+				}
+				finally
+				{
+					if (_onCompletion != null)
+						_onCompletion.Invoke(this);
+				}
+			}
+		}
+
 		public Task StartAsync(CancellationToken cancellationToken)
 		{
 			if (!_tcpClient.Connected)
@@ -42,18 +64,18 @@ namespace Cubizer
 
 			_task = Task.Run(() =>
 			{
-				try
+				using (var stream = _tcpClient.GetStream())
 				{
-					using (var stream = _tcpClient.GetStream())
+					try
 					{
 						while (!cancellationToken.IsCancellationRequested)
 							DispatchIncomingPacket(stream);
 					}
-				}
-				catch (Exception e)
-				{
-					_tcpClient.Close();
-					throw e;
+					finally
+					{
+						if (_onCompletion != null)
+							_onCompletion.Invoke(this);
+					}
 				}
 			});
 
@@ -82,11 +104,18 @@ namespace Cubizer
 			this.Close();
 		}
 
+		public void OnCompletion(ServerTcpDelegates.OnOutcomingClientSession continuation)
+		{
+			_onCompletion = continuation;
+		}
+
 		private void DispatchIncomingPacket(NetworkStream stream)
 		{
 			int count = stream.Read(buffer, 0, buffer.Length);
 			if (count > 0)
 				DispatchIncomingPacket(stream, buffer, count);
+			else
+				throw new EndOfStreamException();
 		}
 
 		private void DispatchIncomingPacket(NetworkStream stream, byte[] buffer, int length)

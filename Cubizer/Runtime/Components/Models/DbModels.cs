@@ -22,6 +22,8 @@ namespace Cubizer
 				{
 					return new DbSettings
 					{
+						url = "localhost",
+						name = "cubizer.db"
 					};
 				}
 			}
@@ -29,16 +31,6 @@ namespace Cubizer
 
 		[SerializeField]
 		private DbSettings _settings = DbSettings.defaultSettings;
-
-		public void SetDefaultURL(string url)
-		{
-			_settings.url = url;
-		}
-
-		public void SetDefaultName(string name)
-		{
-			_settings.name = name;
-		}
 
 		public DbSettings settings
 		{
@@ -49,6 +41,15 @@ namespace Cubizer
 		public override void Reset()
 		{
 			_settings = DbSettings.defaultSettings;
+		}
+
+		public override void OnValidate()
+		{
+			if (string.IsNullOrEmpty(_settings.url))
+				_settings.url = "localhost";
+
+			if (string.IsNullOrEmpty(_settings.name))
+				_settings.name = "cubizer.db";
 		}
 	}
 }

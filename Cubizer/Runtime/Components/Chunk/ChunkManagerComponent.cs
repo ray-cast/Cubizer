@@ -19,24 +19,22 @@ namespace Cubizer
 
 		private readonly ConcurrentQueue<ChunkPrimer> _deferredUpdater = new ConcurrentQueue<ChunkPrimer>();
 
-		private bool _active;
-
 		public override bool active
 		{
 			get
 			{
-				return _active;
+				return model.enabled;
 			}
 			set
 			{
-				if (_active != value)
+				if (model.enabled != value)
 				{
 					if (value)
 						this.OnEnable();
 					else
 						this.OnDisable();
 
-					_active = value;
+					model.enabled = value;
 				}
 			}
 		}
@@ -59,7 +57,6 @@ namespace Cubizer
 		public ChunkManagerComponent(string name = "ServerChunks")
 		{
 			_name = name;
-			_active = true;
 			_callbacks = new ChunkDelegates();
 		}
 
