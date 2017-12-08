@@ -81,11 +81,11 @@ namespace Cubizer
 					_tcpListener.events.onIncomingClient += OnIncomingClient;
 					_tcpListener.events.onIncomingClientSession += OnIncomingClientSession;
 					_tcpListener.events.onOutcomingClientSession += OnOutcomingClientSession;
-					_tcpListener.Start(_cancellationToken.Token).GetAwaiter().OnCompleted(() => { _tcpListener = null; });
+					_tcpListener.Start(_cancellationToken.Token);
 				}
 				catch (Exception e)
 				{
-					_cancellationToken = new CancellationTokenSource();
+					_cancellationToken.Cancel();
 					throw e;
 				}
 			}
@@ -99,6 +99,7 @@ namespace Cubizer
 		{
 			if (_cancellationToken != null)
 			{
+				_cancellationToken.Token.Register(_tcpListener.Dispose);
 				_cancellationToken.Cancel();
 				_cancellationToken = null;
 			}
@@ -124,6 +125,8 @@ namespace Cubizer
 		private void OnStopTcpListener()
 		{
 			Debug.Log("Stop server listener...");
+
+			_cancellationToken.Cancel();
 		}
 
 		private void OnIncomingClient(TcpClient client)

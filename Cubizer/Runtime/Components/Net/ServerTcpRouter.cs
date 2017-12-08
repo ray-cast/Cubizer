@@ -87,8 +87,6 @@ namespace Cubizer
 		{
 			Debug.Assert(_task == null);
 
-			cancellationToken.Register(Dispose);
-
 			_task = Task.Run(async () =>
 			{
 				try
