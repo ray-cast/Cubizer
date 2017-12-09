@@ -61,5 +61,11 @@ namespace Cubizer
 		{
 			_settings = ChunkManagerSettings.defaultSettings;
 		}
+
+		public override void OnValidate()
+		{
+			if (_settings.chunkSize == 0)
+				_settings.chunkSize = 24;
+		}
 	}
 }

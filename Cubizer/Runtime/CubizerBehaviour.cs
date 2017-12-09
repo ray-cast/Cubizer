@@ -63,7 +63,7 @@ namespace Cubizer
 				_players.settings.players.Add(player);
 
 				if (_events.OnPlayerConnection != null)
-					_events.OnPlayerConnection(player);
+					_events.OnPlayerConnection.Invoke(player);
 			}
 			else
 			{
@@ -78,7 +78,7 @@ namespace Cubizer
 				_players.settings.players.Remove(player);
 
 				if (_events.OnPlayerDisconnect != null)
-					_events.OnPlayerDisconnect(player);
+					_events.OnPlayerDisconnect.Invoke(player);
 			}
 			else
 			{
@@ -89,43 +89,43 @@ namespace Cubizer
 		private void OnLoadChunkDataBefore(int x, int y, int z, ref ChunkPrimer chunk)
 		{
 			if (_events.OnLoadChunkBefore != null)
-				_events.OnLoadChunkBefore(x, y, z, ref chunk);
+				_events.OnLoadChunkBefore.Invoke(x, y, z, ref chunk);
 		}
 
 		private void OnLoadChunkDataAfter(ChunkPrimer chunk)
 		{
 			if (_events.OnLoadChunkAfter != null)
-				_events.OnLoadChunkAfter(chunk);
+				_events.OnLoadChunkAfter.Invoke(chunk);
 		}
 
 		private void OnDestroyChunkData(ChunkPrimer chunk)
 		{
 			if (_events.OnDestroyChunk != null)
-				_events.OnDestroyChunk(chunk);
+				_events.OnDestroyChunk.Invoke(chunk);
 		}
 
 		private void OnAddBlockBefore(ChunkPrimer chunk, int x, int y, int z, VoxelMaterial voxel)
 		{
 			if (_events.OnAddBlockBefore != null)
-				_events.OnAddBlockBefore(chunk, x, y, z, voxel);
+				_events.OnAddBlockBefore.Invoke(chunk, x, y, z, voxel);
 		}
 
 		private void OnAddBlockAfter(ChunkPrimer chunk, int x, int y, int z, VoxelMaterial voxel)
 		{
 			if (_events.OnAddBlockAfter != null)
-				_events.OnAddBlockAfter(chunk, x, y, z, voxel);
+				_events.OnAddBlockAfter.Invoke(chunk, x, y, z, voxel);
 		}
 
 		private void OnRemoveBlockBefore(ChunkPrimer chunk, int x, int y, int z, VoxelMaterial voxel)
 		{
 			if (_events.OnRemoveBlockBefore != null)
-				_events.OnRemoveBlockBefore(chunk, x, y, z, voxel);
+				_events.OnRemoveBlockBefore.Invoke(chunk, x, y, z, voxel);
 		}
 
 		private void OnRemoveBlockAfter(ChunkPrimer chunk, int x, int y, int z, VoxelMaterial voxel)
 		{
 			if (_events.OnRemoveBlockAfter != null)
-				_events.OnRemoveBlockAfter(chunk, x, y, z, voxel);
+				_events.OnRemoveBlockAfter.Invoke(chunk, x, y, z, voxel);
 		}
 
 		private void EnableComponents()
@@ -207,12 +207,10 @@ namespace Cubizer
 			StartCoroutine("UpdateComponentsWithCoroutine");
 		}
 
-		public void Start()
+		public void OnEnable()
 		{
 			if (_profile == null)
 				Debug.LogError("Please drag a CubizerProfile into Inspector.");
-
-			Debug.Assert(_profile.chunk.settings.chunkSize > 0);
 
 			_context = new CubizerContext();
 			_context.profile = _profile;
@@ -221,9 +219,14 @@ namespace Cubizer
 			_context.players = _players;
 
 			_lives = AddComponent(new LiveManagerComponent());
+			_chunkManager = AddComponent(new ChunkManagerComponent());
+			_biomeManager = AddComponent(new BiomeManagerComponent());
+			_database = AddComponent(new DbComponent());
+			_server = AddComponent(new ServerComponent());
+			_client = AddComponent(new ClientComponent());
+
 			_lives.Init(_context, _profile.lives);
 
-			_chunkManager = AddComponent(new ChunkManagerComponent());
 			_chunkManager.Init(_context, _profile.chunk);
 			_chunkManager.callbacks.OnLoadChunkBefore += this.OnLoadChunkDataBefore;
 			_chunkManager.callbacks.OnLoadChunkAfter += this.OnLoadChunkDataAfter;
@@ -233,16 +236,9 @@ namespace Cubizer
 			_chunkManager.callbacks.OnRemoveBlockBefore += this.OnRemoveBlockBefore;
 			_chunkManager.callbacks.OnRemoveBlockAfter += this.OnRemoveBlockAfter;
 
-			_biomeManager = AddComponent(new BiomeManagerComponent());
 			_biomeManager.Init(_context, _profile.biome);
-
-			_database = AddComponent(new DbComponent());
 			_database.Init(_context, _profile.database);
-
-			_server = AddComponent(new ServerComponent());
 			_server.Init(_context, _profile.network);
-
-			_client = AddComponent(new ClientComponent());
 			_client.Init(_context, _profile.network);
 
 			this.EnableComponents();
@@ -250,7 +246,7 @@ namespace Cubizer
 			StartCoroutine("UpdateComponentsWithCoroutine");
 		}
 
-		public void OnDestroy()
+		public void OnDisable()
 		{
 			this.DisableComponents();
 

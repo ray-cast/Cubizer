@@ -1,11 +1,12 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 using UnityEngine;
 
 namespace Cubizer
 {
-	public class ClientComponent : CubizerComponent<NetworkModels>
+	public sealed class ClientComponent : CubizerComponent<NetworkModels>
 	{
 		private Task _task;
 		private Client _client;
@@ -57,10 +58,10 @@ namespace Cubizer
 		{
 			if (isCancellationRequested)
 			{
+				_cancellationToken = new CancellationTokenSource();
+
 				try
 				{
-					_cancellationToken = new CancellationTokenSource();
-
 					_client = new Client(model.settings.client.protocol, model.settings.network.address, model.settings.network.port);
 					_client.sendTimeout = model.settings.client.sendTimeOut;
 					_client.receiveTimeout = model.settings.client.receiveTimeout;
@@ -83,15 +84,16 @@ namespace Cubizer
 
 					return _client.connected;
 				}
-				catch (System.Exception e)
+				catch (Exception e)
 				{
 					_cancellationToken.Cancel();
+					_cancellationToken = null;
 					throw e;
 				}
 			}
 			else
 			{
-				throw new System.InvalidOperationException("There is a client already working now.");
+				throw new InvalidOperationException("There is a client already working now.");
 			}
 		}
 
@@ -127,6 +129,7 @@ namespace Cubizer
 			Debug.Log("Stop client listener...");
 
 			_cancellationToken.Cancel();
+			_cancellationToken = null;
 		}
 	}
 }

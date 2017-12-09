@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Cubizer
 {
-	public class DbComponent : CubizerComponent<DbModels>
+	public sealed class DbComponent : CubizerComponent<DbModels>
 	{
 		private string _dbUrl;
 		private string _dbName;
@@ -78,7 +78,7 @@ namespace Cubizer
 		{
 			Task.Run(() =>
 			{
-				_dbManager.InsertBlock(chunk.position.x, chunk.position.y, chunk.position.z, x, y, z, 0);
+				_dbManager.RemoveBlock(chunk.position.x, chunk.position.y, chunk.position.z, x, y, z);
 			});
 		}
 	}

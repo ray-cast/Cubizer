@@ -127,20 +127,20 @@ namespace Cubizer
 			var y = chunk.position.y;
 			var z = chunk.position.z;
 
+			string query = "";
+
+			foreach (var it in chunk.voxels.GetEnumerator())
+			{
+				var xx = it.position.x;
+				var yy = it.position.y;
+				var zz = it.position.z;
+				var ww = it.value.GetInstanceID();
+
+				query += $"insert or replace into block (x, y, z, xx, yy, zz, ww) values ({x}, {y}, {z}, {xx}, {yy}, {zz}, {ww});";
+			}
+
 			using (var _dbCommandSaveBlock = _dbConnection.CreateCommand())
 			{
-				string query = "";
-
-				foreach (var it in chunk.voxels.GetEnumerator())
-				{
-					var xx = it.position.x;
-					var yy = it.position.y;
-					var zz = it.position.z;
-					var ww = it.value.GetInstanceID();
-
-					query += $"insert or replace into block (x, y, z, xx, yy, zz, ww) values ({x}, {y}, {z}, {xx}, {yy}, {zz}, {ww});";
-				}
-
 				_dbCommandSaveBlock.CommandText = query;
 				_dbCommandSaveBlock.ExecuteNonQuery();
 			}
@@ -160,6 +160,11 @@ namespace Cubizer
 				_dbCommandInsertBlock.Parameters.Add(new SqliteParameter("ww", ww));
 				_dbCommandInsertBlock.ExecuteNonQuery();
 			}
+		}
+
+		public void RemoveBlock(int x, int y, int z, int xx, int yy, int zz)
+		{
+			InsertBlock(x, y, z, xx, yy, zz, 0);
 		}
 	}
 }

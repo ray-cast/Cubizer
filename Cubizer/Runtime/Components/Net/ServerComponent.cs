@@ -8,8 +8,6 @@ namespace Cubizer
 {
 	public sealed class ServerComponent : CubizerComponent<NetworkModels>
 	{
-		private bool _active = true;
-
 		private ServerTcpRouter _tcpListener;
 		private CancellationTokenSource _cancellationToken;
 
@@ -17,18 +15,18 @@ namespace Cubizer
 		{
 			get
 			{
-				return _active;
+				return model.enabled;
 			}
 			set
 			{
-				if (_active != value)
+				if (model.enabled != value)
 				{
 					if (value)
 						this.OnEnable();
 					else
 						this.OnDisable();
 
-					_active = value;
+					model.enabled = value;
 				}
 			}
 		}
@@ -86,6 +84,7 @@ namespace Cubizer
 				catch (Exception e)
 				{
 					_cancellationToken.Cancel();
+					_cancellationToken = null;
 					throw e;
 				}
 			}
@@ -126,7 +125,11 @@ namespace Cubizer
 		{
 			Debug.Log("Stop server listener...");
 
-			_cancellationToken.Cancel();
+			if (_cancellationToken != null)
+			{
+				_cancellationToken.Cancel();
+				_cancellationToken = null;
+			}
 		}
 
 		private void OnIncomingClient(TcpClient client)

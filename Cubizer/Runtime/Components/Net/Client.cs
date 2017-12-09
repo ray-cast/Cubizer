@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Cubizer
 {
-	public class Client : IDisposable
+	public sealed class Client : IDisposable
 	{
 		private readonly int _port;
 		private readonly IPAddress _address;
