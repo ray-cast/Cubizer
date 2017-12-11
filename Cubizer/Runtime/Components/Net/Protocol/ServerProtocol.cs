@@ -6,7 +6,7 @@ namespace Cubizer.Protocol
 	{
 		public void DispatchIncomingPacket(UncompressedPacket packet)
 		{
-			Debug.Log("Packet：" + packet.packetId + ".Length:[" + packet.length + "byte]");
+			Debug.Log("Packet：" + packet.packetId + ".Length:[" + packet.data.Count + "byte]");
 		}
 	}
 }

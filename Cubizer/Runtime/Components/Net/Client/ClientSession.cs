@@ -150,7 +150,7 @@ namespace Cubizer.Client
 			}
 			catch (Exception e)
 			{
-				UnityEngine.Debug.LogError(e.Message);
+				UnityEngine.Debug.LogException(e);
 			}
 			finally
 			{

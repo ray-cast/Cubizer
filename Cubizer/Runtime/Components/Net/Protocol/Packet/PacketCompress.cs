@@ -4,12 +4,12 @@
 	{
 		public CompressedPacket Compress(UncompressedPacket packet)
 		{
-			return new CompressedPacket(packet.length, packet.packetId, packet.data);
+			return new CompressedPacket(packet.packetId, packet.data);
 		}
 
 		public UncompressedPacket Decompress(CompressedPacket packet)
 		{
-			return new UncompressedPacket(packet.length, packet.packetId, packet.data);
+			return new UncompressedPacket(packet.packetId, packet.data);
 		}
 	}
 }

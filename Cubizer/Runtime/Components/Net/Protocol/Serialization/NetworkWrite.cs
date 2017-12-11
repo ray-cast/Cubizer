@@ -5,35 +5,30 @@ using System.Text;
 
 namespace Cubizer.Protocol
 {
-	public class NetworkWrite : IDisposable
+	public class NetworkWrite : BinaryWriter
 	{
-		public readonly BinaryWriter bw;
-
 		public NetworkWrite(Stream stream)
+			: base(stream)
 		{
-			bw = new BinaryWriter(stream);
 		}
 
 		public NetworkWrite(Stream stream, Encoding encoding, bool leaveOpen)
+			: base(stream, encoding, leaveOpen)
 		{
-			bw = new BinaryWriter(stream, encoding, leaveOpen);
 		}
 
-		public void Close() => bw.Close();
-		public void Flush() => bw.Flush();
-		public void Dispose() => bw.Dispose();
-
-		public void Write(bool value) => bw.Write(value);
-		public void Write(byte value) => bw.Write(value);
-		public void Write(byte[] value) => bw.Write(value);
-		public void Write(short value) => bw.Write(value.ToBigEndian());
-		public void Write(int value) => bw.Write(value.ToBigEndian());
-		public void Write(long value) => bw.Write(value.ToBigEndian());
-		public void Write(ushort value) => bw.Write(value.ToBigEndian());
-		public void Write(ulong value) => bw.Write(value.ToBigEndian());
-		public void Write(float value) => bw.Write(BitConverter.ToUInt32(BitConverter.GetBytes(value), 0).ToBigEndian());
-		public void Write(double value) => bw.Write(BitConverter.DoubleToInt64Bits(value).ToBigEndian());
-		public void Write(Guid value) => bw.Write(value.ToByteArray());
+		public override void Write(bool value) => base.Write(value);
+		public override void Write(byte value) => base.Write(value);
+		public override void Write(byte[] value) => base.Write(value);
+		public override void Write(short value) => base.Write(value.ToBigEndian());
+		public override void Write(int value) => base.Write(value.ToBigEndian());
+		public override void Write(uint value) => this.WriteVarInt(value);
+		public override void Write(long value) => base.Write(value.ToBigEndian());
+		public override void Write(ushort value) => base.Write(value.ToBigEndian());
+		public override void Write(ulong value) => base.Write(value.ToBigEndian());
+		public override void Write(float value) => base.Write(BitConverter.ToUInt32(BitConverter.GetBytes(value), 0).ToBigEndian());
+		public override void Write(double value) => base.Write(BitConverter.DoubleToInt64Bits(value).ToBigEndian());
+		public void Write(Guid value) => base.Write(value.ToByteArray());
 
 		public void WriteVarInt(uint value)
 		{
@@ -43,12 +38,12 @@ namespace Cubizer.Protocol
 				value >>= 7;
 				if (value != 0)
 					temp |= 0x80;
-				bw.Write(temp);
+				base.Write(temp);
 			}
 			while (value != 0);
 		}
 
-		public void writeVarLong(long value)
+		public void WriteVarLong(long value)
 		{
 			do
 			{
@@ -59,15 +54,15 @@ namespace Cubizer.Protocol
 				{
 					temp |= 0x80;
 				}
-				bw.Write(temp);
+				base.Write(temp);
 			} while (value != 0);
 		}
 
-		public void Write(string value)
+		public override void Write(string value)
 		{
 			var bytes = Encoding.UTF8.GetBytes(value);
 			this.WriteVarInt((uint)bytes.Length);
-			bw.Write(bytes);
+			base.Write(bytes);
 		}
 
 		public void Write<T>(IReadOnlyList<T> array)
