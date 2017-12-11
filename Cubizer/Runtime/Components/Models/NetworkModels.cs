@@ -7,7 +7,7 @@ namespace Cubizer
 	public class NetworkModels : CubizerModel
 	{
 		[Serializable]
-		public struct NetworkSettings
+		public struct ServerSettings
 		{
 			[SerializeField]
 			public string address;
@@ -15,22 +15,6 @@ namespace Cubizer
 			[SerializeField]
 			public int port;
 
-			public static NetworkSettings defaultSettings
-			{
-				get
-				{
-					return new NetworkSettings
-					{
-						address = "127.0.0.1",
-						port = 10000,
-					};
-				}
-			}
-		}
-
-		[Serializable]
-		public struct ServerSettings
-		{
 			[SerializeField]
 			public int sendTimeOut;
 
@@ -38,10 +22,7 @@ namespace Cubizer
 			public int receiveTimeout;
 
 			[SerializeField]
-			public IServerProtocol protocol;
-
-			[SerializeField]
-			public IClientProtocol clientProtocol;
+			public string protocol;
 
 			public static ServerSettings defaultSettings
 			{
@@ -49,10 +30,11 @@ namespace Cubizer
 				{
 					return new ServerSettings
 					{
+						address = "127.0.0.1",
+						port = 10000,
 						sendTimeOut = 5000,
 						receiveTimeout = 10000,
-						protocol = new ServerProtocolNull(),
-						clientProtocol = new ClientProtocolNull()
+						protocol = "Cubizer.Protocol.ServerProtocolDefault"
 					};
 				}
 			}
@@ -62,13 +44,19 @@ namespace Cubizer
 		public struct ClientSettings
 		{
 			[SerializeField]
+			public string address;
+
+			[SerializeField]
+			public int port;
+
+			[SerializeField]
 			public int sendTimeOut;
 
 			[SerializeField]
 			public int receiveTimeout;
 
 			[SerializeField]
-			public IClientProtocol protocol;
+			public string protocol;
 
 			public static ClientSettings defaultSettings
 			{
@@ -76,9 +64,11 @@ namespace Cubizer
 				{
 					return new ClientSettings
 					{
+						address = "127.0.0.1",
+						port = 10000,
 						sendTimeOut = 5000,
 						receiveTimeout = 10000,
-						protocol = new ClientProtocolNull()
+						protocol = "Cubizer.Protocol.ClientProtocolDefault"
 					};
 				}
 			}
@@ -87,7 +77,6 @@ namespace Cubizer
 		[Serializable]
 		public struct Settings
 		{
-			public NetworkSettings network;
 			public ClientSettings client;
 			public ServerSettings server;
 
@@ -97,7 +86,6 @@ namespace Cubizer
 				{
 					return new Settings
 					{
-						network = NetworkSettings.defaultSettings,
 						client = ClientSettings.defaultSettings,
 						server = ServerSettings.defaultSettings
 					};
@@ -121,11 +109,17 @@ namespace Cubizer
 
 		public override void OnValidate()
 		{
-			if (string.IsNullOrEmpty(_settings.network.address))
-				_settings.network.address = "127.0.0.1";
+			if (string.IsNullOrEmpty(_settings.client.address))
+				_settings.client.address = "127.0.0.1";
 
-			if (_settings.network.port == 0)
-				_settings.network.port = 10000;
+			if (_settings.client.port == 0)
+				_settings.client.port = 10000;
+
+			if (string.IsNullOrEmpty(_settings.server.address))
+				_settings.server.address = "127.0.0.1";
+
+			if (_settings.server.port == 0)
+				_settings.server.port = 10000;
 		}
 	}
 }

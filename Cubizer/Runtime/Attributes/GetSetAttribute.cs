@@ -1,7 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Cubizer
 {
+	[AttributeUsage(AttributeTargets.All, Inherited = true, AllowMultiple = false)]
 	public sealed class GetSetAttribute : PropertyAttribute
 	{
 		public readonly string name;

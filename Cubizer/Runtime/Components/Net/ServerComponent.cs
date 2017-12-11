@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Threading;
 using System.Net.Sockets;
+using System.Reflection;
 
 using UnityEngine;
+using Cubizer.Protocol;
 
 namespace Cubizer
 {
 	public sealed class ServerComponent : CubizerComponent<NetworkModels>
 	{
 		private ServerTcpRouter _tcpListener;
+		private IServerProtocol _serverProtocol;
 		private CancellationTokenSource _cancellationToken;
 
 		public override bool active
@@ -49,6 +52,14 @@ namespace Cubizer
 
 		public override void OnEnable()
 		{
+			var assembly = Assembly.GetAssembly(typeof(IServerProtocol));
+			if (assembly == null)
+				throw new MissingReferenceException($"Failed to load assembly: {typeof(IServerProtocol).FullName}.");
+
+			_serverProtocol = assembly.CreateInstance(model.settings.server.protocol) as IServerProtocol;
+			if (_serverProtocol == null)
+				throw new ArgumentException($"Invalid type name of protocol: {model.settings.client.protocol}.");
+
 			context.behaviour.events.OnLoadChunkAfter += this.OnLoadChunkDataAfter;
 			context.behaviour.events.OnAddBlockAfter += this.OnAddBlockAfter;
 			context.behaviour.events.OnRemoveBlockAfter += this.OnRemoveBlockAfter;
@@ -71,7 +82,7 @@ namespace Cubizer
 
 				try
 				{
-					_tcpListener = new ServerTcpRouter(model.settings.server.protocol, model.settings.network.address, model.settings.network.port);
+					_tcpListener = new ServerTcpRouter(model.settings.server.address, model.settings.server.port, _serverProtocol);
 					_tcpListener.sendTimeout = model.settings.server.sendTimeOut;
 					_tcpListener.receiveTimeout = model.settings.server.receiveTimeout;
 					_tcpListener.events.onStartTcpListener += OnStartTcpListener;
@@ -137,12 +148,12 @@ namespace Cubizer
 			Debug.Log($"Incoming connection of client from {client.Client.RemoteEndPoint}.");
 		}
 
-		private void OnIncomingClientSession(ClientSession session)
+		private void OnIncomingClientSession(ServerSession session)
 		{
 			Debug.Log($"Incoming connection of client session from {session.client.Client.RemoteEndPoint}.");
 		}
 
-		private void OnOutcomingClientSession(ClientSession session)
+		private void OnOutcomingClientSession(ServerSession session)
 		{
 			Debug.Log($"Outcoming connection of clisent session.");
 		}
