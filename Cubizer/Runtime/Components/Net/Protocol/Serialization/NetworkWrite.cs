@@ -66,7 +66,7 @@ namespace Cubizer.Protocol
 		}
 
 		public void Write<T>(IReadOnlyList<T> array)
-			where T : ISerializablePacket
+			where T : IPacketSerializable
 		{
 			foreach (var item in array)
 				item.Serialize(this);

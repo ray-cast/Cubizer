@@ -17,7 +17,7 @@ namespace Cubizer.Server
 		private readonly int _port;
 		private readonly IPAddress _address;
 		private readonly TcpListener _listener;
-		private readonly IServerProtocol _protocol;
+		private readonly IPacketRouter _protocol;
 		private readonly List<ServerSession> _sessions = new List<ServerSession>();
 		private readonly ServerTcpDelegates _events = new ServerTcpDelegates();
 
@@ -70,7 +70,7 @@ namespace Cubizer.Server
 			}
 		}
 
-		public ServerTcpRouter(string ip, int port, IServerProtocol protocol)
+		public ServerTcpRouter(string ip, int port, IPacketRouter protocol)
 		{
 			Debug.Assert(protocol != null && !string.IsNullOrEmpty(ip));
 

@@ -15,7 +15,7 @@ namespace Cubizer
 	{
 		private Task _task;
 		private ClientSession _client;
-		private IClientProtocol _clientProtocol = new ClientProtocol();
+		private IPacketRouter _clientProtocol = new ClientProtocol();
 		private CancellationTokenSource _cancellationToken;
 
 		public override bool active

@@ -1,6 +1,6 @@
 ﻿namespace Cubizer.Protocol
 {
-	public interface IClientProtocol
+	public interface IPacketRouter
 	{
 		void DispatchIncomingPacket(UncompressedPacket packet);
 	}

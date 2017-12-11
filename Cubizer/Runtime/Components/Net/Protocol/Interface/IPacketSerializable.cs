@@ -1,6 +1,6 @@
 ﻿namespace Cubizer.Protocol
 {
-	public interface ISerializablePacket
+	public interface IPacketSerializable
 	{
 		uint packId
 		{

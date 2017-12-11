@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Net.Sockets;
-using System.Reflection;
 
 using UnityEngine;
 
@@ -13,7 +12,7 @@ namespace Cubizer
 	public sealed class ServerComponent : CubizerComponent<NetworkModels>
 	{
 		private ServerTcpRouter _tcpListener;
-		private IServerProtocol _serverProtocol = new ServerProtocol();
+		private IPacketRouter _serverProtocol = new ServerProtocol();
 		private CancellationTokenSource _cancellationToken;
 
 		public override bool active

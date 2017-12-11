@@ -4,7 +4,7 @@ using System.Reflection;
 namespace Cubizer.Protocol.Handshake
 {
 	[Packet(0x00)]
-	public sealed class Handshake : ISerializablePacket
+	public sealed class Handshake : IPacketSerializable
 	{
 		public uint version;
 		public string address;

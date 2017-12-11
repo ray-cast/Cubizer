@@ -64,12 +64,12 @@ MonoBehaviour:
       network:
         version: 335
       client:
-        address: 127.0.0.1
+        address: gs.sunnycase.moe
         port: 25565
         sendTimeOut: 5000
         receiveTimeout: 10000
       server:
-        address: 127.0.0.1
+        address: gs.sunnycase.moe
         port: 25565
         sendTimeOut: 5000
         receiveTimeout: 10000

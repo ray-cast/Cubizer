@@ -2,7 +2,7 @@
 
 namespace Cubizer.Protocol
 {
-	public sealed class ClientProtocol : IClientProtocol
+	public sealed class ClientProtocol : IPacketRouter
 	{
 		public void DispatchIncomingPacket(UncompressedPacket packet)
 		{

@@ -4,7 +4,7 @@ using System.Reflection;
 namespace Cubizer.Protocol.Status
 {
 	[Packet(0x01)]
-	public sealed class Ping : ISerializablePacket
+	public sealed class Ping : IPacketSerializable
 	{
 		public long Payload;
 
@@ -30,7 +30,7 @@ namespace Cubizer.Protocol.Status
 	}
 
 	[Packet(0x01)]
-	public sealed class Pong : ISerializablePacket
+	public sealed class Pong : IPacketSerializable
 	{
 		public long Payload;
 

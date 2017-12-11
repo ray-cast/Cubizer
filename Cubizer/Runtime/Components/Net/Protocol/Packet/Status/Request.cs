@@ -4,7 +4,7 @@ using System.Reflection;
 namespace Cubizer.Protocol.Status
 {
 	[Packet(0x00)]
-	public sealed class Request : ISerializablePacket
+	public sealed class Request : IPacketSerializable
 	{
 		public static readonly Request Empty = new Request();
 
@@ -29,7 +29,7 @@ namespace Cubizer.Protocol.Status
 	}
 
 	[Packet(0x00)]
-	public sealed class Response : ISerializablePacket
+	public sealed class Response : IPacketSerializable
 	{
 		public string response;
 

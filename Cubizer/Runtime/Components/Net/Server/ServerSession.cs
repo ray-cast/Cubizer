@@ -13,7 +13,7 @@ namespace Cubizer.Server
 	public sealed class ServerSession : IDisposable
 	{
 		private readonly TcpClient _tcpClient;
-		private readonly IServerProtocol _packRouter;
+		private readonly IPacketRouter _packRouter;
 		private readonly IPacketCompress _packetCompress;
 		private readonly CompressedPacket _compressedPacket = new CompressedPacket();
 
@@ -28,7 +28,7 @@ namespace Cubizer.Server
 			}
 		}
 
-		public ServerSession(TcpClient client, IServerProtocol protocol, IPacketCompress packetCompress = null)
+		public ServerSession(TcpClient client, IPacketRouter protocol, IPacketCompress packetCompress = null)
 		{
 			Debug.Assert(client != null && protocol != null);
 
@@ -126,7 +126,7 @@ namespace Cubizer.Server
 			}
 		}
 
-		public void SendPacket(ISerializablePacket packet)
+		public void SendPacket(IPacketSerializable packet)
 		{
 			if (packet == null)
 				this.SendUncompressedPacket(null);

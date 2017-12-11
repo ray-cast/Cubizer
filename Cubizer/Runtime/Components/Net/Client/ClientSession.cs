@@ -14,7 +14,7 @@ namespace Cubizer.Client
 	{
 		private readonly int _port;
 		private readonly string _hostname;
-		private readonly IClientProtocol _packRouter;
+		private readonly IPacketRouter _packRouter;
 		private readonly IPacketCompress _packetCompress;
 		private readonly ClientDelegates _events = new ClientDelegates();
 		private readonly CompressedPacket _compressedPacket = new CompressedPacket();
@@ -77,7 +77,7 @@ namespace Cubizer.Client
 			}
 		}
 
-		public ClientSession(string hostname, int port, IClientProtocol protocal, IPacketCompress packetCompress = null)
+		public ClientSession(string hostname, int port, IPacketRouter protocal, IPacketCompress packetCompress = null)
 		{
 			Debug.Assert(protocal != null);
 
@@ -175,7 +175,7 @@ namespace Cubizer.Client
 			}
 		}
 
-		public void SendPacket(ISerializablePacket packet)
+		public void SendPacket(IPacketSerializable packet)
 		{
 			if (packet == null)
 				SendUncompressedPacket(null);
