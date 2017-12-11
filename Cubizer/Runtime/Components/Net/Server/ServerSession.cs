@@ -14,10 +14,11 @@ namespace Cubizer
 	{
 		private readonly TcpClient _tcpClient;
 		private readonly IServerProtocol _tcpProtocol;
-		private readonly PacketCompress _packetCompress = new PacketCompress();
+		private readonly IPacketCompress _packetCompress;
 		private readonly CompressedPacket _compressedPacket = new CompressedPacket();
 
 		private Task _task;
+		private Stream _stream;
 		private ServerTcpDelegates.OnOutcomingClientSession _onCompletion;
 
 		public TcpClient client
@@ -28,11 +29,13 @@ namespace Cubizer
 			}
 		}
 
-		public ServerSession(TcpClient client, IServerProtocol protocol)
+		public ServerSession(TcpClient client, IServerProtocol protocol, IPacketCompress packetCompress = null)
 		{
 			Debug.Assert(client != null && protocol != null);
+
 			_tcpClient = client;
 			_tcpProtocol = protocol;
+			_packetCompress = packetCompress ?? new PacketCompress();
 		}
 
 		~ServerSession()
@@ -45,12 +48,12 @@ namespace Cubizer
 			if (!_tcpClient.Connected)
 				return;
 
-			using (var stream = _tcpClient.GetStream())
+			using (_stream = _tcpClient.GetStream())
 			{
 				try
 				{
 					while (!cancellationToken.IsCancellationRequested)
-						DispatchIncomingPacket(stream);
+						DispatchIncomingPacket(_stream);
 				}
 				finally
 				{
@@ -112,18 +115,29 @@ namespace Cubizer
 			_onCompletion = continuation;
 		}
 
-		private void DispatchIncomingPacket(NetworkStream stream)
+		private async Task SendPacket(UncompressedPacket packet)
+		{
+			if (packet == null)
+				_tcpClient.Client.Shutdown(SocketShutdown.Send);
+			else
+			{
+				var newPacket = _packetCompress.Compress(packet);
+				await newPacket.SerializeAsync(_stream);
+			}
+		}
+
+		private void DispatchIncomingPacket(Stream stream)
 		{
 			int count = _compressedPacket.Deserialize(stream);
 			if (count > 0)
-				DispatchIncomingPacket(stream, _packetCompress.Decompress(_compressedPacket));
+				DispatchIncomingPacket(_packetCompress.Decompress(_compressedPacket));
 			else
 				throw new EndOfStreamException();
 		}
 
-		private void DispatchIncomingPacket(NetworkStream stream, UncompressedPacket packet)
+		private void DispatchIncomingPacket(UncompressedPacket packet)
 		{
-			_tcpProtocol.DispatchIncomingPacket(stream, packet);
+			_tcpProtocol.DispatchIncomingPacket(packet);
 		}
 	}
 }

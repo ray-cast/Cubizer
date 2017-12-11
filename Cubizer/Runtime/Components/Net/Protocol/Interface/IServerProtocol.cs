@@ -4,6 +4,6 @@ namespace Cubizer.Protocol
 {
 	public interface IServerProtocol
 	{
-		void DispatchIncomingPacket(NetworkStream stream, UncompressedPacket packet);
+		void DispatchIncomingPacket(UncompressedPacket packet);
 	}
 }

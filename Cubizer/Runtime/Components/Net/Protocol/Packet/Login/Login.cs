@@ -7,17 +7,14 @@ namespace Cubizer.Protocol.Login
 	{
 		public string name;
 
-		public static LoginStart Deserialize(ref BinaryReader br)
-		{
-			return new LoginStart
-			{
-				name = br.ReadString(),
-			};
-		}
-
 		public void Serialize(BinaryWriter bw)
 		{
 			bw.Write(name);
+		}
+
+		public void Deserialize(ref BinaryReader br)
+		{
+			name = br.ReadString();
 		}
 	}
 
@@ -26,17 +23,14 @@ namespace Cubizer.Protocol.Login
 	{
 		public string reason;
 
-		public static LoginDisconnect Deserialize(ref BinaryReader br)
-		{
-			return new LoginDisconnect
-			{
-				reason = br.ReadString()
-			};
-		}
-
 		public void Serialize(BinaryWriter bw)
 		{
 			bw.Write(reason);
+		}
+
+		public void Deserialize(ref BinaryReader br)
+		{
+			reason = br.ReadString();
 		}
 	}
 
@@ -51,6 +45,12 @@ namespace Cubizer.Protocol.Login
 		{
 			bw.Write(UUID);
 			bw.Write(username);
+		}
+
+		public void Deserialize(ref BinaryReader br)
+		{
+			UUID = br.ReadString();
+			username = br.ReadString();
 		}
 	}
 }

@@ -6,6 +6,7 @@ using System.Reflection;
 using UnityEngine;
 
 using Cubizer.Protocol;
+using Cubizer.Protocol.Login;
 
 namespace Cubizer
 {
@@ -86,12 +87,6 @@ namespace Cubizer
 						return false;
 					}
 
-					if (!_client.Login())
-					{
-						_cancellationToken.Cancel();
-						return false;
-					}
-
 					_client.Start(_cancellationToken.Token);
 
 					return _client.connected;
@@ -113,7 +108,7 @@ namespace Cubizer
 		{
 			if (_cancellationToken != null)
 			{
-				_cancellationToken.Token.Register(_client.Loginout);
+				_cancellationToken.Token.Register(_client.Close);
 				_cancellationToken.Cancel();
 				_cancellationToken = null;
 			}

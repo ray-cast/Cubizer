@@ -15,7 +15,7 @@ namespace Cubizer
 		private readonly int _port;
 		private readonly string _hostname;
 		private readonly IClientProtocol _tcpProtocol;
-		private readonly PacketCompress _packetCompress = new PacketCompress();
+		private readonly IPacketCompress _packetCompress;
 		private readonly ClientDelegates _events = new ClientDelegates();
 		private readonly CompressedPacket _compressedPacket = new CompressedPacket();
 
@@ -23,6 +23,7 @@ namespace Cubizer
 		private int _receiveTimeout = 0;
 
 		private Task _tcpTask;
+		private Stream _stream;
 		private TcpClient _tcpClient;
 
 		public int sendTimeout
@@ -77,18 +78,19 @@ namespace Cubizer
 			}
 		}
 
-		public Client(string hostname, int port, IClientProtocol protocal)
+		public Client(string hostname, int port, IClientProtocol protocal, IPacketCompress packetCompress = null)
 		{
 			Debug.Assert(protocal != null);
 
 			_port = port;
 			_hostname = hostname;
 			_tcpProtocol = protocal;
+			_packetCompress = packetCompress ?? new PacketCompress();
 		}
 
 		~Client()
 		{
-			this.Loginout();
+			this.Close();
 		}
 
 		public bool Connect()
@@ -110,28 +112,38 @@ namespace Cubizer
 			}
 		}
 
-		public bool Login()
+		public Task Start(CancellationToken cancellationToken)
 		{
 			if (!_tcpClient.Connected)
-				throw new InvalidOperationException("Please connect the server before login");
+				throw new InvalidOperationException("Please connect the server before Start()");
 
-			try
+			_tcpTask = Task.Run(() =>
 			{
-				var stream = _tcpClient.GetStream();
-				if (!_tcpProtocol.ConnectRequire(stream))
-					return false;
+				if (!_tcpClient.Connected)
+					throw new InvalidOperationException("Please connect the server before Start()");
 
-				return DispatchIncomingPacket(stream) && _tcpClient.Connected;
-			}
-			catch (Exception e)
-			{
-				_tcpClient.Close();
-				_tcpClient = null;
-				throw e;
-			}
+				using (_stream = _tcpClient.GetStream())
+				{
+					try
+					{
+						if (_events.onStartClientListener != null)
+							_events.onStartClientListener.Invoke();
+
+						while (!cancellationToken.IsCancellationRequested)
+							DispatchIncomingPacket(_stream);
+					}
+					finally
+					{
+						if (_events.onStopClientListener != null)
+							_events.onStopClientListener.Invoke();
+					}
+				}
+			});
+
+			return _tcpTask;
 		}
 
-		public void Loginout()
+		public void Close()
 		{
 			try
 			{
@@ -153,43 +165,23 @@ namespace Cubizer
 			}
 		}
 
-		public Task Start(CancellationToken cancellationToken)
+		public async Task SendPacket(UncompressedPacket packet)
 		{
-			if (!_tcpClient.Connected)
-				throw new InvalidOperationException("Please connect the server before login");
-
-			_tcpTask = Task.Run(() =>
+			if (packet == null)
+				_tcpClient.Client.Shutdown(SocketShutdown.Send);
+			else
 			{
-				if (!_tcpClient.Connected)
-					throw new InvalidOperationException("Please connect the server before login");
-
-				using (var stream = _tcpClient.GetStream())
-				{
-					try
-					{
-						if (_events.onStartClientListener != null)
-							_events.onStartClientListener.Invoke();
-
-						while (!cancellationToken.IsCancellationRequested)
-							DispatchIncomingPacket(stream);
-					}
-					finally
-					{
-						if (_events.onStopClientListener != null)
-							_events.onStopClientListener.Invoke();
-					}
-				}
-			});
-
-			return _tcpTask;
+				var newPacket = _packetCompress.Compress(packet);
+				await newPacket.SerializeAsync(_stream);
+			}
 		}
 
 		public void Dispose()
 		{
-			this.Loginout();
+			this.Close();
 		}
 
-		private bool DispatchIncomingPacket(NetworkStream stream)
+		private bool DispatchIncomingPacket(Stream stream)
 		{
 			int count = _compressedPacket.Deserialize(stream);
 			if (count > 0)

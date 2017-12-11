@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Cubizer.Protocol
 {
-	public sealed class ClientProtocolDefault : IClientProtocol
+	public sealed class ClientProtocol : IClientProtocol
 	{
 		public bool ConnectRequire(NetworkStream stream)
 		{

@@ -1,8 +1,10 @@
-﻿using System.Net.Sockets;
+﻿using System;
+using System.Net.Sockets;
+using System.Text;
 
 namespace Cubizer.Protocol
 {
-	public sealed class ServerProtocolNull : IServerProtocol
+	public class ServerProtocol : IServerProtocol
 	{
 		public void DispatchIncomingPacket(UncompressedPacket packet)
 		{
