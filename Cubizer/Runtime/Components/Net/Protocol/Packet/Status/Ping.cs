@@ -6,7 +6,7 @@ namespace Cubizer.Protocol.Status
 	[Packet(0x01)]
 	public sealed class Ping : IPacketSerializable
 	{
-		public long Payload;
+		public long payload;
 
 		public uint packId
 		{
@@ -20,19 +20,19 @@ namespace Cubizer.Protocol.Status
 
 		public void Deserialize(ref BinaryReader br)
 		{
-			Payload = br.ReadInt64();
+			payload = br.ReadInt64();
 		}
 
 		public void Serialize(NetworkWrite bw)
 		{
-			bw.Write(Payload);
+			bw.Write(payload);
 		}
 	}
 
 	[Packet(0x01)]
 	public sealed class Pong : IPacketSerializable
 	{
-		public long Payload;
+		public long payload;
 
 		public uint packId
 		{
@@ -46,12 +46,12 @@ namespace Cubizer.Protocol.Status
 
 		public void Deserialize(ref BinaryReader br)
 		{
-			Payload = br.ReadInt64();
+			payload = br.ReadInt64();
 		}
 
 		public void Serialize(NetworkWrite bw)
 		{
-			bw.Write(Payload);
+			bw.Write(payload);
 		}
 	}
 }

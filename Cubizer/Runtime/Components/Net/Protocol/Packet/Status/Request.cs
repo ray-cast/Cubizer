@@ -6,8 +6,6 @@ namespace Cubizer.Protocol.Status
 	[Packet(0x00)]
 	public sealed class Request : IPacketSerializable
 	{
-		public static readonly Request Empty = new Request();
-
 		public uint packId
 		{
 			get
@@ -18,9 +16,8 @@ namespace Cubizer.Protocol.Status
 			}
 		}
 
-		public static Request Deserialize(ref BinaryReader br)
+		public void Deserialize(ref BinaryReader br)
 		{
-			return Empty;
 		}
 
 		public void Serialize(NetworkWrite bw)
@@ -43,12 +40,9 @@ namespace Cubizer.Protocol.Status
 			}
 		}
 
-		public static Response Deserialize(ref BinaryReader br)
+		public void Deserialize(ref BinaryReader br)
 		{
-			return new Response
-			{
-				response = br.ReadString()
-			};
+			response = br.ReadString();
 		}
 
 		public void Serialize(NetworkWrite bw)

@@ -9,7 +9,7 @@ namespace Cubizer.Protocol.Handshake
 		public uint version;
 		public string address;
 		public ushort port;
-		public NextStateType nextState;
+		public SessionStatus nextState;
 
 		public uint packId
 		{
@@ -25,7 +25,7 @@ namespace Cubizer.Protocol.Handshake
 		{
 		}
 
-		public Handshake(uint version, string address, ushort port, NextStateType next)
+		public Handshake(uint version, string address, ushort port, SessionStatus next)
 		{
 			this.version = version;
 			this.address = address;
@@ -39,19 +39,19 @@ namespace Cubizer.Protocol.Handshake
 			address = br.ReadString();
 			port = br.ReadUInt16();
 
-			var state = (NextStateType)br.ReadUInt32();
+			var state = (SessionStatus)br.ReadUInt32();
 			switch (state)
 			{
-				case NextStateType.Status:
-					nextState = NextStateType.Status;
+				case SessionStatus.Status:
+					nextState = SessionStatus.Status;
 					break;
 
-				case NextStateType.Login:
-					nextState = NextStateType.Login;
+				case SessionStatus.Login:
+					nextState = SessionStatus.Login;
 					break;
 
 				default:
-					nextState = NextStateType.Invalid;
+					nextState = SessionStatus.Invalid;
 					break;
 			}
 		}

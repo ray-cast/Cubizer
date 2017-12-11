@@ -82,7 +82,7 @@ namespace Cubizer
 
 					_client.Start(_cancellationToken.Token);
 
-					_client.SendPacket(new Handshake(model.settings.network.version, model.settings.client.address, model.settings.client.port, NextStateType.Login));
+					_client.SendPacket(new Handshake(model.settings.network.version, model.settings.client.address, model.settings.client.port, SessionStatus.Login));
 					_client.SendPacket(new LoginStart { name = "test" });
 
 					return _client.connected;
