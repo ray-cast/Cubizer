@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -9,7 +10,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cubizer.Protocol;
 
-namespace Cubizer
+namespace Cubizer.Server
 {
 	public sealed class ServerTcpRouter : IDisposable
 	{
@@ -129,8 +130,10 @@ namespace Cubizer
 
 						using (var stream = tcpClient.GetStream())
 						{
-							Byte[] sendBytes = Encoding.ASCII.GetBytes("Exit");
-							stream.Write(sendBytes, 0, sendBytes.Length);
+							using (var bw = new BinaryWriter(stream))
+							{
+								bw.Write(0);
+							}
 						}
 					}
 				}

@@ -8,17 +8,16 @@ using UnityEngine;
 
 using Cubizer.Protocol;
 
-namespace Cubizer
+namespace Cubizer.Server
 {
 	public sealed class ServerSession : IDisposable
 	{
 		private readonly TcpClient _tcpClient;
-		private readonly IServerProtocol _tcpProtocol;
+		private readonly IServerProtocol _packRouter;
 		private readonly IPacketCompress _packetCompress;
 		private readonly CompressedPacket _compressedPacket = new CompressedPacket();
 
 		private Task _task;
-		private Stream _stream;
 		private ServerTcpDelegates.OnOutcomingClientSession _onCompletion;
 
 		public TcpClient client
@@ -34,7 +33,7 @@ namespace Cubizer
 			Debug.Assert(client != null && protocol != null);
 
 			_tcpClient = client;
-			_tcpProtocol = protocol;
+			_packRouter = protocol;
 			_packetCompress = packetCompress ?? new PacketCompress();
 		}
 
@@ -48,12 +47,12 @@ namespace Cubizer
 			if (!_tcpClient.Connected)
 				return;
 
-			using (_stream = _tcpClient.GetStream())
+			using (var stream = _tcpClient.GetStream())
 			{
 				try
 				{
 					while (!cancellationToken.IsCancellationRequested)
-						DispatchIncomingPacket(_stream);
+						DispatchIncomingPacket(stream);
 				}
 				finally
 				{
@@ -95,8 +94,9 @@ namespace Cubizer
 				if (_task != null)
 					_task.Wait();
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
+				UnityEngine.Debug.LogError(e.Message);
 			}
 			finally
 			{
@@ -115,14 +115,34 @@ namespace Cubizer
 			_onCompletion = continuation;
 		}
 
-		private async Task SendPacket(UncompressedPacket packet)
+		private void SendUncompressedPacket(UncompressedPacket packet)
 		{
 			if (packet == null)
 				_tcpClient.Client.Shutdown(SocketShutdown.Send);
 			else
 			{
 				var newPacket = _packetCompress.Compress(packet);
-				await newPacket.SerializeAsync(_stream);
+				newPacket.Serialize(_tcpClient.GetStream());
+			}
+		}
+
+		public void SendPacket(ISerializablePacket packet)
+		{
+			if (packet == null)
+				this.SendUncompressedPacket(null);
+			else
+			{
+				using (var stream = new MemoryStream())
+				{
+					using (var bw = new NetworkWrite(stream))
+						packet.Serialize(bw);
+
+					var newPacket = new UncompressedPacket();
+					newPacket.packetId = packet.packId;
+					newPacket.data = new ArraySegment<byte>(stream.ToArray());
+
+					this.SendUncompressedPacket(newPacket);
+				}
 			}
 		}
 
@@ -130,14 +150,14 @@ namespace Cubizer
 		{
 			int count = _compressedPacket.Deserialize(stream);
 			if (count > 0)
-				DispatchIncomingPacket(_packetCompress.Decompress(_compressedPacket));
+				this.DispatchIncomingPacket(_packetCompress.Decompress(_compressedPacket));
 			else
 				throw new EndOfStreamException();
 		}
 
 		private void DispatchIncomingPacket(UncompressedPacket packet)
 		{
-			_tcpProtocol.DispatchIncomingPacket(packet);
+			_packRouter.DispatchIncomingPacket(packet);
 		}
 	}
 }

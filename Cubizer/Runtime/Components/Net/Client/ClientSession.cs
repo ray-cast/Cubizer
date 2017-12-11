@@ -8,13 +8,13 @@ using UnityEngine;
 
 using Cubizer.Protocol;
 
-namespace Cubizer
+namespace Cubizer.Client
 {
-	public sealed class Client : IDisposable
+	public sealed class ClientSession : IDisposable
 	{
 		private readonly int _port;
 		private readonly string _hostname;
-		private readonly IClientProtocol _tcpProtocol;
+		private readonly IClientProtocol _packRouter;
 		private readonly IPacketCompress _packetCompress;
 		private readonly ClientDelegates _events = new ClientDelegates();
 		private readonly CompressedPacket _compressedPacket = new CompressedPacket();
@@ -23,7 +23,6 @@ namespace Cubizer
 		private int _receiveTimeout = 0;
 
 		private Task _tcpTask;
-		private Stream _stream;
 		private TcpClient _tcpClient;
 
 		public int sendTimeout
@@ -78,23 +77,25 @@ namespace Cubizer
 			}
 		}
 
-		public Client(string hostname, int port, IClientProtocol protocal, IPacketCompress packetCompress = null)
+		public ClientSession(string hostname, int port, IClientProtocol protocal, IPacketCompress packetCompress = null)
 		{
 			Debug.Assert(protocal != null);
 
 			_port = port;
 			_hostname = hostname;
-			_tcpProtocol = protocal;
+			_packRouter = protocal;
 			_packetCompress = packetCompress ?? new PacketCompress();
 		}
 
-		~Client()
+		~ClientSession()
 		{
 			this.Close();
 		}
 
 		public bool Connect()
 		{
+			Debug.Assert(_tcpClient == null);
+
 			try
 			{
 				_tcpClient = new TcpClient();
@@ -119,10 +120,7 @@ namespace Cubizer
 
 			_tcpTask = Task.Run(() =>
 			{
-				if (!_tcpClient.Connected)
-					throw new InvalidOperationException("Please connect the server before Start()");
-
-				using (_stream = _tcpClient.GetStream())
+				using (var stream = _tcpClient.GetStream())
 				{
 					try
 					{
@@ -130,7 +128,7 @@ namespace Cubizer
 							_events.onStartClientListener.Invoke();
 
 						while (!cancellationToken.IsCancellationRequested)
-							DispatchIncomingPacket(_stream);
+							DispatchIncomingPacket(stream);
 					}
 					finally
 					{
@@ -150,8 +148,9 @@ namespace Cubizer
 				if (_tcpTask != null)
 					_tcpTask.Wait();
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
+				UnityEngine.Debug.LogError(e.Message);
 			}
 			finally
 			{
@@ -165,14 +164,34 @@ namespace Cubizer
 			}
 		}
 
-		public async Task SendPacket(UncompressedPacket packet)
+		public void SendUncompressedPacket(UncompressedPacket packet)
 		{
 			if (packet == null)
 				_tcpClient.Client.Shutdown(SocketShutdown.Send);
 			else
 			{
 				var newPacket = _packetCompress.Compress(packet);
-				await newPacket.SerializeAsync(_stream);
+				newPacket.Serialize(_tcpClient.GetStream());
+			}
+		}
+
+		public void SendPacket(ISerializablePacket packet)
+		{
+			if (packet == null)
+				SendUncompressedPacket(null);
+			else
+			{
+				using (var stream = new MemoryStream())
+				{
+					using (var bw = new NetworkWrite(stream))
+						packet.Serialize(bw);
+
+					var newPacket = new UncompressedPacket();
+					newPacket.packetId = packet.packId;
+					newPacket.data = new ArraySegment<byte>(stream.ToArray());
+
+					SendUncompressedPacket(newPacket);
+				}
 			}
 		}
 
@@ -181,18 +200,18 @@ namespace Cubizer
 			this.Close();
 		}
 
-		private bool DispatchIncomingPacket(Stream stream)
+		private void DispatchIncomingPacket(Stream stream)
 		{
 			int count = _compressedPacket.Deserialize(stream);
 			if (count > 0)
-				return DispatchIncomingPacket(_packetCompress.Decompress(_compressedPacket));
+				DispatchIncomingPacket(_packetCompress.Decompress(_compressedPacket));
 			else
 				throw new EndOfStreamException();
 		}
 
-		private bool DispatchIncomingPacket(UncompressedPacket packet)
+		private void DispatchIncomingPacket(UncompressedPacket packet)
 		{
-			return _tcpProtocol.DispatchIncomingPacket(packet);
+			_packRouter.DispatchIncomingPacket(packet);
 		}
 	}
 }

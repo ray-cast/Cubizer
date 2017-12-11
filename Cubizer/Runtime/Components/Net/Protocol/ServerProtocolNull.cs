@@ -1,6 +1,4 @@
-﻿using System.Net.Sockets;
-
-namespace Cubizer.Protocol
+﻿namespace Cubizer.Protocol
 {
 	public sealed class ServerProtocolNull : IServerProtocol
 	{

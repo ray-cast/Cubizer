@@ -7,22 +7,36 @@ namespace Cubizer
 	public class NetworkModels : CubizerModel
 	{
 		[Serializable]
+		public struct NetworkSettings
+		{
+			public uint version;
+
+			public static NetworkSettings defaultSettings
+			{
+				get
+				{
+					return new NetworkSettings
+					{
+						version = 335
+					};
+				}
+			}
+		}
+
+		[Serializable]
 		public struct ServerSettings
 		{
 			[SerializeField]
 			public string address;
 
 			[SerializeField]
-			public int port;
+			public ushort port;
 
 			[SerializeField]
 			public int sendTimeOut;
 
 			[SerializeField]
 			public int receiveTimeout;
-
-			[SerializeField]
-			public string protocol;
 
 			public static ServerSettings defaultSettings
 			{
@@ -31,10 +45,9 @@ namespace Cubizer
 					return new ServerSettings
 					{
 						address = "127.0.0.1",
-						port = 10000,
+						port = 25565,
 						sendTimeOut = 5000,
 						receiveTimeout = 10000,
-						protocol = "Cubizer.Protocol.ServerProtocolDefault"
 					};
 				}
 			}
@@ -47,16 +60,13 @@ namespace Cubizer
 			public string address;
 
 			[SerializeField]
-			public int port;
+			public ushort port;
 
 			[SerializeField]
 			public int sendTimeOut;
 
 			[SerializeField]
 			public int receiveTimeout;
-
-			[SerializeField]
-			public string protocol;
 
 			public static ClientSettings defaultSettings
 			{
@@ -65,10 +75,9 @@ namespace Cubizer
 					return new ClientSettings
 					{
 						address = "127.0.0.1",
-						port = 10000,
+						port = 25565,
 						sendTimeOut = 5000,
 						receiveTimeout = 10000,
-						protocol = "Cubizer.Protocol.ClientProtocolDefault"
 					};
 				}
 			}
@@ -77,6 +86,7 @@ namespace Cubizer
 		[Serializable]
 		public struct Settings
 		{
+			public NetworkSettings network;
 			public ClientSettings client;
 			public ServerSettings server;
 
@@ -86,6 +96,7 @@ namespace Cubizer
 				{
 					return new Settings
 					{
+						network = NetworkSettings.defaultSettings,
 						client = ClientSettings.defaultSettings,
 						server = ServerSettings.defaultSettings
 					};
@@ -113,13 +124,13 @@ namespace Cubizer
 				_settings.client.address = "127.0.0.1";
 
 			if (_settings.client.port == 0)
-				_settings.client.port = 10000;
+				_settings.client.port = 25565;
 
 			if (string.IsNullOrEmpty(_settings.server.address))
 				_settings.server.address = "127.0.0.1";
 
 			if (_settings.server.port == 0)
-				_settings.server.port = 10000;
+				_settings.server.port = 25565;
 		}
 	}
 }

@@ -4,6 +4,8 @@ using System.Net.Sockets;
 using System.Reflection;
 
 using UnityEngine;
+
+using Cubizer.Server;
 using Cubizer.Protocol;
 
 namespace Cubizer
@@ -11,7 +13,7 @@ namespace Cubizer
 	public sealed class ServerComponent : CubizerComponent<NetworkModels>
 	{
 		private ServerTcpRouter _tcpListener;
-		private IServerProtocol _serverProtocol;
+		private IServerProtocol _serverProtocol = new ServerProtocol();
 		private CancellationTokenSource _cancellationToken;
 
 		public override bool active
@@ -52,14 +54,6 @@ namespace Cubizer
 
 		public override void OnEnable()
 		{
-			var assembly = Assembly.GetAssembly(typeof(IServerProtocol));
-			if (assembly == null)
-				throw new MissingReferenceException($"Failed to load assembly: {typeof(IServerProtocol).FullName}.");
-
-			_serverProtocol = assembly.CreateInstance(model.settings.server.protocol) as IServerProtocol;
-			if (_serverProtocol == null)
-				throw new ArgumentException($"Invalid type name of protocol: {model.settings.client.protocol}.");
-
 			context.behaviour.events.OnLoadChunkAfter += this.OnLoadChunkDataAfter;
 			context.behaviour.events.OnAddBlockAfter += this.OnAddBlockAfter;
 			context.behaviour.events.OnRemoveBlockAfter += this.OnRemoveBlockAfter;
@@ -101,7 +95,7 @@ namespace Cubizer
 			}
 			else
 			{
-				throw new System.InvalidOperationException("There is a server already working now.");
+				throw new System.InvalidOperationException("A server has already working now.");
 			}
 		}
 

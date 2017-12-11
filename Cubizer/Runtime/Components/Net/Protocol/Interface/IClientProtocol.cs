@@ -1,11 +1,7 @@
-﻿using System.Net.Sockets;
-
-namespace Cubizer.Protocol
+﻿namespace Cubizer.Protocol
 {
 	public interface IClientProtocol
 	{
-		bool ConnectRequire(NetworkStream stream);
-
-		bool DispatchIncomingPacket(UncompressedPacket packet);
+		void DispatchIncomingPacket(UncompressedPacket packet);
 	}
 }

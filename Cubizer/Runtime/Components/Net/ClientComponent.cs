@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Reflection;
 
-using UnityEngine;
-
+using Cubizer.Client;
 using Cubizer.Protocol;
 using Cubizer.Protocol.Login;
+using Cubizer.Protocol.Handshake;
+
+using UnityEngine;
 
 namespace Cubizer
 {
 	public sealed class ClientComponent : CubizerComponent<NetworkModels>
 	{
 		private Task _task;
-		private Client _client;
-		private IClientProtocol _clientProtocol;
+		private ClientSession _client;
+		private IClientProtocol _clientProtocol = new ClientProtocol();
 		private CancellationTokenSource _cancellationToken;
 
 		public override bool active
@@ -47,14 +48,6 @@ namespace Cubizer
 
 		public override void OnEnable()
 		{
-			var assembly = Assembly.GetAssembly(typeof(IClientProtocol));
-			if (assembly == null)
-				throw new MissingReferenceException($"Failed to load assembly: {typeof(IClientProtocol).FullName}.");
-
-			_clientProtocol = assembly.CreateInstance(model.settings.client.protocol) as IClientProtocol;
-			if (_clientProtocol == null)
-				throw new ArgumentException($"Invalid type name of protocol: {model.settings.client.protocol}.");
-
 			context.behaviour.events.OnLoadChunkAfter += this.OnLoadChunkDataAfter;
 			context.behaviour.events.OnAddBlockAfter += this.OnAddBlockAfter;
 			context.behaviour.events.OnRemoveBlockAfter += this.OnRemoveBlockAfter;
@@ -75,7 +68,7 @@ namespace Cubizer
 
 				try
 				{
-					_client = new Client(model.settings.client.address, model.settings.client.port, _clientProtocol);
+					_client = new ClientSession(model.settings.client.address, model.settings.client.port, _clientProtocol);
 					_client.sendTimeout = model.settings.client.sendTimeOut;
 					_client.receiveTimeout = model.settings.client.receiveTimeout;
 					_client.events.onStartClientListener = OnStartClientListener;
@@ -89,6 +82,9 @@ namespace Cubizer
 
 					_client.Start(_cancellationToken.Token);
 
+					_client.SendPacket(new Handshake(model.settings.network.version, model.settings.client.address, model.settings.client.port, NextStateType.Login));
+					_client.SendPacket(new LoginStart { name = "test" });
+
 					return _client.connected;
 				}
 				catch (Exception e)
@@ -100,7 +96,7 @@ namespace Cubizer
 			}
 			else
 			{
-				throw new InvalidOperationException("There is a client already working now.");
+				throw new InvalidOperationException("A client has already working now.");
 			}
 		}
 

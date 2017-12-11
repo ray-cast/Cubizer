@@ -1,6 +1,4 @@
-﻿using System;
-using System.Net.Sockets;
-using System.Text;
+﻿using UnityEngine;
 
 namespace Cubizer.Protocol
 {
@@ -8,6 +6,7 @@ namespace Cubizer.Protocol
 	{
 		public void DispatchIncomingPacket(UncompressedPacket packet)
 		{
+			Debug.Log("Packet：" + packet.packetId + ".Length:[" + packet.length + "byte]");
 		}
 	}
 }

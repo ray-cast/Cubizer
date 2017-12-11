@@ -1,29 +1,26 @@
 ﻿using System.IO;
+using System.Reflection;
 
 namespace Cubizer.Protocol.Login
 {
-	[Packet(0x00)]
-	public sealed class LoginStart : ISerializablePacket
-	{
-		public string name;
-
-		public void Serialize(BinaryWriter bw)
-		{
-			bw.Write(name);
-		}
-
-		public void Deserialize(ref BinaryReader br)
-		{
-			name = br.ReadString();
-		}
-	}
+	#region server
 
 	[Packet(0x00)]
 	public sealed class LoginDisconnect : ISerializablePacket
 	{
 		public string reason;
 
-		public void Serialize(BinaryWriter bw)
+		public uint packId
+		{
+			get
+			{
+				var typeInfo = this.GetType().GetTypeInfo();
+				var attr = typeInfo.GetCustomAttribute<PacketAttribute>();
+				return attr.id;
+			}
+		}
+
+		public void Serialize(NetworkWrite bw)
 		{
 			bw.Write(reason);
 		}
@@ -38,10 +35,19 @@ namespace Cubizer.Protocol.Login
 	public sealed class LoginSuccess : ISerializablePacket
 	{
 		public string UUID;
-
 		public string username;
 
-		public void Serialize(BinaryWriter bw)
+		public uint packId
+		{
+			get
+			{
+				var typeInfo = this.GetType().GetTypeInfo();
+				var attr = typeInfo.GetCustomAttribute<PacketAttribute>();
+				return attr.id;
+			}
+		}
+
+		public void Serialize(NetworkWrite bw)
 		{
 			bw.Write(UUID);
 			bw.Write(username);
@@ -53,4 +59,62 @@ namespace Cubizer.Protocol.Login
 			username = br.ReadString();
 		}
 	}
+
+	[Packet(0x03)]
+	public sealed class SetCompression : ISerializablePacket
+	{
+		public int threshold;
+
+		public uint packId
+		{
+			get
+			{
+				var typeInfo = this.GetType().GetTypeInfo();
+				var attr = typeInfo.GetCustomAttribute<PacketAttribute>();
+				return attr.id;
+			}
+		}
+
+		public void Serialize(NetworkWrite bw)
+		{
+			bw.Write(threshold);
+		}
+
+		public void Deserialize(ref BinaryReader br)
+		{
+			threshold = br.ReadInt32();
+		}
+	}
+
+	#endregion server
+
+	#region client
+
+	[Packet(0x00)]
+	public sealed class LoginStart : ISerializablePacket
+	{
+		public string name;
+
+		public uint packId
+		{
+			get
+			{
+				var typeInfo = this.GetType().GetTypeInfo();
+				var attr = typeInfo.GetCustomAttribute<PacketAttribute>();
+				return attr.id;
+			}
+		}
+
+		public void Deserialize(ref BinaryReader br)
+		{
+			name = br.ReadString();
+		}
+
+		public void Serialize(NetworkWrite bw)
+		{
+			bw.Write(name);
+		}
+	}
+
+	#endregion client
 }

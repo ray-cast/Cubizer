@@ -1,4 +1,4 @@
-﻿namespace Cubizer
+﻿namespace Cubizer.Client
 {
 	public sealed class ClientDelegates
 	{
