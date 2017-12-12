@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEditor;
 
@@ -14,59 +15,66 @@ namespace Cubier
 
 			base.DrawDefaultInspector();
 
-			if (behaviour.chunkManager != null)
+			try
 			{
-				if (GUILayout.Button("Load Terrain..."))
+				if (behaviour.chunkManager != null)
 				{
-					var SelectedPath = EditorUtility.OpenFilePanel("Load Chunk", "", "asset");
-					if (SelectedPath.Length == 0)
-						return;
+					if (GUILayout.Button("Load Terrain..."))
+					{
+						var SelectedPath = EditorUtility.OpenFilePanel("Load Chunk", "", "asset");
+						if (SelectedPath.Length == 0)
+							return;
 
-					if (behaviour.chunkManager.Load(SelectedPath))
-						Debug.Log("Your data of terrain was loaded successfully");
-					else
-						Debug.Log("load Failed");
+						if (behaviour.chunkManager.Load(SelectedPath))
+							Debug.Log("Your data of terrain was loaded successfully");
+						else
+							Debug.Log("load Failed");
+					}
+
+					if (GUILayout.Button("Save Terrain..."))
+					{
+						var SelectedPath = EditorUtility.SaveFilePanel("Save Chunk", "", "New Resource", "asset");
+						if (SelectedPath.Length == 0)
+							return;
+
+						if (behaviour.chunkManager.Save(SelectedPath))
+							Debug.Log("Your data of terrain was saved successfully");
+						else
+							Debug.Log("Save Failed");
+					}
 				}
 
-				if (GUILayout.Button("Save Terrain..."))
+				if (behaviour.server != null)
 				{
-					var SelectedPath = EditorUtility.SaveFilePanel("Save Chunk", "", "New Resource", "asset");
-					if (SelectedPath.Length == 0)
-						return;
-
-					if (behaviour.chunkManager.Save(SelectedPath))
-						Debug.Log("Your data of terrain was saved successfully");
+					if (behaviour.server.isCancellationRequested)
+					{
+						if (GUILayout.Button("Create Server..."))
+							behaviour.server.Open();
+					}
 					else
-						Debug.Log("Save Failed");
+					{
+						if (GUILayout.Button("Close Server..."))
+							behaviour.server.Close();
+					}
+				}
+
+				if (behaviour.client != null)
+				{
+					if (behaviour.client.isCancellationRequested)
+					{
+						if (GUILayout.Button("Connect Server..."))
+							behaviour.client.Connect();
+					}
+					else
+					{
+						if (GUILayout.Button("Disconnect Server..."))
+							behaviour.client.Disconnect();
+					}
 				}
 			}
-
-			if (behaviour.server != null)
+			catch (Exception e)
 			{
-				if (behaviour.server.isCancellationRequested)
-				{
-					if (GUILayout.Button("Create Server..."))
-						behaviour.server.Open();
-				}
-				else
-				{
-					if (GUILayout.Button("Close Server..."))
-						behaviour.server.Close();
-				}
-			}
-
-			if (behaviour.client != null)
-			{
-				if (behaviour.client.isCancellationRequested)
-				{
-					if (GUILayout.Button("Connect Server..."))
-						behaviour.client.Connect();
-				}
-				else
-				{
-					if (GUILayout.Button("Disconnect Server..."))
-						behaviour.client.Disconnect();
-				}
+				UnityEngine.Debug.LogException(e);
 			}
 		}
 	}

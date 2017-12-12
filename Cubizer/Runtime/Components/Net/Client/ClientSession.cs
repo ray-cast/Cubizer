@@ -186,11 +186,7 @@ namespace Cubizer.Client
 					using (var bw = new NetworkWrite(stream))
 						packet.Serialize(bw);
 
-					var newPacket = new UncompressedPacket();
-					newPacket.packetId = packet.packId;
-					newPacket.data = new ArraySegment<byte>(stream.ToArray());
-
-					SendUncompressedPacket(newPacket);
+					SendUncompressedPacket(new UncompressedPacket(packet.packId, new ArraySegment<byte>(stream.ToArray())));
 				}
 			}
 		}

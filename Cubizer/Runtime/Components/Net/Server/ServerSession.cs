@@ -129,7 +129,7 @@ namespace Cubizer.Server
 		public void SendPacket(IPacketSerializable packet)
 		{
 			if (packet == null)
-				this.SendUncompressedPacket(null);
+				SendUncompressedPacket(null);
 			else
 			{
 				using (var stream = new MemoryStream())
@@ -137,11 +137,7 @@ namespace Cubizer.Server
 					using (var bw = new NetworkWrite(stream))
 						packet.Serialize(bw);
 
-					var newPacket = new UncompressedPacket();
-					newPacket.packetId = packet.packId;
-					newPacket.data = new ArraySegment<byte>(stream.ToArray());
-
-					this.SendUncompressedPacket(newPacket);
+					SendUncompressedPacket(new UncompressedPacket(packet.packId, new ArraySegment<byte>(stream.ToArray())));
 				}
 			}
 		}

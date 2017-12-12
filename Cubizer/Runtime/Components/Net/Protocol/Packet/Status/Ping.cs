@@ -18,7 +18,7 @@ namespace Cubizer.Protocol.Status
 			}
 		}
 
-		public void Deserialize(ref BinaryReader br)
+		public void Deserialize(NetworkReader br)
 		{
 			payload = br.ReadInt64();
 		}
@@ -44,7 +44,7 @@ namespace Cubizer.Protocol.Status
 			}
 		}
 
-		public void Deserialize(ref BinaryReader br)
+		public void Deserialize(NetworkReader br)
 		{
 			payload = br.ReadInt64();
 		}

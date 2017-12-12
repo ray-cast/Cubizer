@@ -83,7 +83,7 @@ namespace Cubizer
 					_client.Start(_cancellationToken.Token);
 
 					_client.SendPacket(new Handshake(model.settings.network.version, model.settings.client.address, model.settings.client.port, SessionStatus.Login));
-					_client.SendPacket(new LoginStart { name = "test" });
+					_client.SendPacket(new LoginStart("test"));
 
 					return _client.connected;
 				}
@@ -131,8 +131,11 @@ namespace Cubizer
 		{
 			Debug.Log("Stop client listener...");
 
-			_cancellationToken.Cancel();
-			_cancellationToken = null;
+			if (_cancellationToken != null)
+			{
+				_cancellationToken.Cancel();
+				_cancellationToken = null;
+			}
 		}
 	}
 }

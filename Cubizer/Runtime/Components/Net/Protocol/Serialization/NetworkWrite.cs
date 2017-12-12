@@ -12,6 +12,11 @@ namespace Cubizer.Protocol
 		{
 		}
 
+		public NetworkWrite(Stream stream, Encoding encoding)
+			: base(stream, encoding)
+		{
+		}
+
 		public NetworkWrite(Stream stream, Encoding encoding, bool leaveOpen)
 			: base(stream, encoding, leaveOpen)
 		{
@@ -19,6 +24,7 @@ namespace Cubizer.Protocol
 
 		public override void Write(bool value) => base.Write(value);
 		public override void Write(byte value) => base.Write(value);
+		public override void Write(sbyte value) => base.Write(value);
 		public override void Write(byte[] value) => base.Write(value);
 		public override void Write(short value) => base.Write(value.ToBigEndian());
 		public override void Write(int value) => base.Write(value.ToBigEndian());
@@ -38,6 +44,7 @@ namespace Cubizer.Protocol
 				value >>= 7;
 				if (value != 0)
 					temp |= 0x80;
+
 				base.Write(temp);
 			}
 			while (value != 0);
@@ -51,9 +58,8 @@ namespace Cubizer.Protocol
 
 				value >>= 7;
 				if (value != 0)
-				{
 					temp |= 0x80;
-				}
+
 				base.Write(temp);
 			} while (value != 0);
 		}
@@ -61,15 +67,22 @@ namespace Cubizer.Protocol
 		public override void Write(string value)
 		{
 			var bytes = Encoding.UTF8.GetBytes(value);
-			this.WriteVarInt((uint)bytes.Length);
-			base.Write(bytes);
+			if (bytes.Length <= short.MaxValue)
+			{
+				this.WriteVarInt((uint)bytes.Length);
+				base.Write(bytes);
+			}
+			else
+			{
+				throw new InvalidDataException($"String is too big .length:{value.Length}.");
+			}
 		}
 
 		public void Write<T>(IReadOnlyList<T> array)
 			where T : IPacketSerializable
 		{
-			foreach (var item in array)
-				item.Serialize(this);
+			foreach (var it in array)
+				it.Serialize(this);
 		}
 	}
 }

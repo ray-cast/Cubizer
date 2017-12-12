@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace Cubizer.Protocol.Login
 {
@@ -25,7 +24,7 @@ namespace Cubizer.Protocol.Login
 			bw.Write(reason);
 		}
 
-		public void Deserialize(ref BinaryReader br)
+		public void Deserialize(NetworkReader br)
 		{
 			reason = br.ReadString();
 		}
@@ -53,7 +52,7 @@ namespace Cubizer.Protocol.Login
 			bw.Write(username);
 		}
 
-		public void Deserialize(ref BinaryReader br)
+		public void Deserialize(NetworkReader br)
 		{
 			UUID = br.ReadString();
 			username = br.ReadString();
@@ -80,7 +79,7 @@ namespace Cubizer.Protocol.Login
 			bw.Write(threshold);
 		}
 
-		public void Deserialize(ref BinaryReader br)
+		public void Deserialize(NetworkReader br)
 		{
 			threshold = br.ReadInt32();
 		}
@@ -105,7 +104,12 @@ namespace Cubizer.Protocol.Login
 			}
 		}
 
-		public void Deserialize(ref BinaryReader br)
+		public LoginStart(string name)
+		{
+			this.name = name;
+		}
+
+		public void Deserialize(NetworkReader br)
 		{
 			name = br.ReadString();
 		}

@@ -33,7 +33,7 @@ namespace Cubizer.Protocol.Handshake
 			this.nextState = next;
 		}
 
-		public void Deserialize(ref BinaryReader br)
+		public void Deserialize(NetworkReader br)
 		{
 			version = br.ReadUInt32();
 			address = br.ReadString();
@@ -61,7 +61,7 @@ namespace Cubizer.Protocol.Handshake
 			bw.WriteVarInt(version);
 			bw.Write(address);
 			bw.Write(port);
-			bw.Write((int)nextState);
+			bw.WriteVarInt((uint)nextState);
 		}
 	}
 }

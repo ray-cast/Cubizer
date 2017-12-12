@@ -7,6 +7,7 @@
 			get;
 		}
 
+		void Deserialize(NetworkReader br);
 		void Serialize(NetworkWrite bw);
 	}
 }

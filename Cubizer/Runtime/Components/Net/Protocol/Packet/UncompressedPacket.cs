@@ -7,7 +7,6 @@ namespace Cubizer.Protocol
 	public class UncompressedPacket
 	{
 		public uint packetId;
-
 		public ArraySegment<byte> data;
 
 		public UncompressedPacket()
@@ -23,7 +22,7 @@ namespace Cubizer.Protocol
 
 		public void Serialize(Stream stream)
 		{
-			var length = (uint)data.Count + sizeof(uint);
+			var length = (uint)data.Count + packetId.SizeofBytes();
 
 			using (var bw = new NetworkWrite(stream, Encoding.UTF8, true))
 			{
@@ -36,15 +35,16 @@ namespace Cubizer.Protocol
 
 		public int Deserialize(Stream stream, int maxLength = ushort.MaxValue)
 		{
-			using (var br = new BinaryReader(stream, Encoding.UTF8, true))
+			using (var br = new NetworkReader(stream, Encoding.UTF8, true))
 			{
-				var length = br.ReadInt32();
+				var length = (int)br.ReadVarInt();
 
-				if (length > sizeof(uint) && length < maxLength)
+				if (length > 0 && length < maxLength)
 				{
-					packetId = br.ReadUInt32();
+					byte packLength;
+					packetId = br.ReadVarInt(out packLength);
 
-					data = new ArraySegment<byte>(new byte[length - sizeof(uint)]);
+					data = new ArraySegment<byte>(new byte[length - packLength]);
 					return stream.Read(data.Array, data.Offset, data.Count);
 				}
 
