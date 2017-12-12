@@ -1,5 +1,5 @@
-﻿using System.IO;
-using System.Reflection;
+﻿using System.Reflection;
+using Cubizer.Protocol.Serialization;
 
 namespace Cubizer.Protocol.Handshake
 {

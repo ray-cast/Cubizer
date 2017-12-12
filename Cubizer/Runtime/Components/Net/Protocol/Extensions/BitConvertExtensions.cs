@@ -1,4 +1,4 @@
-﻿namespace Cubizer.Protocol
+﻿namespace Cubizer.Protocol.Extensions
 {
 	internal static class BitConvertExtensions
 	{

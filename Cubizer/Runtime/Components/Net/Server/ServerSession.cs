@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 using Cubizer.Protocol;
+using Cubizer.Protocol.Serialization;
 
 namespace Cubizer.Server
 {

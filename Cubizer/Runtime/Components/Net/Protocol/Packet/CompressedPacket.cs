@@ -2,9 +2,12 @@
 using System.IO;
 using System.Text;
 
+using Cubizer.Protocol.Extensions;
+using Cubizer.Protocol.Serialization;
+
 namespace Cubizer.Protocol
 {
-	public class CompressedPacket
+	public sealed class CompressedPacket
 	{
 		public uint packetId;
 

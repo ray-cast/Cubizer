@@ -1,6 +1,6 @@
 ﻿namespace Cubizer.Protocol
 {
-	public class PacketCompress : IPacketCompress
+	public sealed class PacketCompress : IPacketCompress
 	{
 		public CompressedPacket Compress(UncompressedPacket packet)
 		{

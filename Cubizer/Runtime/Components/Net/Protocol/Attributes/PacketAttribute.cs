@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Cubizer
+namespace Cubizer.Protocol
 {
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, Inherited = false, AllowMultiple = false)]
 	public sealed class PacketAttribute : Attribute

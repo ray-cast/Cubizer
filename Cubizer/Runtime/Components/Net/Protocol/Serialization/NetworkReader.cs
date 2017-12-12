@@ -3,7 +3,9 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Cubizer.Protocol
+using Cubizer.Protocol.Extensions;
+
+namespace Cubizer.Protocol.Serialization
 {
 	public class NetworkReader : BinaryReader
 	{

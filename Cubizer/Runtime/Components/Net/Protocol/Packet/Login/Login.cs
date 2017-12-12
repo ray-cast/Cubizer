@@ -1,5 +1,7 @@
 ﻿using System.Reflection;
 
+using Cubizer.Protocol.Serialization;
+
 namespace Cubizer.Protocol.Login
 {
 	#region server

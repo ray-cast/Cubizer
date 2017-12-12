@@ -1,4 +1,6 @@
-﻿namespace Cubizer.Protocol
+﻿using Cubizer.Protocol.Serialization;
+
+namespace Cubizer.Protocol
 {
 	public interface IPacketSerializable
 	{
