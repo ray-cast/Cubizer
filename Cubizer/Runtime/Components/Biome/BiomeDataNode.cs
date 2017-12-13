@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Cubizer
+namespace Cubizer.Biome
 {
 	[Serializable]
 	public sealed class BiomeDataNode<_Tx, _Ty>

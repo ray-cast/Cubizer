@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using Cubizer.Math;
+using Cubizer.Biome;
 
 using UnityEngine;
 

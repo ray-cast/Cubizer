@@ -1,4 +1,4 @@
-﻿namespace Cubizer
+﻿namespace Cubizer.Biome
 {
 	public abstract class BiomeGenerator : IBiomeGenerator
 	{

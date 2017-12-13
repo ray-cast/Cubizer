@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
+using Cubizer.Biome;
+
 namespace Cubizer
 {
 	[Serializable]

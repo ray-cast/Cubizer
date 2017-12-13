@@ -2,7 +2,7 @@
 
 using UnityEngine;
 
-namespace Cubizer
+namespace Cubizer.Live
 {
 	[Serializable]
 	public sealed class LiveManagerComponent : CubizerComponent<LiveManagerModels>

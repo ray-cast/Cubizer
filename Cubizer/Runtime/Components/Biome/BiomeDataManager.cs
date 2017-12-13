@@ -4,7 +4,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 using Cubizer.Math;
 
-namespace Cubizer
+namespace Cubizer.Biome
 {
 	[Serializable]
 	public class BiomeDataManager : IBiomeDataManager

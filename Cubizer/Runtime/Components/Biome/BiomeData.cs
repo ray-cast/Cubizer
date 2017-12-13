@@ -1,6 +1,6 @@
 ﻿using Cubizer.Chunk;
 
-namespace Cubizer
+namespace Cubizer.Biome
 {
 	public class BiomeData : IBiomeData
 	{

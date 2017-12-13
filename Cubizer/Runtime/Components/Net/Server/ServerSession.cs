@@ -85,6 +85,11 @@ namespace Cubizer.Net.Server
 			}
 		}
 
+		public void Dispose()
+		{
+			this.Close();
+		}
+
 		public void OnCompletion(OnOutcomingClientSession continuation)
 		{
 			_onCompletion = continuation;
@@ -134,11 +139,6 @@ namespace Cubizer.Net.Server
 		public async Task SendIncomingUncompressedPacket(UncompressedPacket packet)
 		{
 			await _packRouter.DispatchIncomingPacket(packet);
-		}
-
-		public void Dispose()
-		{
-			this.Close();
 		}
 
 		private async Task DispatchIncomingPacket(Stream stream)

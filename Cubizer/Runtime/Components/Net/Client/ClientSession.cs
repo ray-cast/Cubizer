@@ -158,6 +158,11 @@ namespace Cubizer.Net.Client
 			}
 		}
 
+		public void Dispose()
+		{
+			this.Close();
+		}
+
 		public async Task SendOutcomingPacket(IPacketSerializable packet)
 		{
 			if (packet == null)
@@ -202,11 +207,6 @@ namespace Cubizer.Net.Client
 		public async Task SendIncomingUncompressedPacket(UncompressedPacket packet)
 		{
 			await _packRouter.DispatchIncomingPacket(packet);
-		}
-
-		public void Dispose()
-		{
-			this.Close();
 		}
 
 		private async Task DispatchIncomingPacket(Stream stream)

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-namespace Cubizer
+namespace Cubizer.Biome
 {
 	public class BiomeManagerComponent : CubizerComponent<BiomeManagerModels>
 	{

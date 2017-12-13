@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using Cubizer.Db;
 using Cubizer.Net;
 using Cubizer.Chunk;
+using Cubizer.Biome;
+using Cubizer.Live;
 
 namespace Cubizer
 {

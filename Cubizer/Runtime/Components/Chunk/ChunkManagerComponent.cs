@@ -7,6 +7,7 @@ using UnityEngine;
 
 using Cubizer.Math;
 using Cubizer.Chunk;
+using Cubizer.Biome;
 
 namespace Cubizer
 {

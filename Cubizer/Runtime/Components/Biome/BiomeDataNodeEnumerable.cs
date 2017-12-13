@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace Cubizer
+namespace Cubizer.Biome
 {
 	public sealed class BiomeDataNodeEnumerable<_Tx, _Ty> : IEnumerable
 		where _Tx : struct
