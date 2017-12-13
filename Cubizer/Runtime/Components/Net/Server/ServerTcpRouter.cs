@@ -22,10 +22,10 @@ namespace Cubizer.Server
 
 		private Task _task;
 
-		private int _sendTimeout = 0;
-		private int _receiveTimeout = 0;
+		private int _sessionSendTimeout = 0;
+		private int _sessionReceiveTimeout = 0;
 
-		public int count
+		public int sessionsCount
 		{
 			get
 			{
@@ -33,31 +33,39 @@ namespace Cubizer.Server
 			}
 		}
 
-		public int sendTimeout
+		public int sessionsSendTimeout
 		{
 			set
 			{
-				if (_sendTimeout != value)
+				if (_sessionSendTimeout != value)
 				{
 					foreach (var it in _sessions)
 						it.client.SendTimeout = value;
 
-					_sendTimeout = value;
+					_sessionSendTimeout = value;
 				}
 			}
 		}
 
-		public int receiveTimeout
+		public int sessionsReceiveTimeout
 		{
 			set
 			{
-				if (_receiveTimeout != value)
+				if (_sessionReceiveTimeout != value)
 				{
 					foreach (var it in _sessions)
 						it.client.ReceiveTimeout = value;
 
-					_receiveTimeout = value;
+					_sessionReceiveTimeout = value;
 				}
+			}
+		}
+
+		public TcpListener listener
+		{
+			get
+			{
+				return _listener;
 			}
 		}
 
@@ -165,8 +173,8 @@ namespace Cubizer.Server
 					_events.onIncomingClient.Invoke(tcpClient);
 
 				var session = new ServerSession(tcpClient, _protocol);
-				session.client.SendTimeout = _sendTimeout;
-				session.client.ReceiveTimeout = _receiveTimeout;
+				session.client.SendTimeout = _sessionSendTimeout;
+				session.client.ReceiveTimeout = _sessionReceiveTimeout;
 				session.OnCompletion(OnCompletionSession);
 				session.Start(cancellationToken);
 

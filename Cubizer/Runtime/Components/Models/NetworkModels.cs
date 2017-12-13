@@ -38,6 +38,12 @@ namespace Cubizer
 			[SerializeField]
 			public int receiveTimeout;
 
+			[SerializeField]
+			public int sessionSendTimeOut;
+
+			[SerializeField]
+			public int sessionReceiveTimeout;
+
 			public static ServerSettings defaultSettings
 			{
 				get
@@ -46,8 +52,10 @@ namespace Cubizer
 					{
 						address = "127.0.0.1",
 						port = 25565,
-						sendTimeOut = 5000,
-						receiveTimeout = 10000,
+						sendTimeOut = 0,
+						receiveTimeout = 0,
+						sessionSendTimeOut = 5000,
+						sessionReceiveTimeout = 10000,
 					};
 				}
 			}

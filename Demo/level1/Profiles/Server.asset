@@ -71,5 +71,7 @@ MonoBehaviour:
       server:
         address: 127.0.0.1
         port: 25565
-        sendTimeOut: 5000
-        receiveTimeout: 10000
+        sendTimeOut: 0
+        receiveTimeout: 0
+        sessionSendTimeOut: 5000
+        sessionReceiveTimeout: 10000

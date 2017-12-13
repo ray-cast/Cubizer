@@ -47,7 +47,7 @@ namespace Cubizer
 		{
 			get
 			{
-				return _tcpListener != null ? _tcpListener.count : 0;
+				return _tcpListener != null ? _tcpListener.sessionsCount : 0;
 			}
 		}
 
@@ -76,8 +76,10 @@ namespace Cubizer
 				try
 				{
 					_tcpListener = new ServerTcpRouter(model.settings.server.address, model.settings.server.port, _serverProtocol);
-					_tcpListener.sendTimeout = model.settings.server.sendTimeOut;
-					_tcpListener.receiveTimeout = model.settings.server.receiveTimeout;
+					_tcpListener.listener.Server.SendTimeout = model.settings.server.sendTimeOut;
+					_tcpListener.listener.Server.ReceiveTimeout = model.settings.server.receiveTimeout;
+					_tcpListener.sessionsSendTimeout = model.settings.server.sessionSendTimeOut;
+					_tcpListener.sessionsReceiveTimeout = model.settings.server.sessionReceiveTimeout;
 					_tcpListener.events.onStartTcpListener += OnStartTcpListener;
 					_tcpListener.events.onStopTcpListener += OnStopTcpListener;
 					_tcpListener.events.onIncomingClient += OnIncomingClient;
