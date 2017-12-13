@@ -4,7 +4,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 using Cubizer.Math;
 
-namespace Cubizer
+namespace Cubizer.Chunk
 {
 	[Serializable]
 	public class ChunkPrimer
@@ -13,13 +13,13 @@ namespace Cubizer
 		private readonly VoxelData<VoxelMaterial> _voxels;
 
 		[NonSerialized]
-		private ChunkPrimerDelegates.OnChangeDelegate _onChunkChange;
+		private OnChangeDelegate _onChunkChange;
 
 		[NonSerialized]
-		private ChunkPrimerDelegates.OnDestroyDelegate _onChunkDestroy;
+		private OnDestroyDelegate _onChunkDestroy;
 
 		[NonSerialized]
-		private ChunkPrimerDelegates.OnUpdate _onUpdate;
+		private OnUpdate _onUpdate;
 
 		private bool _dirty;
 
@@ -45,13 +45,13 @@ namespace Cubizer
 			get { return _voxels; }
 		}
 
-		public ChunkPrimerDelegates.OnChangeDelegate OnChunkChange
+		public OnChangeDelegate OnChunkChange
 		{
 			set { _onChunkChange = value; }
 			get { return _onChunkChange; }
 		}
 
-		public ChunkPrimerDelegates.OnDestroyDelegate OnChunkDestroy
+		public OnDestroyDelegate OnChunkDestroy
 		{
 			set { _onChunkDestroy = value; }
 			get { return _onChunkDestroy; }

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Cubizer
+namespace Cubizer.Chunk
 {
 	[SelectionBase]
 	[DisallowMultipleComponent]

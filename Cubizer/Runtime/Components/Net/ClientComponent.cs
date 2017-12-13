@@ -2,20 +2,21 @@
 using System.Threading;
 using System.Threading.Tasks;
 
+using Cubizer.Chunk;
 using Cubizer.Net.Client;
 using Cubizer.Net.Protocol;
-using Cubizer.Net.Protocol.Login;
-using Cubizer.Net.Protocol.Serverbound.Handshake;
+using Cubizer.Net.Protocol.Login.Serverbound;
+using Cubizer.Net.Protocol.Handshake.Serverbound;
 
 using UnityEngine;
 
-namespace Cubizer
+namespace Cubizer.Net
 {
 	public sealed class ClientComponent : CubizerComponent<NetworkModels>
 	{
 		private Task _task;
 		private ClientSession _client;
-		private IPacketRouter _clientProtocol = new ClientProtocol();
+		private ClientPacketRouter _clientRouter = new ClientPacketRouter();
 		private CancellationTokenSource _cancellationToken;
 
 		public override bool active
@@ -46,6 +47,12 @@ namespace Cubizer
 			}
 		}
 
+		public ClientComponent()
+		{
+			_clientRouter.onDispatchIncomingPacket = this.OnDispatchIncomingPacket;
+			_clientRouter.onDispatchInvalidPacket = this.OnDispatchInvalidPacket;
+		}
+
 		public override void OnEnable()
 		{
 			context.behaviour.events.OnLoadChunkAfter += this.OnLoadChunkDataAfter;
@@ -68,11 +75,11 @@ namespace Cubizer
 
 				try
 				{
-					_client = new ClientSession(model.settings.client.address, model.settings.client.port, _clientProtocol);
+					_client = new ClientSession(model.settings.client.address, model.settings.client.port, _clientRouter);
 					_client.sendTimeout = model.settings.client.sendTimeOut;
 					_client.receiveTimeout = model.settings.client.receiveTimeout;
-					_client.events.onStartClientListener = OnStartClientListener;
-					_client.events.onStopClientListener = OnStopClientListener;
+					_client.onStartClientListener = OnStartClientListener;
+					_client.onStopClientListener = OnStopClientListener;
 
 					if (!_client.Connect())
 					{
@@ -82,8 +89,10 @@ namespace Cubizer
 
 					_client.Start(_cancellationToken.Token);
 
-					_client.SendPacket(new Handshake(model.settings.network.version, model.settings.client.address, model.settings.client.port, SessionStatus.Login));
-					_client.SendPacket(new LoginStart("test"));
+					_clientRouter.status = SessionStatus.Login;
+
+					_client.SendOutcomingPacket(new Handshake(model.settings.network.version, model.settings.client.address, model.settings.client.port, SessionStatus.Login));
+					_client.SendOutcomingPacket(new LoginStart("test"));
 
 					return _client.connected;
 				}
@@ -136,6 +145,16 @@ namespace Cubizer
 				_cancellationToken.Cancel();
 				_cancellationToken = null;
 			}
+		}
+
+		private void OnDispatchIncomingPacket(SessionStatus status, IPacketSerializable packet)
+		{
+			UnityEngine.Debug.Log($"Status:{status} Packet：{packet.GetType().Name}");
+		}
+
+		private void OnDispatchInvalidPacket(SessionStatus status, UncompressedPacket packet)
+		{
+			UnityEngine.Debug.Log($"Invalid Packet: Status:{status} Packet：{packet.packetId}.Length:[{packet.data.Count}byte]");
 		}
 	}
 }

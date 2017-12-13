@@ -2,17 +2,18 @@
 using System.Threading;
 using System.Net.Sockets;
 
+using Cubizer.Chunk;
 using Cubizer.Net.Server;
 using Cubizer.Net.Protocol;
 
 using UnityEngine;
 
-namespace Cubizer
+namespace Cubizer.Net
 {
 	public sealed class ServerComponent : CubizerComponent<NetworkModels>
 	{
 		private ServerTcpRouter _tcpListener;
-		private IPacketRouter _serverProtocol = new ServerProtocol();
+		private ServerPacketRouter _serverRouter = new ServerPacketRouter();
 		private CancellationTokenSource _cancellationToken;
 
 		public override bool active
@@ -51,6 +52,12 @@ namespace Cubizer
 			}
 		}
 
+		public ServerComponent()
+		{
+			_serverRouter.onDispatchIncomingPacket = this.OnDispatchIncomingPacket;
+			_serverRouter.onDispatchInvalidPacket = this.OnDispatchInvalidPacket;
+		}
+
 		public override void OnEnable()
 		{
 			context.behaviour.events.OnLoadChunkAfter += this.OnLoadChunkDataAfter;
@@ -75,16 +82,16 @@ namespace Cubizer
 
 				try
 				{
-					_tcpListener = new ServerTcpRouter(model.settings.server.address, model.settings.server.port, _serverProtocol);
+					_tcpListener = new ServerTcpRouter(model.settings.server.address, model.settings.server.port, _serverRouter);
 					_tcpListener.listener.Server.SendTimeout = model.settings.server.sendTimeOut;
 					_tcpListener.listener.Server.ReceiveTimeout = model.settings.server.receiveTimeout;
 					_tcpListener.sessionsSendTimeout = model.settings.server.sessionSendTimeOut;
 					_tcpListener.sessionsReceiveTimeout = model.settings.server.sessionReceiveTimeout;
-					_tcpListener.events.onStartTcpListener += OnStartTcpListener;
-					_tcpListener.events.onStopTcpListener += OnStopTcpListener;
-					_tcpListener.events.onIncomingClient += OnIncomingClient;
-					_tcpListener.events.onIncomingClientSession += OnIncomingClientSession;
-					_tcpListener.events.onOutcomingClientSession += OnOutcomingClientSession;
+					_tcpListener.onStartTcpListener = OnStartTcpListener;
+					_tcpListener.onStopTcpListener = OnStopTcpListener;
+					_tcpListener.onIncomingClient = OnIncomingClient;
+					_tcpListener.onIncomingClientSession = OnIncomingClientSession;
+					_tcpListener.onOutcomingClientSession = OnOutcomingClientSession;
 					_tcpListener.Start(_cancellationToken.Token);
 				}
 				catch (Exception e)
@@ -151,6 +158,16 @@ namespace Cubizer
 		private void OnOutcomingClientSession(ServerSession session)
 		{
 			Debug.Log($"Outcoming connection of clisent session.");
+		}
+
+		private void OnDispatchIncomingPacket(SessionStatus status, IPacketSerializable packet)
+		{
+			UnityEngine.Debug.Log($"Status:{status} Packet：{packet.GetType().Name}");
+		}
+
+		private void OnDispatchInvalidPacket(SessionStatus status, UncompressedPacket packet)
+		{
+			UnityEngine.Debug.Log($"Invalid Packet: Status:{status} Packet：{packet.packetId}.Length:[{packet.data.Count}byte]");
 		}
 	}
 }

@@ -1,6 +1,7 @@
 ﻿using System;
+using Cubizer.Chunk;
 
-namespace Cubizer
+namespace Cubizer.Db
 {
 	public interface IDbManager : IDisposable
 	{

@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Threading.Tasks;
+using Cubizer.Chunk;
 
-namespace Cubizer
+namespace Cubizer.Db
 {
 	public sealed class DbComponent : CubizerComponent<DbModels>
 	{

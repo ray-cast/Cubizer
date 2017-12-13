@@ -3,6 +3,10 @@
 using System.Collections;
 using System.Collections.Generic;
 
+using Cubizer.Db;
+using Cubizer.Net;
+using Cubizer.Chunk;
+
 namespace Cubizer
 {
 	[DisallowMultipleComponent]

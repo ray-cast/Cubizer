@@ -1,6 +1,7 @@
 ﻿using System;
 
 using UnityEngine;
+using Cubizer.Chunk;
 
 namespace Cubizer
 {

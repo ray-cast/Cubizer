@@ -24,6 +24,11 @@ namespace Cubizer.Net.Protocol.Serialization
 		{
 		}
 
+		public NetworkReader(ArraySegment<byte> segment)
+			: base(new MemoryStream(segment.Array, segment.Offset, segment.Count))
+		{
+		}
+
 		public override bool ReadBoolean() => base.ReadBoolean();
 		public override byte ReadByte() => base.ReadByte();
 		public override sbyte ReadSByte() => base.ReadSByte();

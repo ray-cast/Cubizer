@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Cubizer
+namespace Cubizer.Chunk
 {
 	[Serializable]
 	public sealed class ChunkDataNode<_Tx, _Ty>

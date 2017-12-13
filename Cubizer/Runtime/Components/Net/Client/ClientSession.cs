@@ -17,7 +17,6 @@ namespace Cubizer.Net.Client
 		private readonly string _hostname;
 		private readonly IPacketRouter _packRouter;
 		private readonly IPacketCompress _packetCompress;
-		private readonly ClientDelegates _events = new ClientDelegates();
 		private readonly CompressedPacket _compressedPacket = new CompressedPacket();
 
 		private int _sendTimeout = 0;
@@ -25,6 +24,9 @@ namespace Cubizer.Net.Client
 
 		private Task _tcpTask;
 		private TcpClient _tcpClient;
+
+		public OnStartTcpListener onStartClientListener { get; set; }
+		public OnStopTcpListener onStopClientListener { get; set; }
 
 		public int sendTimeout
 		{
@@ -70,21 +72,13 @@ namespace Cubizer.Net.Client
 			}
 		}
 
-		public ClientDelegates events
+		public ClientSession(string hostname, int port, IPacketRouter packetRouter, IPacketCompress packetCompress = null)
 		{
-			get
-			{
-				return _events;
-			}
-		}
-
-		public ClientSession(string hostname, int port, IPacketRouter protocal, IPacketCompress packetCompress = null)
-		{
-			Debug.Assert(protocal != null);
+			Debug.Assert(packetRouter != null);
 
 			_port = port;
 			_hostname = hostname;
-			_packRouter = protocal;
+			_packRouter = packetRouter;
 			_packetCompress = packetCompress ?? new PacketCompress();
 		}
 
@@ -125,16 +119,16 @@ namespace Cubizer.Net.Client
 				{
 					try
 					{
-						if (_events.onStartClientListener != null)
-							_events.onStartClientListener.Invoke();
+						if (onStartClientListener != null)
+							onStartClientListener.Invoke();
 
 						while (!cancellationToken.IsCancellationRequested)
 							await DispatchIncomingPacket(stream);
 					}
 					finally
 					{
-						if (_events.onStopClientListener != null)
-							_events.onStopClientListener.Invoke();
+						if (onStopClientListener != null)
+							onStopClientListener.Invoke();
 					}
 				}
 			});
@@ -176,7 +170,7 @@ namespace Cubizer.Net.Client
 			}
 		}
 
-		public async Task SendPacket(IPacketSerializable packet)
+		public async Task SendOutcomingPacket(IPacketSerializable packet)
 		{
 			if (packet == null)
 				await SendUncompressedPacket(null);
@@ -187,7 +181,7 @@ namespace Cubizer.Net.Client
 					using (var bw = new NetworkWrite(stream))
 						packet.Serialize(bw);
 
-					await SendUncompressedPacket(new UncompressedPacket(packet.packId, new ArraySegment<byte>(stream.ToArray())));
+					await SendUncompressedPacket(new UncompressedPacket(packet.packetId, new ArraySegment<byte>(stream.ToArray())));
 				}
 			}
 		}

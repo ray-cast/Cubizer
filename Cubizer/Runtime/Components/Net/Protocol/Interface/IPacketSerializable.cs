@@ -1,10 +1,12 @@
-﻿using Cubizer.Net.Protocol.Serialization;
+﻿using System;
+
+using Cubizer.Net.Protocol.Serialization;
 
 namespace Cubizer.Net.Protocol
 {
-	public interface IPacketSerializable
+	public interface IPacketSerializable : ICloneable
 	{
-		uint packId
+		uint packetId
 		{
 			get;
 		}

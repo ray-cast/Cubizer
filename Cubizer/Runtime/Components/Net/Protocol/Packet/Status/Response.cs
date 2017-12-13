@@ -1,11 +1,13 @@
 ﻿using Cubizer.Net.Protocol.Serialization;
 
-namespace Cubizer.Net.Protocol.Status.Serverbound
+namespace Cubizer.Net.Protocol.Status.Clientbound
 {
 	[Packet(Packet)]
-	public sealed class Request : IPacketSerializable
+	public sealed class Response : IPacketSerializable
 	{
 		public const int Packet = 0x00;
+
+		public string response;
 
 		public uint packetId
 		{
@@ -17,15 +19,17 @@ namespace Cubizer.Net.Protocol.Status.Serverbound
 
 		public void Deserialize(NetworkReader br)
 		{
+			response = br.ReadString();
 		}
 
 		public void Serialize(NetworkWrite bw)
 		{
+			bw.Write(response);
 		}
 
 		public object Clone()
 		{
-			return new Request();
+			return new Response();
 		}
 	}
 }

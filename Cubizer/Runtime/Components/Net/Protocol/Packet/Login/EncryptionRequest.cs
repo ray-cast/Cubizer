@@ -2,16 +2,18 @@
 
 using Cubizer.Net.Protocol.Serialization;
 
-namespace Cubizer.Net.Protocol.Encryption
+namespace Cubizer.Net.Protocol.Login.Clientbound
 {
-	[Packet(0x01)]
+	[Packet(Packet)]
 	public sealed class EncryptionRequest : IPacketSerializable
 	{
+		public const int Packet = 0x01;
+
 		public string serverID;
 		public byte[] key;
 		public byte[] token;
 
-		public uint packId
+		public uint packetId
 		{
 			get
 			{
@@ -38,37 +40,10 @@ namespace Cubizer.Net.Protocol.Encryption
 			this.key = br.ReadBytes();
 			this.token = br.ReadBytes();
 		}
-	}
 
-	[Packet(0x01)]
-	public sealed class EncryptionResponse : IPacketSerializable
-	{
-		public byte[] secret;
-		public byte[] token;
-
-		public uint packId
+		public object Clone()
 		{
-			get
-			{
-				var typeInfo = this.GetType().GetTypeInfo();
-				var attr = typeInfo.GetCustomAttribute<PacketAttribute>();
-				return attr.id;
-			}
-		}
-
-		public void Serialize(NetworkWrite bw)
-		{
-			bw.WriteVarInt((uint)secret.Length);
-			bw.Write(secret);
-
-			bw.WriteVarInt((uint)token.Length);
-			bw.Write(token);
-		}
-
-		public void Deserialize(NetworkReader br)
-		{
-			this.secret = br.ReadBytes();
-			this.token = br.ReadBytes();
+			return new EncryptionRequest();
 		}
 	}
 }

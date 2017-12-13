@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
 using Cubizer.Math;
+using Cubizer.Chunk;
 
 namespace Cubizer
 {

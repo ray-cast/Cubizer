@@ -1,23 +1,25 @@
-﻿using System.Reflection;
+﻿using System;
+using System.IO;
+
 using Cubizer.Net.Protocol.Serialization;
 
-namespace Cubizer.Net.Protocol.Serverbound.Handshake
+namespace Cubizer.Net.Protocol.Handshake.Serverbound
 {
-	[Packet(0x00)]
+	[Packet(Packet)]
 	public sealed class Handshake : IPacketSerializable
 	{
+		public const int Packet = 0x0;
+
 		public uint version;
 		public string address;
 		public ushort port;
 		public SessionStatus nextState;
 
-		public uint packId
+		public uint packetId
 		{
 			get
 			{
-				var typeInfo = this.GetType().GetTypeInfo();
-				var attr = typeInfo.GetCustomAttribute<PacketAttribute>();
-				return attr.id;
+				return Packet;
 			}
 		}
 
@@ -33,15 +35,19 @@ namespace Cubizer.Net.Protocol.Serverbound.Handshake
 			this.nextState = next;
 		}
 
-		public void Deserialize(NetworkReader br)
+		void IPacketSerializable.Deserialize(NetworkReader br)
 		{
 			version = br.ReadUInt32();
 			address = br.ReadString();
 			port = br.ReadUInt16();
 
-			var state = (SessionStatus)br.ReadUInt32();
-			switch (state)
+			var status = (SessionStatus)br.ReadUInt32();
+			switch (status)
 			{
+				case SessionStatus.Handshaking:
+					nextState = SessionStatus.Handshaking;
+					break;
+
 				case SessionStatus.Status:
 					nextState = SessionStatus.Status;
 					break;
@@ -50,18 +56,26 @@ namespace Cubizer.Net.Protocol.Serverbound.Handshake
 					nextState = SessionStatus.Login;
 					break;
 
-				default:
-					nextState = SessionStatus.Invalid;
+				case SessionStatus.Play:
+					nextState = SessionStatus.Play;
 					break;
+
+				default:
+					throw new InvalidDataException($"Invalid session status:{(int)status}");
 			}
 		}
 
-		public void Serialize(NetworkWrite bw)
+		void IPacketSerializable.Serialize(NetworkWrite bw)
 		{
 			bw.WriteVarInt(version);
 			bw.Write(address);
 			bw.Write(port);
 			bw.WriteVarInt((uint)nextState);
+		}
+
+		object ICloneable.Clone()
+		{
+			return new Handshake();
 		}
 	}
 }

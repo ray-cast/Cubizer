@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-namespace Cubizer
+namespace Cubizer.Chunk
 {
 	[CustomEditor(typeof(ChunkData))]
 	public class ChunkDataInspector : Editor

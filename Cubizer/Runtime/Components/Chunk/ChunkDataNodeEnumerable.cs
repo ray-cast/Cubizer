@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace Cubizer
+namespace Cubizer.Chunk
 {
 	public sealed class ChunkDataNodeEnumerable<_Tx, _Ty> : IEnumerable
 		where _Tx : struct

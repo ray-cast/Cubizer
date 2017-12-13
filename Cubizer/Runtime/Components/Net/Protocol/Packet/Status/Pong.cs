@@ -1,9 +1,11 @@
-﻿using Cubizer.Net.Protocol.Serialization;
+﻿using System.Reflection;
 
-namespace Cubizer.Net.Protocol.Status.Serverbound
+using Cubizer.Net.Protocol.Serialization;
+
+namespace Cubizer.Net.Protocol.Status.Clientbound
 {
 	[Packet(Packet)]
-	public sealed class Ping : IPacketSerializable
+	public sealed class Pong : IPacketSerializable
 	{
 		public const int Packet = 0x01;
 
@@ -13,7 +15,9 @@ namespace Cubizer.Net.Protocol.Status.Serverbound
 		{
 			get
 			{
-				return Packet;
+				var typeInfo = this.GetType().GetTypeInfo();
+				var attr = typeInfo.GetCustomAttribute<PacketAttribute>();
+				return attr.id;
 			}
 		}
 
@@ -29,7 +33,7 @@ namespace Cubizer.Net.Protocol.Status.Serverbound
 
 		public object Clone()
 		{
-			return new Ping();
+			return new Pong();
 		}
 	}
 }

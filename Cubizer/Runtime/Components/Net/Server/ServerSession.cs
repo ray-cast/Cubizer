@@ -18,7 +18,7 @@ namespace Cubizer.Net.Server
 		private readonly IPacketCompress _packetCompress;
 
 		private Task _task;
-		private ServerTcpDelegates.OnOutcomingClientSession _onCompletion;
+		private OnOutcomingClientSession _onCompletion;
 
 		public TcpClient client
 		{
@@ -28,12 +28,12 @@ namespace Cubizer.Net.Server
 			}
 		}
 
-		public ServerSession(TcpClient client, IPacketRouter protocol, IPacketCompress packetCompress = null)
+		public ServerSession(TcpClient client, IPacketRouter packRouter = null, IPacketCompress packetCompress = null)
 		{
-			Debug.Assert(client != null && protocol != null);
+			Debug.Assert(client != null && packRouter != null);
 
 			_tcpClient = client;
-			_packRouter = protocol;
+			_packRouter = packRouter ?? new ServerPacketRouter();
 			_packetCompress = packetCompress ?? new PacketCompress();
 		}
 
@@ -90,7 +90,7 @@ namespace Cubizer.Net.Server
 			this.Close();
 		}
 
-		public void OnCompletion(ServerTcpDelegates.OnOutcomingClientSession continuation)
+		public void OnCompletion(OnOutcomingClientSession continuation)
 		{
 			_onCompletion = continuation;
 		}
@@ -106,7 +106,7 @@ namespace Cubizer.Net.Server
 			}
 		}
 
-		public async Task SendPacket(IPacketSerializable packet)
+		public async Task SendOutcomingPacket(IPacketSerializable packet)
 		{
 			if (packet == null)
 				await SendUncompressedPacket(null);
@@ -117,7 +117,7 @@ namespace Cubizer.Net.Server
 					using (var bw = new NetworkWrite(stream))
 						packet.Serialize(bw);
 
-					await SendUncompressedPacket(new UncompressedPacket(packet.packId, new ArraySegment<byte>(stream.ToArray())));
+					await SendUncompressedPacket(new UncompressedPacket(packet.packetId, new ArraySegment<byte>(stream.ToArray())));
 				}
 			}
 		}

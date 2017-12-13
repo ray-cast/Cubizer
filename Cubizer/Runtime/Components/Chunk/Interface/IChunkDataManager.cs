@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace Cubizer
+namespace Cubizer.Chunk
 {
 	public interface IChunkDataManager
 	{

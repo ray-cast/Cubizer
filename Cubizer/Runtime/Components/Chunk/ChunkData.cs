@@ -2,7 +2,7 @@
 
 using UnityEngine;
 
-namespace Cubizer
+namespace Cubizer.Chunk
 {
 	public class ChunkData : IChunkData
 	{

@@ -1,4 +1,4 @@
-﻿namespace Cubizer
+﻿namespace Cubizer.Chunk
 {
 	public class ChunkGeneratorNull : IChunkGenerator
 	{

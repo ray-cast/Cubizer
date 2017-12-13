@@ -6,7 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 using Cubizer.Math;
 
-namespace Cubizer
+namespace Cubizer.Chunk
 {
 	using ChunkNode = ChunkDataNode<Vector3<int>, ChunkPrimer>;
 

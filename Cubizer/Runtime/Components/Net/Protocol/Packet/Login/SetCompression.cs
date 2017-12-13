@@ -1,21 +1,19 @@
-﻿using System.Reflection;
+﻿using Cubizer.Net.Protocol.Serialization;
 
-using Cubizer.Net.Protocol.Serialization;
-
-namespace Cubizer.Net.Protocol.Clientbound.Login
+namespace Cubizer.Net.Protocol.Login.Serverbound
 {
-	[Packet(0x03)]
+	[Packet(Packet)]
 	public sealed class SetCompression : IPacketSerializable
 	{
+		public const int Packet = 0x03;
+
 		public int threshold;
 
-		public uint packId
+		public uint packetId
 		{
 			get
 			{
-				var typeInfo = this.GetType().GetTypeInfo();
-				var attr = typeInfo.GetCustomAttribute<PacketAttribute>();
-				return attr.id;
+				return Packet;
 			}
 		}
 
@@ -27,6 +25,11 @@ namespace Cubizer.Net.Protocol.Clientbound.Login
 		public void Deserialize(NetworkReader br)
 		{
 			threshold = br.ReadInt32();
+		}
+
+		public object Clone()
+		{
+			return new SetCompression();
 		}
 	}
 }

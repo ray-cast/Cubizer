@@ -1,4 +1,6 @@
-﻿namespace Cubizer
+﻿using Cubizer.Chunk;
+
+namespace Cubizer
 {
 	public interface IBiomeData
 	{

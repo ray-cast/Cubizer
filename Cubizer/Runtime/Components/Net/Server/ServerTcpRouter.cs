@@ -19,12 +19,19 @@ namespace Cubizer.Net.Server
 		private readonly TcpListener _listener;
 		private readonly IPacketRouter _protocol;
 		private readonly List<ServerSession> _sessions = new List<ServerSession>();
-		private readonly ServerTcpDelegates _events = new ServerTcpDelegates();
 
 		private Task _task;
 
 		private int _sendTimeout = 0;
 		private int _receiveTimeout = 0;
+
+		public OnStartTcpListener onStartTcpListener { get; set; }
+		public OnStopTcpListener onStopTcpListener { get; set; }
+
+		public OnIncomingClient onIncomingClient { get; set; }
+		public OnIncomingClientSession onIncomingClientSession { get; set; }
+
+		public OnOutcomingClientSession onOutcomingClientSession { get; set; }
 
 		public int count
 		{
@@ -70,14 +77,6 @@ namespace Cubizer.Net.Server
 			}
 		}
 
-		public ServerTcpDelegates events
-		{
-			get
-			{
-				return _events;
-			}
-		}
-
 		public ServerTcpRouter(string ip, int port, IPacketRouter protocol)
 		{
 			Debug.Assert(protocol != null && !string.IsNullOrEmpty(ip));
@@ -101,8 +100,8 @@ namespace Cubizer.Net.Server
 			{
 				try
 				{
-					if (_events.onStartTcpListener != null)
-						_events.onStartTcpListener.Invoke();
+					if (onStartTcpListener != null)
+						onStartTcpListener();
 
 					_listener.Start();
 
@@ -111,8 +110,8 @@ namespace Cubizer.Net.Server
 				}
 				finally
 				{
-					if (_events.onStopTcpListener != null)
-						_events.onStopTcpListener.Invoke();
+					if (onStopTcpListener != null)
+						onStopTcpListener();
 
 					_listener.Stop();
 				}
@@ -170,8 +169,8 @@ namespace Cubizer.Net.Server
 
 			if (tcpClient.Connected)
 			{
-				if (_events.onIncomingClient != null)
-					_events.onIncomingClient.Invoke(tcpClient);
+				if (onIncomingClient != null)
+					onIncomingClient(tcpClient);
 
 				var session = new ServerSession(tcpClient, _protocol);
 				session.client.SendTimeout = _sendTimeout;
@@ -179,8 +178,8 @@ namespace Cubizer.Net.Server
 				session.OnCompletion(OnCompletionSession);
 				session.Start(cancellationToken);
 
-				if (_events.onIncomingClientSession != null)
-					_events.onIncomingClientSession.Invoke(session);
+				if (onIncomingClientSession != null)
+					onIncomingClientSession(session);
 
 				lock (_sessions) _sessions.Add(session);
 			}
@@ -188,8 +187,8 @@ namespace Cubizer.Net.Server
 
 		private void OnCompletionSession(ServerSession clientSession)
 		{
-			if (_events.onOutcomingClientSession != null)
-				_events.onOutcomingClientSession.Invoke(clientSession);
+			if (onOutcomingClientSession != null)
+				onOutcomingClientSession(clientSession);
 
 			lock (_sessions) _sessions.Remove(clientSession);
 		}

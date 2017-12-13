@@ -1,11 +1,10 @@
-﻿namespace Cubizer.Net.Client
-{
-	public sealed class ClientDelegates
-	{
-		public delegate void OnStartTcpListener();
-		public delegate void OnStopTcpListener();
+﻿using Cubizer.Net.Protocol;
 
-		public OnStartTcpListener onStartClientListener;
-		public OnStopTcpListener onStopClientListener;
-	}
+namespace Cubizer.Net.Client
+{
+	public delegate void OnStartTcpListener();
+	public delegate void OnStopTcpListener();
+
+	public delegate void OnDispatchInvalidPacket(SessionStatus status, UncompressedPacket data);
+	public delegate void OnDispatchIncomingPacket(SessionStatus status, IPacketSerializable data);
 }

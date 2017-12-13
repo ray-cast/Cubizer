@@ -2,8 +2,9 @@
 
 using System;
 using Mono.Data.Sqlite;
+using Cubizer.Chunk;
 
-namespace Cubizer
+namespace Cubizer.Db
 {
 	public class DbSqlite : IDbManager
 	{
