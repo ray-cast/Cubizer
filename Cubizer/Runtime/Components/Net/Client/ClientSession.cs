@@ -17,7 +17,6 @@ namespace Cubizer.Net.Client
 		private readonly string _hostname;
 		private readonly IPacketRouter _packRouter;
 		private readonly IPacketCompress _packetCompress;
-		private readonly CompressedPacket _compressedPacket = new CompressedPacket();
 
 		private int _sendTimeout = 0;
 		private int _receiveTimeout = 0;
@@ -159,7 +158,23 @@ namespace Cubizer.Net.Client
 			}
 		}
 
-		public async Task SendUncompressedPacket(UncompressedPacket packet)
+		public async Task SendOutcomingPacket(IPacketSerializable packet)
+		{
+			if (packet == null)
+				await SendOutcomingUncompressedPacket(null);
+			else
+			{
+				using (var stream = new MemoryStream())
+				{
+					using (var bw = new NetworkWrite(stream))
+						packet.Serialize(bw);
+
+					await SendOutcomingUncompressedPacket(new UncompressedPacket(packet.packetId, new ArraySegment<byte>(stream.ToArray())));
+				}
+			}
+		}
+
+		public async Task SendOutcomingUncompressedPacket(UncompressedPacket packet)
 		{
 			if (packet == null)
 				_tcpClient.Client.Shutdown(SocketShutdown.Send);
@@ -170,20 +185,23 @@ namespace Cubizer.Net.Client
 			}
 		}
 
-		public async Task SendOutcomingPacket(IPacketSerializable packet)
+		public async Task SendIncomingPacket(IPacketSerializable packet)
 		{
-			if (packet == null)
-				await SendUncompressedPacket(null);
-			else
+			if (packet != null)
 			{
 				using (var stream = new MemoryStream())
 				{
 					using (var bw = new NetworkWrite(stream))
 						packet.Serialize(bw);
 
-					await SendUncompressedPacket(new UncompressedPacket(packet.packetId, new ArraySegment<byte>(stream.ToArray())));
+					await SendIncomingUncompressedPacket(new UncompressedPacket(packet.packetId, new ArraySegment<byte>(stream.ToArray())));
 				}
 			}
+		}
+
+		public async Task SendIncomingUncompressedPacket(UncompressedPacket packet)
+		{
+			await _packRouter.DispatchIncomingPacket(packet);
 		}
 
 		public void Dispose()
@@ -193,16 +211,13 @@ namespace Cubizer.Net.Client
 
 		private async Task DispatchIncomingPacket(Stream stream)
 		{
-			int count = await _compressedPacket.DeserializeAsync(stream);
+			var compressedPacket = new CompressedPacket();
+
+			int count = await compressedPacket.DeserializeAsync(stream);
 			if (count > 0)
-				await DispatchIncomingPacket(_packetCompress.Decompress(_compressedPacket));
+				await SendIncomingUncompressedPacket(_packetCompress.Decompress(compressedPacket));
 			else
 				throw new EndOfStreamException();
-		}
-
-		private async Task DispatchIncomingPacket(UncompressedPacket packet)
-		{
-			await _packRouter.DispatchIncomingPacket(packet);
 		}
 	}
 }
