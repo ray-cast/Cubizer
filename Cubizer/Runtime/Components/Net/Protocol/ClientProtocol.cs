@@ -1,12 +1,15 @@
-﻿using UnityEngine;
+﻿using System.Threading.Tasks;
+
+using UnityEngine;
 
 namespace Cubizer.Protocol
 {
 	public sealed class ClientProtocol : IPacketRouter
 	{
-		public void DispatchIncomingPacket(UncompressedPacket packet)
+		Task IPacketRouter.DispatchIncomingPacket(UncompressedPacket packet)
 		{
 			Debug.Log("Packet：" + packet.packetId + ".Length:[" + packet.data.Count + "byte]");
+			return Task.CompletedTask;
 		}
 	}
 }

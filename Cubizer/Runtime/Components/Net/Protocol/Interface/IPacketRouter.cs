@@ -1,7 +1,9 @@
-﻿namespace Cubizer.Protocol
+﻿using System.Threading.Tasks;
+
+namespace Cubizer.Protocol
 {
 	public interface IPacketRouter
 	{
-		void DispatchIncomingPacket(UncompressedPacket packet);
+		Task DispatchIncomingPacket(UncompressedPacket packet);
 	}
 }

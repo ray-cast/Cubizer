@@ -2,7 +2,6 @@
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -169,7 +168,7 @@ namespace Cubizer.Server
 				session.client.SendTimeout = _sendTimeout;
 				session.client.ReceiveTimeout = _receiveTimeout;
 				session.OnCompletion(OnCompletionSession);
-				session.StartAsync(cancellationToken);
+				session.Start(cancellationToken);
 
 				if (_events.onIncomingClientSession != null)
 					_events.onIncomingClientSession.Invoke(session);

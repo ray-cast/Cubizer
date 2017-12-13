@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 using Cubizer.Protocol.Extensions;
 using Cubizer.Protocol.Serialization;
@@ -31,9 +32,24 @@ namespace Cubizer.Protocol
 			{
 				bw.WriteVarInt(length);
 				bw.WriteVarInt(packetId);
-				bw.BaseStream.Write(data.Array, data.Offset, data.Count);
 				bw.Flush();
 			}
+
+			stream.Write(data.Array, data.Offset, data.Count);
+		}
+
+		public async void SerializeAsync(Stream stream)
+		{
+			var length = (uint)data.Count + packetId.SizeofBytes();
+
+			using (var bw = new NetworkWrite(stream, Encoding.UTF8, true))
+			{
+				bw.WriteVarInt(length);
+				bw.WriteVarInt(packetId);
+				bw.Flush();
+			}
+
+			await stream.WriteAsync(data.Array, data.Offset, data.Count);
 		}
 
 		public int Deserialize(Stream stream, int maxLength = ushort.MaxValue)
@@ -46,9 +62,28 @@ namespace Cubizer.Protocol
 				{
 					byte packLength;
 					packetId = br.ReadVarInt(out packLength);
+					data = new ArraySegment<byte>(new byte[length - packLength]);
+
+					return stream.Read(data.Array, data.Offset, data.Count);
+				}
+
+				return length;
+			}
+		}
+
+		public async Task<int> DeserializeAsync(Stream stream, int maxLength = ushort.MaxValue)
+		{
+			using (var br = new NetworkReader(stream, Encoding.UTF8, true))
+			{
+				var length = (int)br.ReadVarInt();
+
+				if (length > 0 && length < maxLength)
+				{
+					byte packLength;
+					packetId = br.ReadVarInt(out packLength);
 
 					data = new ArraySegment<byte>(new byte[length - packLength]);
-					return stream.Read(data.Array, data.Offset, data.Count);
+					return await stream.ReadAsync(data.Array, data.Offset, data.Count);
 				}
 
 				return length;

@@ -1,9 +1,12 @@
-﻿namespace Cubizer.Protocol
+﻿using System.Threading.Tasks;
+
+namespace Cubizer.Protocol
 {
 	public sealed class ClientProtocolNull : IPacketRouter
 	{
-		public void DispatchIncomingPacket(UncompressedPacket packet)
+		Task IPacketRouter.DispatchIncomingPacket(UncompressedPacket packet)
 		{
+			return Task.CompletedTask;
 		}
 	}
 }

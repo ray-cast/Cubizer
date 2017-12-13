@@ -119,7 +119,7 @@ namespace Cubizer.Client
 			if (!_tcpClient.Connected)
 				throw new InvalidOperationException("Please connect the server before Start()");
 
-			_tcpTask = Task.Run(() =>
+			_tcpTask = Task.Run(async () =>
 			{
 				using (var stream = _tcpClient.GetStream())
 				{
@@ -129,7 +129,7 @@ namespace Cubizer.Client
 							_events.onStartClientListener.Invoke();
 
 						while (!cancellationToken.IsCancellationRequested)
-							DispatchIncomingPacket(stream);
+							await DispatchIncomingPacket(stream);
 					}
 					finally
 					{
@@ -165,21 +165,21 @@ namespace Cubizer.Client
 			}
 		}
 
-		public void SendUncompressedPacket(UncompressedPacket packet)
+		public async Task SendUncompressedPacket(UncompressedPacket packet)
 		{
 			if (packet == null)
 				_tcpClient.Client.Shutdown(SocketShutdown.Send);
 			else
 			{
 				var newPacket = _packetCompress.Compress(packet);
-				newPacket.Serialize(_tcpClient.GetStream());
+				await newPacket.SerializeAsync(_tcpClient.GetStream());
 			}
 		}
 
-		public void SendPacket(IPacketSerializable packet)
+		public async Task SendPacket(IPacketSerializable packet)
 		{
 			if (packet == null)
-				SendUncompressedPacket(null);
+				await SendUncompressedPacket(null);
 			else
 			{
 				using (var stream = new MemoryStream())
@@ -187,7 +187,7 @@ namespace Cubizer.Client
 					using (var bw = new NetworkWrite(stream))
 						packet.Serialize(bw);
 
-					SendUncompressedPacket(new UncompressedPacket(packet.packId, new ArraySegment<byte>(stream.ToArray())));
+					await SendUncompressedPacket(new UncompressedPacket(packet.packId, new ArraySegment<byte>(stream.ToArray())));
 				}
 			}
 		}
@@ -197,18 +197,18 @@ namespace Cubizer.Client
 			this.Close();
 		}
 
-		private void DispatchIncomingPacket(Stream stream)
+		private async Task DispatchIncomingPacket(Stream stream)
 		{
-			int count = _compressedPacket.Deserialize(stream);
+			int count = await _compressedPacket.DeserializeAsync(stream);
 			if (count > 0)
-				DispatchIncomingPacket(_packetCompress.Decompress(_compressedPacket));
+				await DispatchIncomingPacket(_packetCompress.Decompress(_compressedPacket));
 			else
 				throw new EndOfStreamException();
 		}
 
-		private void DispatchIncomingPacket(UncompressedPacket packet)
+		private async Task DispatchIncomingPacket(UncompressedPacket packet)
 		{
-			_packRouter.DispatchIncomingPacket(packet);
+			await _packRouter.DispatchIncomingPacket(packet);
 		}
 	}
 }
