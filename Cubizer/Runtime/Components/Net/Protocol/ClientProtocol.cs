@@ -2,7 +2,7 @@
 
 using UnityEngine;
 
-namespace Cubizer.Protocol
+namespace Cubizer.Net.Protocol
 {
 	public sealed class ClientProtocol : IPacketRouter
 	{

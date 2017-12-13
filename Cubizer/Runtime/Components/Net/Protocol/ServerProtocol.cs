@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Cubizer.Protocol
+namespace Cubizer.Net.Protocol
 {
 	public sealed class ServerProtocol : IPacketRouter
 	{

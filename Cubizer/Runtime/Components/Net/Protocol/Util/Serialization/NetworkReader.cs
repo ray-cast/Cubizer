@@ -3,9 +3,9 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text;
 
-using Cubizer.Protocol.Extensions;
+using Cubizer.Net.Protocol.Extensions;
 
-namespace Cubizer.Protocol.Serialization
+namespace Cubizer.Net.Protocol.Serialization
 {
 	public class NetworkReader : BinaryReader
 	{
@@ -27,7 +27,6 @@ namespace Cubizer.Protocol.Serialization
 		public override bool ReadBoolean() => base.ReadBoolean();
 		public override byte ReadByte() => base.ReadByte();
 		public override sbyte ReadSByte() => base.ReadSByte();
-		public override byte[] ReadBytes(int count) => base.ReadBytes(count);
 		public override short ReadInt16() => (Int16)base.ReadInt16().ToBigEndian();
 		public override int ReadInt32() => (int)base.ReadInt32().ToBigEndian();
 		public override long ReadInt64() => (long)base.ReadInt64().ToBigEndian();
@@ -36,6 +35,7 @@ namespace Cubizer.Protocol.Serialization
 		public override ulong ReadUInt64() => base.ReadUInt64().ToBigEndian();
 		public override float ReadSingle() => BitConverter.ToSingle(BitConverter.GetBytes(base.ReadUInt32().ToBigEndian()), 0);
 		public override double ReadDouble() => BitConverter.Int64BitsToDouble((long)base.ReadInt64().ToBigEndian());
+		public byte[] ReadBytesAny(int count) => base.ReadBytes(count);
 
 		public Guid ReadGuid()
 		{
@@ -102,8 +102,13 @@ namespace Cubizer.Protocol.Serialization
 
 		public override string ReadString()
 		{
-			var length = (int)this.ReadUInt32();
-			if (length <= short.MaxValue)
+			return ReadString(int.MaxValue);
+		}
+
+		public string ReadString(int maxLength)
+		{
+			var length = (int)this.ReadVarInt();
+			if (length <= maxLength)
 			{
 				var bytes = base.ReadBytes(length);
 				return Encoding.UTF8.GetString(bytes);
@@ -111,6 +116,19 @@ namespace Cubizer.Protocol.Serialization
 			else
 			{
 				throw new InvalidDataException($"String is too big .length:{length}.");
+			}
+		}
+
+		public override byte[] ReadBytes(int maxLength = short.MaxValue)
+		{
+			var length = (int)this.ReadVarInt();
+			if (length <= maxLength)
+			{
+				return base.ReadBytes(length);
+			}
+			else
+			{
+				throw new InvalidDataException($"Bytes is too big .length:{length}.");
 			}
 		}
 

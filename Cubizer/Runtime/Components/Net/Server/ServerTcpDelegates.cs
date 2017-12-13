@@ -1,6 +1,6 @@
 ﻿using System.Net.Sockets;
 
-namespace Cubizer.Server
+namespace Cubizer.Net.Server
 {
 	public sealed class ServerTcpDelegates
 	{

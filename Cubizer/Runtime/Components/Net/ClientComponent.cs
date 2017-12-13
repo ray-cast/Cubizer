@@ -2,10 +2,10 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-using Cubizer.Client;
-using Cubizer.Protocol;
-using Cubizer.Protocol.Login;
-using Cubizer.Protocol.Handshake;
+using Cubizer.Net.Client;
+using Cubizer.Net.Protocol;
+using Cubizer.Net.Protocol.Login;
+using Cubizer.Net.Protocol.Serverbound.Handshake;
 
 using UnityEngine;
 

@@ -1,4 +1,4 @@
-﻿namespace Cubizer.Protocol.Extensions
+﻿namespace Cubizer.Net.Protocol.Extensions
 {
 	internal static class SizeofExtensions
 	{

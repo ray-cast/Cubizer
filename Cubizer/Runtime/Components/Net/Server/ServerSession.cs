@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-using Cubizer.Protocol;
-using Cubizer.Protocol.Serialization;
+using Cubizer.Net.Protocol;
+using Cubizer.Net.Protocol.Serialization;
 
-namespace Cubizer.Server
+namespace Cubizer.Net.Server
 {
 	public sealed class ServerSession : IDisposable
 	{

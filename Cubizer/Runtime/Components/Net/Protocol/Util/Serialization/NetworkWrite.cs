@@ -3,9 +3,9 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text;
 
-using Cubizer.Protocol.Extensions;
+using Cubizer.Net.Protocol.Extensions;
 
-namespace Cubizer.Protocol.Serialization
+namespace Cubizer.Net.Protocol.Serialization
 {
 	public class NetworkWrite : BinaryWriter
 	{
@@ -27,7 +27,10 @@ namespace Cubizer.Protocol.Serialization
 		public override void Write(bool value) => base.Write(value);
 		public override void Write(byte value) => base.Write(value);
 		public override void Write(sbyte value) => base.Write(value);
+		public override void Write(char value) => base.Write(value);
 		public override void Write(byte[] value) => base.Write(value);
+		public override void Write(byte[] value, int index, int count) => base.Write(value, index, count);
+		public override void Write(char[] value, int index, int count) => base.Write(value, index, count);
 		public override void Write(short value) => base.Write(value.ToBigEndian());
 		public override void Write(int value) => base.Write(value.ToBigEndian());
 		public override void Write(uint value) => this.WriteVarInt(value);
@@ -37,6 +40,11 @@ namespace Cubizer.Protocol.Serialization
 		public override void Write(float value) => base.Write(BitConverter.ToUInt32(BitConverter.GetBytes(value), 0).ToBigEndian());
 		public override void Write(double value) => base.Write(BitConverter.DoubleToInt64Bits(value).ToBigEndian());
 		public void Write(Guid value) => base.Write(value.ToByteArray());
+
+		public void WriteVarInt(int value)
+		{
+			this.WriteVarInt((uint)value);
+		}
 
 		public void WriteVarInt(uint value)
 		{
@@ -68,8 +76,13 @@ namespace Cubizer.Protocol.Serialization
 
 		public override void Write(string value)
 		{
+			this.Write(value, short.MaxValue);
+		}
+
+		public void Write(string value, int maxLength)
+		{
 			var bytes = Encoding.UTF8.GetBytes(value);
-			if (bytes.Length <= short.MaxValue)
+			if (bytes.Length <= maxLength)
 			{
 				this.WriteVarInt((uint)bytes.Length);
 				base.Write(bytes);
@@ -80,7 +93,7 @@ namespace Cubizer.Protocol.Serialization
 			}
 		}
 
-		public void Write<T>(IReadOnlyList<T> array)
+		public void WritePakcets<T>(IReadOnlyList<T> array)
 			where T : IPacketSerializable
 		{
 			foreach (var it in array)

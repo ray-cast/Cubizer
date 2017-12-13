@@ -1,4 +1,4 @@
-﻿namespace Cubizer.Protocol
+﻿namespace Cubizer.Net.Protocol
 {
 	public interface IPacketCompress
 	{

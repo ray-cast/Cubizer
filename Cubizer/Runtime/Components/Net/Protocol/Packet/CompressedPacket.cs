@@ -3,10 +3,10 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-using Cubizer.Protocol.Extensions;
-using Cubizer.Protocol.Serialization;
+using Cubizer.Net.Protocol.Extensions;
+using Cubizer.Net.Protocol.Serialization;
 
-namespace Cubizer.Protocol
+namespace Cubizer.Net.Protocol
 {
 	public sealed class CompressedPacket
 	{

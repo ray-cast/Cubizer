@@ -1,6 +1,6 @@
-﻿using Cubizer.Protocol.Serialization;
+﻿using Cubizer.Net.Protocol.Serialization;
 
-namespace Cubizer.Protocol
+namespace Cubizer.Net.Protocol
 {
 	public interface IPacketSerializable
 	{

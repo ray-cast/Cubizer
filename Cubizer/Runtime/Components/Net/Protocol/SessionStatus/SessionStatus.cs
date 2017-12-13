@@ -1,4 +1,4 @@
-﻿namespace Cubizer.Protocol.Handshake
+﻿namespace Cubizer.Net.Protocol
 {
 	public enum SessionStatus
 	{

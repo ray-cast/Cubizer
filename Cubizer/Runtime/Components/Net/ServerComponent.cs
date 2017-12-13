@@ -2,10 +2,10 @@
 using System.Threading;
 using System.Net.Sockets;
 
-using UnityEngine;
+using Cubizer.Net.Server;
+using Cubizer.Net.Protocol;
 
-using Cubizer.Server;
-using Cubizer.Protocol;
+using UnityEngine;
 
 namespace Cubizer
 {
@@ -47,7 +47,7 @@ namespace Cubizer
 		{
 			get
 			{
-				return _tcpListener != null ? _tcpListener.sessionsCount : 0;
+				return _tcpListener != null ? _tcpListener.count : 0;
 			}
 		}
 

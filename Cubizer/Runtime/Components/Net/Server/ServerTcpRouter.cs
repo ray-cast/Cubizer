@@ -7,9 +7,10 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using UnityEngine;
-using Cubizer.Protocol;
 
-namespace Cubizer.Server
+using Cubizer.Net.Protocol;
+
+namespace Cubizer.Net.Server
 {
 	public sealed class ServerTcpRouter : IDisposable
 	{
@@ -22,10 +23,10 @@ namespace Cubizer.Server
 
 		private Task _task;
 
-		private int _sessionSendTimeout = 0;
-		private int _sessionReceiveTimeout = 0;
+		private int _sendTimeout = 0;
+		private int _receiveTimeout = 0;
 
-		public int sessionsCount
+		public int count
 		{
 			get
 			{
@@ -37,12 +38,12 @@ namespace Cubizer.Server
 		{
 			set
 			{
-				if (_sessionSendTimeout != value)
+				if (_sendTimeout != value)
 				{
 					foreach (var it in _sessions)
 						it.client.SendTimeout = value;
 
-					_sessionSendTimeout = value;
+					_sendTimeout = value;
 				}
 			}
 		}
@@ -51,12 +52,12 @@ namespace Cubizer.Server
 		{
 			set
 			{
-				if (_sessionReceiveTimeout != value)
+				if (_receiveTimeout != value)
 				{
 					foreach (var it in _sessions)
 						it.client.ReceiveTimeout = value;
 
-					_sessionReceiveTimeout = value;
+					_receiveTimeout = value;
 				}
 			}
 		}
@@ -173,8 +174,8 @@ namespace Cubizer.Server
 					_events.onIncomingClient.Invoke(tcpClient);
 
 				var session = new ServerSession(tcpClient, _protocol);
-				session.client.SendTimeout = _sessionSendTimeout;
-				session.client.ReceiveTimeout = _sessionReceiveTimeout;
+				session.client.SendTimeout = _sendTimeout;
+				session.client.ReceiveTimeout = _receiveTimeout;
 				session.OnCompletion(OnCompletionSession);
 				session.Start(cancellationToken);
 

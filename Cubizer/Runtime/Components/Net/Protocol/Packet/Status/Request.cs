@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
 
-using Cubizer.Protocol.Serialization;
+using Cubizer.Net.Protocol.Serialization;
 
-namespace Cubizer.Protocol.Status
+namespace Cubizer.Net.Protocol.Status
 {
 	[Packet(0x00)]
 	public sealed class Request : IPacketSerializable

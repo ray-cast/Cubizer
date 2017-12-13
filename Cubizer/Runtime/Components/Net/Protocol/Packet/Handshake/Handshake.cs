@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
-using Cubizer.Protocol.Serialization;
+using Cubizer.Net.Protocol.Serialization;
 
-namespace Cubizer.Protocol.Handshake
+namespace Cubizer.Net.Protocol.Serverbound.Handshake
 {
 	[Packet(0x00)]
 	public sealed class Handshake : IPacketSerializable
