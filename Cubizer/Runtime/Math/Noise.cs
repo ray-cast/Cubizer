@@ -24,7 +24,7 @@ using UnityEngine;
 
 namespace Cubizer.Math
 {
-	public class Noise
+	public static class Noise
 	{
 		public static float F2 = 0.3660254037844386f;
 		public static float G2 = 0.21132486540518713f;
@@ -107,7 +107,7 @@ namespace Cubizer.Math
 				128, 195, 78, 66, 215, 61, 156, 180
 		};
 
-		public static float noise2(float x, float y)
+		public static float Noise2(float x, float y)
 		{
 			int i1, j1, I, J;
 			float s = (x + y) * F2;
@@ -152,7 +152,7 @@ namespace Cubizer.Math
 			return (noise[0] + noise[1] + noise[2]) * 70.0f;
 		}
 
-		public static float noise3(float x, float y, float z)
+		public static float Noise3(float x, float y, float z)
 		{
 			int I, J, K;
 			int[] o1 = new int[3], o2 = new int[3], g = new int[4];
@@ -238,43 +238,43 @@ namespace Cubizer.Math
 			return (noise[0] + noise[1] + noise[2] + noise[3]) * 32.0f;
 		}
 
-		public static float simplex2(float x, float y, int octaves, float persistence, float lacunarity)
+		public static float Simplex2(float x, float y, int octaves, float persistence, float lacunarity)
 		{
 			float freq = 1.0f;
 			float amp = 1.0f;
 			float max = 1.0f;
-			float total = noise2(x, y);
+			float total = Noise2(x, y);
 
 			for (int i = 1; i < octaves; i++)
 			{
 				freq *= lacunarity;
 				amp *= persistence;
 				max += amp;
-				total += noise2(x * freq, y * freq) * amp;
+				total += Noise2(x * freq, y * freq) * amp;
 			}
 
 			return (total / max) * 0.5f + 0.5f;
 		}
 
-		public static float simplex3(float x, float y, float z, int octaves, float persistence, float lacunarity)
+		public static float Simplex3(float x, float y, float z, int octaves, float persistence, float lacunarity)
 		{
 			float freq = 1.0f;
 			float amp = 1.0f;
 			float max = 1.0f;
-			float total = noise3(x, y, z);
+			float total = Noise3(x, y, z);
 
 			for (int i = 1; i < octaves; ++i)
 			{
 				freq *= lacunarity;
 				amp *= persistence;
 				max += amp;
-				total += noise3(x * freq, y * freq, z * freq) * amp;
+				total += Noise3(x * freq, y * freq, z * freq) * amp;
 			}
 
 			return (1 + total / max) / 2;
 		}
 
-		public static void simplex_seed(int seed)
+		public static void SimplexSeed(int seed)
 		{
 			UnityEngine.Random.InitState(seed);
 

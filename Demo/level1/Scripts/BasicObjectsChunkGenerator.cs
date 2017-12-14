@@ -42,7 +42,7 @@ namespace Cubizer
 
 		public void BuildGrass(ChunkPrimer map, byte ix, byte iz, int dx, int dz, VoxelMaterial main, out float f, out byte h)
 		{
-			f = Noise.simplex2(_params.grass.loopX * dx, _params.grass.loopZ * dz, _params.grass.octaves, _params.grass.persistence, _params.grass.lacunarity);
+			f = Noise.Simplex2(_params.grass.loopX * dx, _params.grass.loopZ * dz, _params.grass.octaves, _params.grass.persistence, _params.grass.lacunarity);
 			f = (f * (f * _params.floorHeightLismit + _params.floorBase));
 
 			h = System.Math.Max((byte)1, (byte)f);
@@ -102,7 +102,7 @@ namespace Cubizer
 						if (f > waterHeight && f < (waterHeight + 0.1))
 							map.voxels.Set(ix, (byte)(h - 1), iz, _materials.sand);
 
-						if (_params.isGenWeed && Noise.simplex2(
+						if (_params.isGenWeed && Noise.Simplex2(
 								_params.weeds.loopX * dx,
 								_params.weeds.loopZ * dz,
 								_params.weeds.octaves,
@@ -111,7 +111,7 @@ namespace Cubizer
 						{
 							map.voxels.Set(ix, h, iz, _materials.weed[random.Next(0, _materials.weed.Length - 1)]);
 						}
-						else if (_params.isGenFlower && Noise.simplex2(
+						else if (_params.isGenFlower && Noise.Simplex2(
 								_params.flowers.loopX * dx,
 								_params.flowers.loopZ * dz,
 								_params.flowers.octaves,
@@ -124,7 +124,7 @@ namespace Cubizer
 						{
 							if (ix > 3 && ix < map.voxels.Bound.y - 3 && iz > 3 && iz < map.voxels.Bound.y - 3)
 							{
-								if (Noise.simplex2(
+								if (Noise.Simplex2(
 									_params.tree.loopX * dx,
 									_params.tree.loopZ * dz,
 									_params.tree.octaves,

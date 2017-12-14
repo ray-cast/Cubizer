@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
+
 using Cubizer.Chunk;
+using Cubizer.Models;
 
 namespace Cubizer
 {
@@ -25,10 +27,10 @@ namespace Cubizer
 
 			try
 			{
-				var vox = Model.VoxFileImport.Load(_asset.bytes);
+				var vox = VoxFileImport.Load(_asset.bytes);
 				if (vox != null)
 				{
-					var model = Model.VoxFileImport.LoadVoxelFileAsGameObject(this.name, vox, _LOD, _shader);
+					var model = VoxFileImport.LoadVoxelFileAsGameObject(this.name, vox, _LOD, _shader);
 
 					_mesh = model.GetComponentInChildren<MeshFilter>().sharedMesh;
 

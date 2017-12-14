@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 
+using Cubizer.Models;
+
 namespace Cubizer
 {
 	[AddComponentMenu("Cubizer/CubizerMeshFilter")]
@@ -19,9 +21,9 @@ namespace Cubizer
 				if (_shader == null)
 					Debug.LogError("Please assign a shader on the inspector");
 
-				var vox = Model.VoxFileImport.Load(_asset.bytes);
+				var vox = VoxFileImport.Load(_asset.bytes);
 				if (vox != null)
-					Model.VoxFileImport.LoadVoxelFileAsGameObject(gameObject, vox, _LOD, _shader);
+					VoxFileImport.LoadVoxelFileAsGameObject(gameObject, vox, _LOD, _shader);
 			}
 			catch (System.Exception e)
 			{

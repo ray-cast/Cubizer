@@ -4,7 +4,7 @@ using System.IO;
 using UnityEngine;
 using UnityEditor;
 
-using Cubizer.Model;
+using Cubizer.Models;
 
 public class VOXFileLoader : EditorWindow
 {

@@ -48,7 +48,7 @@ namespace Cubizer
 
 		public void Start()
 		{
-			Math.Noise.simplex_seed(context.profile.terrain.settings.seed);
+			Math.Noise.SimplexSeed(context.profile.terrain.settings.seed);
 
 			_materials = new BasicObjectsMaterials();
 
@@ -157,7 +157,7 @@ namespace Cubizer
 			{
 				if (y == layerGrass)
 				{
-					var noise = Noise.simplex2(x * 0.006f, y * 0.006f, 4, 0.5f, 2);
+					var noise = Noise.Simplex2(x * 0.006f, y * 0.006f, 4, 0.5f, 2);
 					if (noise >= 0.51 && noise <= 0.52)
 						return buildForest(noise);
 					else if (noise >= 0.5)

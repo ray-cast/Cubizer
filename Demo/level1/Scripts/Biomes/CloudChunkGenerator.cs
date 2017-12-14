@@ -32,7 +32,7 @@ namespace Cubizer
 					{
 						int dy = offsetY + iy;
 
-						if (Math.Noise.simplex3(dx * 0.01f, dy * 0.1f, dz * 0.01f, 8, 0.5f, 2) > _params.thresholdCloud)
+						if (Math.Noise.Simplex3(dx * 0.01f, dy * 0.1f, dz * 0.01f, 8, 0.5f, 2) > _params.thresholdCloud)
 							map.voxels.Set((byte)ix, (byte)iy, (byte)iz, _materials.cloud);
 					}
 				}
