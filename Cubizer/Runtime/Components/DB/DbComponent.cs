@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Threading.Tasks;
+
 using Cubizer.Chunk;
+using Cubizer.Db.Database;
 
 namespace Cubizer.Db
 {
@@ -9,7 +11,7 @@ namespace Cubizer.Db
 		private string _dbUrl;
 		private string _dbName;
 
-		private IDbManager _dbManager;
+		private IDbController _dbControl;
 
 		public override bool active
 		{
@@ -45,7 +47,7 @@ namespace Cubizer.Db
 			context.behaviour.events.OnAddBlockBefore += this.OnAddBlockBefore;
 			context.behaviour.events.OnRemoveBlockBefore += this.OnRemoveBlockBefore;
 
-			_dbManager = new DbSqlite(_dbUrl + _dbName);
+			_dbControl = new DbSqlite(_dbUrl + _dbName);
 		}
 
 		public override void OnDisable()
@@ -54,24 +56,24 @@ namespace Cubizer.Db
 			context.behaviour.events.OnAddBlockBefore -= this.OnAddBlockBefore;
 			context.behaviour.events.OnRemoveBlockBefore -= this.OnRemoveBlockBefore;
 
-			if (_dbManager != null)
+			if (_dbControl != null)
 			{
-				_dbManager.Dispose();
-				_dbManager = null;
+				_dbControl.Dispose();
+				_dbControl = null;
 			}
 		}
 
 		private void OnLoadChunkDataAfter(ChunkPrimer chunk)
 		{
 			if (chunk != null)
-				_dbManager.LoadChunk(chunk);
+				_dbControl.LoadChunk(chunk);
 		}
 
 		private void OnAddBlockBefore(ChunkPrimer chunk, int x, int y, int z, VoxelMaterial voxel)
 		{
 			Task.Run(() =>
 			{
-				_dbManager.InsertBlock(chunk.position.x, chunk.position.y, chunk.position.z, x, y, z, voxel.GetInstanceID());
+				_dbControl.InsertBlock(chunk.position.x, chunk.position.y, chunk.position.z, x, y, z, voxel.GetInstanceID());
 			});
 		}
 
@@ -79,7 +81,7 @@ namespace Cubizer.Db
 		{
 			Task.Run(() =>
 			{
-				_dbManager.RemoveBlock(chunk.position.x, chunk.position.y, chunk.position.z, x, y, z);
+				_dbControl.RemoveBlock(chunk.position.x, chunk.position.y, chunk.position.z, x, y, z);
 			});
 		}
 	}

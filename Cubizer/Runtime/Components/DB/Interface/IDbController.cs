@@ -1,9 +1,9 @@
 ﻿using System;
 using Cubizer.Chunk;
 
-namespace Cubizer.Db
+namespace Cubizer.Db.Database
 {
-	public interface IDbManager : IDisposable
+	public interface IDbController : IDisposable
 	{
 		void LoadChunk(ChunkPrimer chunk);
 		void SaveChunk(ChunkPrimer chunk);

@@ -4,9 +4,9 @@ using System;
 using Mono.Data.Sqlite;
 using Cubizer.Chunk;
 
-namespace Cubizer.Db
+namespace Cubizer.Db.Database
 {
-	public class DbSqlite : IDbManager
+	public class DbSqlite : IDbController
 	{
 		private string _path;
 
