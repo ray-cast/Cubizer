@@ -24,7 +24,7 @@ namespace Cubizer.Net.Protocol.Login.Serverbound
 
 		public void Deserialize(NetworkReader br)
 		{
-			threshold = br.ReadInt32();
+			br.Read(out threshold);
 		}
 
 		public object Clone()

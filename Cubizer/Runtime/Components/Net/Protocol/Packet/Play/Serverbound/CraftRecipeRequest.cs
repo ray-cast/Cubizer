@@ -2,19 +2,22 @@
 
 namespace Cubizer.Net.Protocol.Play.Serverbound
 {
+	[Packet(Packet)]
 	public class CraftRecipeRequest : IPacketSerializable
 	{
+		public const int Packet = 0x12;
+
 		public uint packetId
 		{
 			get
 			{
-				throw new System.NotImplementedException();
+				return Packet;
 			}
 		}
 
 		public object Clone()
 		{
-			throw new System.NotImplementedException();
+			return new CraftRecipeRequest();
 		}
 
 		public void Deserialize(NetworkReader br)

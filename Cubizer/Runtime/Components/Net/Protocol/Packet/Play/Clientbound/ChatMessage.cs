@@ -2,29 +2,37 @@
 
 namespace Cubizer.Net.Protocol.Play.Clientbound
 {
+	[Packet(Packet)]
 	public class ChatMessage : IPacketSerializable
 	{
+		public const int Packet = 0x0F;
+
+		public string jsonData;
+		public byte type;
+
 		public uint packetId
 		{
 			get
 			{
-				throw new System.NotImplementedException();
+				return Packet;
 			}
 		}
 
 		public object Clone()
 		{
-			throw new System.NotImplementedException();
+			return new ChatMessage();
 		}
 
 		public void Deserialize(NetworkReader br)
 		{
-			throw new System.NotImplementedException();
+			br.Read(out jsonData);
+			br.Read(out type);
 		}
 
 		public void Serialize(NetworkWrite bw)
 		{
-			throw new System.NotImplementedException();
+			bw.WriteVarString(jsonData);
+			bw.Write(type);
 		}
 	}
 }

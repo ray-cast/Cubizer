@@ -19,12 +19,12 @@ namespace Cubizer.Net.Protocol.Login.Clientbound
 
 		public void Serialize(NetworkWrite bw)
 		{
-			bw.Write(reason);
+			bw.WriteVarString(reason);
 		}
 
 		public void Deserialize(NetworkReader br)
 		{
-			reason = br.ReadString();
+			br.ReadVarString(out reason);
 		}
 
 		public object Clone()

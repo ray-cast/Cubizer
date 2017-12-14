@@ -2,29 +2,34 @@
 
 namespace Cubizer.Net.Protocol.Play.Serverbound
 {
+	[Packet(Packet)]
 	public class Spectate : IPacketSerializable
 	{
+		public const int Packet = 0x1E;
+
+		public byte[] targetPlayer;
+
 		public uint packetId
 		{
 			get
 			{
-				throw new System.NotImplementedException();
+				return Packet;
 			}
 		}
 
 		public object Clone()
 		{
-			throw new System.NotImplementedException();
+			return new Spectate();
 		}
 
 		public void Deserialize(NetworkReader br)
 		{
-			throw new System.NotImplementedException();
+			br.Read(out targetPlayer, 16);
 		}
 
 		public void Serialize(NetworkWrite bw)
 		{
-			throw new System.NotImplementedException();
+			bw.Write(targetPlayer, 0, 16);
 		}
 	}
 }

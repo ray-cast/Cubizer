@@ -19,12 +19,12 @@ namespace Cubizer.Net.Protocol.Status.Clientbound
 
 		public void Deserialize(NetworkReader br)
 		{
-			response = br.ReadString();
+			br.ReadVarString(out response);
 		}
 
 		public void Serialize(NetworkWrite bw)
 		{
-			bw.Write(response);
+			bw.WriteVarString(response);
 		}
 
 		public object Clone()

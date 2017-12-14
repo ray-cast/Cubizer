@@ -2,29 +2,46 @@
 
 namespace Cubizer.Net.Protocol.Play.Clientbound
 {
+	[Packet(Packet)]
 	public class SpawnExperienceOrb : IPacketSerializable
 	{
+		public const int Packet = 0x01;
+
+		public uint entityID;
+		public double x;
+		public double y;
+		public double z;
+		public short count;
+
 		public uint packetId
 		{
 			get
 			{
-				throw new System.NotImplementedException();
+				return Packet;
 			}
 		}
 
 		public object Clone()
 		{
-			throw new System.NotImplementedException();
+			return new SpawnGlobalEntity();
 		}
 
 		public void Deserialize(NetworkReader br)
 		{
-			throw new System.NotImplementedException();
+			br.Read(out entityID);
+			br.Read(out x);
+			br.Read(out y);
+			br.Read(out z);
+			br.Read(out count);
 		}
 
 		public void Serialize(NetworkWrite bw)
 		{
-			throw new System.NotImplementedException();
+			bw.Write(entityID);
+			bw.Write(x);
+			bw.Write(y);
+			bw.Write(z);
+			bw.Write(count);
 		}
 	}
 }

@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-using Cubizer.Net.Protocol.Serialization;
+﻿using Cubizer.Net.Protocol.Serialization;
 
 namespace Cubizer.Net.Protocol.Status.Clientbound
 {
@@ -15,15 +13,13 @@ namespace Cubizer.Net.Protocol.Status.Clientbound
 		{
 			get
 			{
-				var typeInfo = this.GetType().GetTypeInfo();
-				var attr = typeInfo.GetCustomAttribute<PacketAttribute>();
-				return attr.id;
+				return Packet;
 			}
 		}
 
 		public void Deserialize(NetworkReader br)
 		{
-			payload = br.ReadInt64();
+			br.Read(out payload);
 		}
 
 		public void Serialize(NetworkWrite bw)

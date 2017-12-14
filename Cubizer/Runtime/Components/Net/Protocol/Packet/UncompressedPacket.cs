@@ -56,18 +56,18 @@ namespace Cubizer.Net.Protocol
 		{
 			using (var br = new NetworkReader(stream, Encoding.UTF8, true))
 			{
-				var length = (int)br.ReadVarInt();
+				uint length;
+				br.ReadVarInt(out length);
 
 				if (length > 0 && length < maxLength)
 				{
-					byte packLength;
-					packetId = br.ReadVarInt(out packLength);
-					data = new ArraySegment<byte>(new byte[length - packLength]);
+					byte packLength = br.ReadVarInt(out packetId);
 
+					data = new ArraySegment<byte>(new byte[length - packLength]);
 					return stream.Read(data.Array, data.Offset, data.Count);
 				}
 
-				return length;
+				return (int)length;
 			}
 		}
 
@@ -75,18 +75,18 @@ namespace Cubizer.Net.Protocol
 		{
 			using (var br = new NetworkReader(stream, Encoding.UTF8, true))
 			{
-				var length = (int)br.ReadVarInt();
+				uint length;
+				br.ReadVarInt(out length);
 
 				if (length > 0 && length < maxLength)
 				{
-					byte packLength;
-					packetId = br.ReadVarInt(out packLength);
+					byte packLength = br.ReadVarInt(out packetId);
 
 					data = new ArraySegment<byte>(new byte[length - packLength]);
 					return await stream.ReadAsync(data.Array, data.Offset, data.Count);
 				}
 
-				return length;
+				return (int)length;
 			}
 		}
 	}

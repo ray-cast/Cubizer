@@ -26,13 +26,13 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 
 		public void Deserialize(NetworkReader br)
 		{
-			chunkX = br.ReadInt32();
-			chunkZ = br.ReadInt32();
+			br.Read(out chunkX);
+			br.Read(out chunkZ);
 		}
 
 		public object Clone()
 		{
-			return new Disconnect();
+			return new ChunkUnload();
 		}
 	}
 }

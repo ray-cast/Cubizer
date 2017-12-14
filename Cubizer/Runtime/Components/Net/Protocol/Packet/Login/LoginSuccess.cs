@@ -20,14 +20,14 @@ namespace Cubizer.Net.Protocol.Login.Clientbound
 
 		public void Serialize(NetworkWrite bw)
 		{
-			bw.Write(UUID);
-			bw.Write(username);
+			bw.WriteVarString(UUID);
+			bw.WriteVarString(username);
 		}
 
 		public void Deserialize(NetworkReader br)
 		{
-			UUID = br.ReadString();
-			username = br.ReadString();
+			br.ReadVarString(out UUID);
+			br.ReadVarString(out username);
 		}
 
 		public object Clone()

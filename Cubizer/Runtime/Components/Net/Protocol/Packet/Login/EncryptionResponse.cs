@@ -24,17 +24,14 @@ namespace Cubizer.Net.Protocol.Login.Serverbound
 
 		public void Serialize(NetworkWrite bw)
 		{
-			bw.WriteVarInt((uint)secret.Length);
-			bw.Write(secret);
-
-			bw.WriteVarInt((uint)token.Length);
-			bw.Write(token);
+			bw.WriteVarBytes(secret);
+			bw.WriteVarBytes(token);
 		}
 
 		public void Deserialize(NetworkReader br)
 		{
-			this.secret = br.ReadBytes();
-			this.token = br.ReadBytes();
+			br.ReadVarBytes(out this.secret);
+			br.ReadVarBytes(out this.token);
 		}
 
 		public object Clone()

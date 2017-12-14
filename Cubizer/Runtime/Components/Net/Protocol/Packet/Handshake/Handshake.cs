@@ -37,26 +37,28 @@ namespace Cubizer.Net.Protocol.Handshake.Serverbound
 
 		void IPacketSerializable.Deserialize(NetworkReader br)
 		{
-			version = br.ReadUInt32();
-			address = br.ReadString();
-			port = br.ReadUInt16();
+			uint status;
 
-			var status = (SessionStatus)br.ReadUInt32();
+			br.ReadVarInt(out version);
+			br.ReadVarString(out address);
+			br.Read(out port);
+			br.ReadVarInt(out status);
+
 			switch (status)
 			{
-				case SessionStatus.Handshaking:
+				case (int)SessionStatus.Handshaking:
 					nextState = SessionStatus.Handshaking;
 					break;
 
-				case SessionStatus.Status:
+				case (int)SessionStatus.Status:
 					nextState = SessionStatus.Status;
 					break;
 
-				case SessionStatus.Login:
+				case (int)SessionStatus.Login:
 					nextState = SessionStatus.Login;
 					break;
 
-				case SessionStatus.Play:
+				case (int)SessionStatus.Play:
 					nextState = SessionStatus.Play;
 					break;
 
@@ -68,7 +70,7 @@ namespace Cubizer.Net.Protocol.Handshake.Serverbound
 		void IPacketSerializable.Serialize(NetworkWrite bw)
 		{
 			bw.WriteVarInt(version);
-			bw.Write(address);
+			bw.WriteVarString(address);
 			bw.Write(port);
 			bw.WriteVarInt((uint)nextState);
 		}

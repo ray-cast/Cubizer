@@ -2,29 +2,34 @@
 
 namespace Cubizer.Net.Protocol.Play.Serverbound
 {
+	[Packet(Packet)]
 	public class TeleportConfirm : IPacketSerializable
 	{
+		public const int Packet = 0x0;
+
+		public uint teleportID;
+
 		public uint packetId
 		{
 			get
 			{
-				throw new System.NotImplementedException();
+				return Packet;
 			}
 		}
 
 		public object Clone()
 		{
-			throw new System.NotImplementedException();
+			return new TeleportConfirm();
 		}
 
 		public void Deserialize(NetworkReader br)
 		{
-			throw new System.NotImplementedException();
+			br.ReadVarInt(out teleportID);
 		}
 
 		public void Serialize(NetworkWrite bw)
 		{
-			throw new System.NotImplementedException();
+			bw.WriteVarInt(teleportID);
 		}
 	}
 }

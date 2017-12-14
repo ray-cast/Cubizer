@@ -36,12 +36,12 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 
 		public void Deserialize(NetworkReader br)
 		{
-			chunkX = br.ReadInt32();
-			chunkZ = br.ReadInt32();
-			groundUpContinuous = br.ReadBoolean();
-			primaryBitMask = br.ReadVarInt();
-			data = br.ReadBytes();
-			entities = br.ReadBytes();
+			br.Read(out chunkX);
+			br.Read(out chunkZ);
+			br.Read(out groundUpContinuous);
+			br.ReadVarInt(out primaryBitMask);
+			br.ReadVarBytes(out data);
+			br.ReadVarBytes(out entities);
 		}
 
 		public object Clone()

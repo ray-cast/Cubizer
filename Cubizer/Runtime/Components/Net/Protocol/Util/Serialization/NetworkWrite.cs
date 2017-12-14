@@ -28,6 +28,7 @@ namespace Cubizer.Net.Protocol.Serialization
 		public override void Write(byte value) => base.Write(value);
 		public override void Write(sbyte value) => base.Write(value);
 		public override void Write(char value) => base.Write(value);
+		public override void Write(string value) => base.Write(value);
 		public override void Write(byte[] value) => base.Write(value);
 		public override void Write(byte[] value, int index, int count) => base.Write(value, index, count);
 		public override void Write(char[] value, int index, int count) => base.Write(value, index, count);
@@ -74,12 +75,7 @@ namespace Cubizer.Net.Protocol.Serialization
 			} while (value != 0);
 		}
 
-		public override void Write(string value)
-		{
-			this.Write(value, short.MaxValue);
-		}
-
-		public void Write(string value, int maxLength)
+		public void WriteVarString(string value, int maxLength = short.MaxValue)
 		{
 			var bytes = Encoding.UTF8.GetBytes(value);
 			if (bytes.Length <= maxLength)
@@ -91,6 +87,12 @@ namespace Cubizer.Net.Protocol.Serialization
 			{
 				throw new InvalidDataException($"String is too big .length:{value.Length}.");
 			}
+		}
+
+		public void WriteVarBytes(byte[] value)
+		{
+			this.WriteVarInt((uint)value.Length);
+			this.Write(value);
 		}
 
 		public void WritePakcets<T>(IReadOnlyList<T> array)

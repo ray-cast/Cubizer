@@ -21,18 +21,18 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 		public void Serialize(NetworkWrite bw)
 		{
 			bw.Write(entityID);
-			bw.Write(entityStatus);
+			bw.WriteVarString(entityStatus);
 		}
 
 		public void Deserialize(NetworkReader br)
 		{
-			entityID = br.ReadInt32();
-			entityStatus = br.ReadString();
+			br.Read(out entityID);
+			br.Read(out entityStatus);
 		}
 
 		public object Clone()
 		{
-			return new Disconnect();
+			return new EntityStatus();
 		}
 	}
 }

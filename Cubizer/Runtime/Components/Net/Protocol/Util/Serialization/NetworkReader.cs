@@ -7,64 +7,58 @@ using Cubizer.Net.Protocol.Extensions;
 
 namespace Cubizer.Net.Protocol.Serialization
 {
-	public class NetworkReader : BinaryReader
+	public class NetworkReader : IDisposable
 	{
+		private BinaryReader reader;
+
 		public NetworkReader(Stream stream)
-			: base(stream)
 		{
+			reader = new BinaryReader(stream);
 		}
 
 		public NetworkReader(Stream stream, Encoding encoding)
-			: base(stream, encoding)
 		{
+			reader = new BinaryReader(stream, encoding);
 		}
 
 		public NetworkReader(Stream stream, Encoding encoding, bool leaveOpen)
-			: base(stream, encoding, leaveOpen)
 		{
+			reader = new BinaryReader(stream, encoding, leaveOpen);
 		}
 
 		public NetworkReader(ArraySegment<byte> segment)
-			: base(new MemoryStream(segment.Array, segment.Offset, segment.Count))
 		{
+			reader = new BinaryReader(new MemoryStream(segment.Array, segment.Offset, segment.Count));
 		}
 
-		public override bool ReadBoolean() => base.ReadBoolean();
-		public override byte ReadByte() => base.ReadByte();
-		public override sbyte ReadSByte() => base.ReadSByte();
-		public override short ReadInt16() => (Int16)base.ReadInt16().ToBigEndian();
-		public override int ReadInt32() => (int)base.ReadInt32().ToBigEndian();
-		public override long ReadInt64() => (long)base.ReadInt64().ToBigEndian();
-		public override ushort ReadUInt16() => base.ReadUInt16().ToBigEndian();
-		public override uint ReadUInt32() => this.ReadVarInt();
-		public override ulong ReadUInt64() => base.ReadUInt64().ToBigEndian();
-		public override float ReadSingle() => BitConverter.ToSingle(BitConverter.GetBytes(base.ReadUInt32().ToBigEndian()), 0);
-		public override double ReadDouble() => BitConverter.Int64BitsToDouble((long)base.ReadInt64().ToBigEndian());
-		public byte[] ReadBytesAny(int count) => base.ReadBytes(count);
+		public void Read(out bool value) => value = reader.ReadBoolean();
+		public void Read(out byte value) => value = reader.ReadByte();
+		public void Read(out sbyte value) => value = reader.ReadSByte();
+		public void Read(out short value) => value = reader.ReadInt16().ToBigEndian();
+		public void Read(out int value) => value = reader.ReadInt32().ToBigEndian();
+		public void Read(out long value) => value = reader.ReadInt64().ToBigEndian();
+		public void Read(out ushort value) => value = reader.ReadUInt16().ToBigEndian();
+		public void Read(out uint value) => value = reader.ReadUInt32().ToBigEndian();
+		public void Read(out ulong value) => value = reader.ReadUInt64().ToBigEndian();
+		public void Read(out string value) => value = reader.ReadString();
+		public void Read(out float value) => value = BitConverter.ToSingle(BitConverter.GetBytes(reader.ReadUInt32().ToBigEndian()), 0);
+		public void Read(out double value) => value = BitConverter.Int64BitsToDouble(reader.ReadInt64().ToBigEndian());
+		public void Read(out byte[] value, int count) => value = reader.ReadBytes(count);
 
-		public Guid ReadGuid()
+		public void Read(out Guid value)
 		{
-			Guid guid;
-			if (!Guid.TryParse(base.ReadString(), out guid))
+			if (!Guid.TryParse(reader.ReadString(), out value))
 				throw new InvalidDataException("Invalid Guid");
-
-			return guid;
 		}
 
-		public uint ReadVarInt()
+		public byte ReadVarInt(out uint varint)
 		{
 			byte numRead = 0;
-			return ReadVarInt(out numRead);
-		}
-
-		public uint ReadVarInt(out byte numRead)
-		{
-			numRead = 0;
 			int result = 0;
 			byte read;
 			do
 			{
-				read = ReadByte();
+				read = reader.ReadByte();
 				int value = (read & 0x7F);
 				result |= (value << (7 * numRead));
 
@@ -75,23 +69,19 @@ namespace Cubizer.Net.Protocol.Serialization
 				}
 			} while ((read & 0x80) != 0);
 
-			return (uint)result;
+			varint = (uint)result;
+
+			return numRead;
 		}
 
-		public ulong ReadVarLong()
+		public byte ReadVarLong(out ulong varlong)
 		{
 			byte numRead = 0;
-			return ReadVarLong(out numRead);
-		}
-
-		public ulong ReadVarLong(out byte numRead)
-		{
-			numRead = 0;
 			ulong result = 0;
 			uint read;
 			do
 			{
-				read = ReadByte();
+				read = reader.ReadByte();
 				uint value = (read & 0x7F);
 				result |= (value << (7 * numRead));
 
@@ -102,21 +92,20 @@ namespace Cubizer.Net.Protocol.Serialization
 				}
 			} while ((read & 0x80) != 0);
 
-			return result;
+			varlong = result;
+
+			return numRead;
 		}
 
-		public override string ReadString()
+		public void ReadVarString(out string value, int maxLength = short.MaxValue)
 		{
-			return ReadString(int.MaxValue);
-		}
+			uint length;
+			this.ReadVarInt(out length);
 
-		public string ReadString(int maxLength)
-		{
-			var length = (int)this.ReadVarInt();
 			if (length <= maxLength)
 			{
-				var bytes = base.ReadBytes(length);
-				return Encoding.UTF8.GetString(bytes);
+				var bytes = reader.ReadBytes((int)length);
+				value = Encoding.UTF8.GetString(bytes);
 			}
 			else
 			{
@@ -124,12 +113,14 @@ namespace Cubizer.Net.Protocol.Serialization
 			}
 		}
 
-		public override byte[] ReadBytes(int maxLength = short.MaxValue)
+		public void ReadVarBytes(out byte[] value, int maxLength = short.MaxValue)
 		{
-			var length = (int)this.ReadVarInt();
+			uint length;
+			this.ReadVarInt(out length);
+
 			if (length <= maxLength)
 			{
-				return base.ReadBytes(length);
+				value = reader.ReadBytes((int)length);
 			}
 			else
 			{
@@ -137,11 +128,16 @@ namespace Cubizer.Net.Protocol.Serialization
 			}
 		}
 
-		public void ReadPakcets<T>(IReadOnlyList<T> array)
-			where T : IPacketSerializable
+		public void Read<T>(IReadOnlyList<T> array)
+		where T : IPacketSerializable
 		{
 			foreach (var it in array)
 				it.Deserialize(this);
+		}
+
+		public void Dispose()
+		{
+			reader.Close();
 		}
 	}
 }

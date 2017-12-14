@@ -2,19 +2,22 @@
 
 namespace Cubizer.Net.Protocol.Play.Clientbound
 {
+	[Packet(Packet)]
 	public class WorldBorder : IPacketSerializable
 	{
+		public const int Packet = 0x38;
+
 		public uint packetId
 		{
 			get
 			{
-				throw new System.NotImplementedException();
+				return Packet;
 			}
 		}
 
 		public object Clone()
 		{
-			throw new System.NotImplementedException();
+			return new WorldBorder();
 		}
 
 		public void Deserialize(NetworkReader br)

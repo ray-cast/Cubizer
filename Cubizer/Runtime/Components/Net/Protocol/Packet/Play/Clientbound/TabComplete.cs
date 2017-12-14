@@ -2,29 +2,34 @@
 
 namespace Cubizer.Net.Protocol.Play.Clientbound
 {
+	[Packet(Packet)]
 	public class TabComplete : IPacketSerializable
 	{
+		public const int Packet = 0x0E;
+
+		public string matches;
+
 		public uint packetId
 		{
 			get
 			{
-				throw new System.NotImplementedException();
+				return Packet;
 			}
 		}
 
 		public object Clone()
 		{
-			throw new System.NotImplementedException();
+			return new TabComplete();
 		}
 
 		public void Deserialize(NetworkReader br)
 		{
-			throw new System.NotImplementedException();
+			br.Read(out matches);
 		}
 
 		public void Serialize(NetworkWrite bw)
 		{
-			throw new System.NotImplementedException();
+			bw.WriteVarString(matches);
 		}
 	}
 }

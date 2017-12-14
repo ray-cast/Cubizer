@@ -2,9 +2,9 @@
 {
 	internal static class BitConvertExtensions
 	{
-		public static ushort ToBigEndian(this short value)
+		public static short ToBigEndian(this short value)
 		{
-			return ((ushort)value).ToBigEndian();
+			return (short)((ushort)value).ToBigEndian();
 		}
 
 		public static ushort ToBigEndian(this ushort value)
@@ -12,9 +12,9 @@
 			return (ushort)((value >> 8) | (((byte)value) << 8));
 		}
 
-		public static uint ToBigEndian(this int value)
+		public static int ToBigEndian(this int value)
 		{
-			return ((uint)value).ToBigEndian();
+			return (int)((uint)value).ToBigEndian();
 		}
 
 		public static uint ToBigEndian(this uint value)
@@ -26,9 +26,9 @@
 				((value & 0x000000FF) << 24);
 		}
 
-		public static ulong ToBigEndian(this long value)
+		public static long ToBigEndian(this long value)
 		{
-			return ((ulong)value).ToBigEndian();
+			return (long)((ulong)value).ToBigEndian();
 		}
 
 		public static ulong ToBigEndian(this ulong value)

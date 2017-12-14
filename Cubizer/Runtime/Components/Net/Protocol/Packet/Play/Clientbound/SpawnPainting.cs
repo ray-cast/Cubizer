@@ -2,29 +2,46 @@
 
 namespace Cubizer.Net.Protocol.Play.Clientbound
 {
+	[Packet(Packet)]
 	public class SpawnPainting : IPacketSerializable
 	{
+		public const int Packet = 0x04;
+
+		public uint entityID;
+		public byte entityUUID;
+		public string title;
+		public byte[] position;
+		public byte direction;
+
 		public uint packetId
 		{
 			get
 			{
-				throw new System.NotImplementedException();
+				return Packet;
 			}
 		}
 
 		public object Clone()
 		{
-			throw new System.NotImplementedException();
+			return new SpawnMob();
 		}
 
 		public void Deserialize(NetworkReader br)
 		{
-			throw new System.NotImplementedException();
+			br.Read(out entityID);
+			br.Read(out entityUUID);
+			br.ReadVarString(out title);
+			br.Read(out position, 8);
+			br.Read(out direction);
 		}
 
 		public void Serialize(NetworkWrite bw)
 		{
-			throw new System.NotImplementedException();
+			bw.Write(entityID);
+			bw.Write(entityUUID);
+			bw.Write(title);
+			bw.Write(position, 0, 8);
+			bw.Write(direction);
 		}
 	}
 }

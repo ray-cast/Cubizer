@@ -2,19 +2,22 @@
 
 namespace Cubizer.Net.Protocol.Play.Serverbound
 {
+	[Packet(Packet)]
 	public class PlayerLook : IPacketSerializable
 	{
+		public const int Packet = 0x0f;
+
 		public uint packetId
 		{
 			get
 			{
-				throw new System.NotImplementedException();
+				return Packet;
 			}
 		}
 
 		public object Clone()
 		{
-			throw new System.NotImplementedException();
+			return new PlayerLook();
 		}
 
 		public void Deserialize(NetworkReader br)

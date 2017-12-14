@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-using Cubizer.Net.Protocol.Serialization;
+﻿using Cubizer.Net.Protocol.Serialization;
 
 namespace Cubizer.Net.Protocol.Login.Clientbound
 {
@@ -17,28 +15,22 @@ namespace Cubizer.Net.Protocol.Login.Clientbound
 		{
 			get
 			{
-				var typeInfo = this.GetType().GetTypeInfo();
-				var attr = typeInfo.GetCustomAttribute<PacketAttribute>();
-				return attr.id;
+				return Packet;
 			}
 		}
 
 		public void Serialize(NetworkWrite bw)
 		{
-			bw.Write(serverID, 20);
-
-			bw.WriteVarInt(key.Length);
-			bw.Write(key);
-
-			bw.WriteVarInt(token.Length);
-			bw.Write(token);
+			bw.WriteVarString(serverID, 20);
+			bw.WriteVarBytes(key);
+			bw.WriteVarBytes(token);
 		}
 
 		public void Deserialize(NetworkReader br)
 		{
-			this.serverID = br.ReadString(20);
-			this.key = br.ReadBytes();
-			this.token = br.ReadBytes();
+			br.ReadVarString(out this.serverID, 20);
+			br.ReadVarBytes(out this.key);
+			br.ReadVarBytes(out this.token);
 		}
 
 		public object Clone()

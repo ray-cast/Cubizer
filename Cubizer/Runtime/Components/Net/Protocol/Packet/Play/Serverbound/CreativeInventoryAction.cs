@@ -2,19 +2,22 @@
 
 namespace Cubizer.Net.Protocol.Play.Serverbound
 {
+	[Packet(Packet)]
 	public class CreativeInventoryAction : IPacketSerializable
 	{
+		public const int Packet = 0x1B;
+
 		public uint packetId
 		{
 			get
 			{
-				throw new System.NotImplementedException();
+				return Packet;
 			}
 		}
 
 		public object Clone()
 		{
-			throw new System.NotImplementedException();
+			return new CreativeInventoryAction();
 		}
 
 		public void Deserialize(NetworkReader br)

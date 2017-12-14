@@ -28,12 +28,12 @@ namespace Cubizer.Net.Protocol.Login.Serverbound
 
 		public void Deserialize(NetworkReader br)
 		{
-			name = br.ReadString();
+			br.ReadVarString(out name);
 		}
 
 		public void Serialize(NetworkWrite bw)
 		{
-			bw.Write(name);
+			bw.WriteVarString(name);
 		}
 
 		public object Clone()

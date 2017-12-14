@@ -2,29 +2,37 @@
 
 namespace Cubizer.Net.Protocol.Play.Clientbound
 {
+	[Packet(Packet)]
 	public class SelectAdvancementTab : IPacketSerializable
 	{
+		public const int Packet = 0x37;
+
+		public bool hasID;
+		public string tabID;
+
 		public uint packetId
 		{
 			get
 			{
-				throw new System.NotImplementedException();
+				return Packet;
 			}
 		}
 
 		public object Clone()
 		{
-			throw new System.NotImplementedException();
+			return new SelectAdvancementTab();
 		}
 
 		public void Deserialize(NetworkReader br)
 		{
-			throw new System.NotImplementedException();
+			br.Read(out hasID);
+			br.ReadVarString(out tabID);
 		}
 
 		public void Serialize(NetworkWrite bw)
 		{
-			throw new System.NotImplementedException();
+			bw.Write(hasID);
+			bw.WriteVarString(tabID);
 		}
 	}
 }

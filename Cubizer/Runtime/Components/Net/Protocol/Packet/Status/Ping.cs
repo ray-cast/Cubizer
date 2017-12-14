@@ -19,7 +19,7 @@ namespace Cubizer.Net.Protocol.Status.Serverbound
 
 		public void Deserialize(NetworkReader br)
 		{
-			payload = br.ReadInt64();
+			br.Read(out payload);
 		}
 
 		public void Serialize(NetworkWrite bw)
