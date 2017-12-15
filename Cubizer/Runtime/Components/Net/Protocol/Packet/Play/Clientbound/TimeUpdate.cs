@@ -7,6 +7,9 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 	{
 		public const int Packet = 0x46;
 
+		public long worldAge;
+		public long timeOfDay;
+
 		public uint packetId
 		{
 			get
@@ -22,12 +25,14 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 
 		public void Deserialize(NetworkReader br)
 		{
-			throw new System.NotImplementedException();
+			br.Read(out worldAge);
+			br.Read(out timeOfDay);
 		}
 
 		public void Serialize(NetworkWrite bw)
 		{
-			throw new System.NotImplementedException();
+			bw.Write(worldAge);
+			bw.Write(timeOfDay);
 		}
 	}
 }

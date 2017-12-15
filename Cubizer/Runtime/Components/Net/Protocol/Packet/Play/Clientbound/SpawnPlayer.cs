@@ -26,12 +26,12 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 
 		public object Clone()
 		{
-			return new SpawnMob();
+			return new SpawnPlayer();
 		}
 
 		public void Deserialize(NetworkReader br)
 		{
-			br.Read(out entityID);
+			br.ReadVarInt(out entityID);
 			br.Read(out playerUUID);
 			br.Read(out x);
 			br.Read(out y);
@@ -43,7 +43,7 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 
 		public void Serialize(NetworkWrite bw)
 		{
-			bw.Write(entityID);
+			bw.WriteVarInt(entityID);
 			bw.Write(playerUUID);
 			bw.Write(x);
 			bw.Write(y);

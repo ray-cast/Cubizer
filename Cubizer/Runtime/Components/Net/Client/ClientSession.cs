@@ -124,6 +124,10 @@ namespace Cubizer.Net.Client
 						while (!cancellationToken.IsCancellationRequested)
 							await DispatchIncomingPacket(stream);
 					}
+					catch (Exception e)
+					{
+						Debug.LogException(e);
+					}
 					finally
 					{
 						if (onStopClientListener != null)

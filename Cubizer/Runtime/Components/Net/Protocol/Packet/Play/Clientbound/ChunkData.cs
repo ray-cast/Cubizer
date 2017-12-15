@@ -40,13 +40,13 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 			br.Read(out chunkZ);
 			br.Read(out groundUpContinuous);
 			br.ReadVarInt(out primaryBitMask);
-			br.ReadVarBytes(out data);
+			br.ReadVarBytes(out data, int.MaxValue);
 			br.ReadVarBytes(out entities);
 		}
 
 		public object Clone()
 		{
-			return new Disconnect();
+			return new ChunkData();
 		}
 	}
 }

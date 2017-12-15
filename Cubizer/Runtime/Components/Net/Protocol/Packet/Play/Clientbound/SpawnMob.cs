@@ -1,4 +1,5 @@
-﻿using Cubizer.Net.Protocol.Serialization;
+﻿using System;
+using Cubizer.Net.Protocol.Serialization;
 
 namespace Cubizer.Net.Protocol.Play.Clientbound
 {
@@ -8,7 +9,7 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 		public const int Packet = 0x03;
 
 		public uint entityID;
-		public byte entityUUID;
+		public Guid entityUUID;
 		public uint type;
 		public double x;
 		public double y;
@@ -19,7 +20,7 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 		public short velocityX;
 		public short velocityY;
 		public short velocityZ;
-		public byte metaData;
+		public string metaData;
 
 		public uint packetId
 		{
@@ -36,9 +37,9 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 
 		public void Deserialize(NetworkReader br)
 		{
-			br.Read(out entityID);
+			/*br.ReadVarInt(out entityID);
 			br.Read(out entityUUID);
-			br.Read(out type);
+			br.ReadVarInt(out type);
 			br.Read(out x);
 			br.Read(out y);
 			br.Read(out z);
@@ -48,14 +49,14 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 			br.Read(out velocityX);
 			br.Read(out velocityY);
 			br.Read(out velocityZ);
-			br.Read(out metaData);
+			br.Read(out metaData);*/
 		}
 
 		public void Serialize(NetworkWrite bw)
 		{
-			bw.Write(entityID);
+			bw.WriteVarInt(entityID);
 			bw.Write(entityUUID);
-			bw.Write(type);
+			bw.WriteVarInt(type);
 			bw.Write(x);
 			bw.Write(y);
 			bw.Write(z);

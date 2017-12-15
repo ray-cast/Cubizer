@@ -7,7 +7,7 @@ namespace Cubizer.Net.Protocol.Play.Serverbound
 	{
 		public const int Packet = 0x0C;
 
-		public long keepAliveID;
+		public uint keepAliveID;
 
 		public uint packetId
 		{
@@ -24,12 +24,12 @@ namespace Cubizer.Net.Protocol.Play.Serverbound
 
 		public void Deserialize(NetworkReader br)
 		{
-			br.Read(out keepAliveID);
+			br.ReadVarInt(out keepAliveID);
 		}
 
 		public void Serialize(NetworkWrite bw)
 		{
-			bw.Write(keepAliveID);
+			bw.WriteVarInt(keepAliveID);
 		}
 	}
 }

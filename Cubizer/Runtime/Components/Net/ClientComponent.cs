@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using Cubizer.Chunk;
 using Cubizer.Net.Client;
 using Cubizer.Net.Protocol;
-using Cubizer.Net.Protocol.Login.Clientbound;
 using Cubizer.Net.Protocol.Login.Serverbound;
+using Cubizer.Net.Protocol.Play.Serverbound;
 using Cubizer.Net.Protocol.Handshake.Serverbound;
 
 using UnityEngine;
@@ -150,17 +150,21 @@ namespace Cubizer.Net
 
 		private void OnDispatchIncomingPacket(SessionStatus status, IPacketSerializable packet)
 		{
-			if (packet.GetType() == typeof(LoginSuccess))
+			if (packet.GetType() == typeof(Protocol.Login.Clientbound.LoginSuccess))
 			{
 				_clientRouter.status = SessionStatus.Play;
 			}
+			else if (packet.GetType() == typeof(Protocol.Play.Clientbound.KeepAlive))
+			{
+				_client.SendOutcomingPacket(new KeepAlive { keepAliveID = (uint)new System.Random().Next() });
+			}
 
-			UnityEngine.Debug.Log($"Status:{status} Packet：{packet.GetType().Name}");
+			UnityEngine.Debug.Log($"Packet：{packet.GetType().Name}");
 		}
 
 		private void OnDispatchInvalidPacket(SessionStatus status, UncompressedPacket packet)
 		{
-			UnityEngine.Debug.Log($"Invalid Packet: Status:{status} Packet：{packet.packetId}.Length:[{packet.data.Count}byte]");
+			UnityEngine.Debug.Log($"Invalid Packet: {packet.packetId}.Length:[{packet.data.Count}byte]");
 		}
 	}
 }

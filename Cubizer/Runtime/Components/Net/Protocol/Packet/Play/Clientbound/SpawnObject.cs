@@ -35,7 +35,7 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 
 		public void Deserialize(NetworkReader br)
 		{
-			br.Read(out entityID);
+			br.ReadVarInt(out entityID);
 			br.Read(out objectUUID);
 			br.Read(out type);
 			br.Read(out x);
@@ -51,7 +51,7 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 
 		public void Serialize(NetworkWrite bw)
 		{
-			bw.Write(entityID);
+			bw.WriteVarInt(entityID);
 			bw.Write(objectUUID);
 			bw.Write(type);
 			bw.Write(x);
