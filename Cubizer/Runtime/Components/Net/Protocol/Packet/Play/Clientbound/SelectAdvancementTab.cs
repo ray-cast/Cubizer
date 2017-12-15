@@ -5,7 +5,7 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 	[Packet(Packet)]
 	public class SelectAdvancementTab : IPacketSerializable
 	{
-		public const int Packet = 0x37;
+		public const int Packet = 0x36;
 
 		public bool hasID;
 		public string tabID;

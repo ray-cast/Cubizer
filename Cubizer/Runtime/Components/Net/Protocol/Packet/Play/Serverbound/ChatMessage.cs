@@ -5,7 +5,7 @@ namespace Cubizer.Net.Protocol.Play.Serverbound
 	[Packet(Packet)]
 	public class ChatMessage : IPacketSerializable
 	{
-		public const int Packet = 0x02;
+		public const int Packet = 0x03;
 
 		public string message;
 

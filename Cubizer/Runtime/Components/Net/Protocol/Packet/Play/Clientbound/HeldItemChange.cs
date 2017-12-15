@@ -5,7 +5,7 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 	[Packet(Packet)]
 	public class HeldItemChange : IPacketSerializable
 	{
-		public const int Packet = 0x3A;
+		public const int Packet = 0x39;
 
 		public uint packetId
 		{

@@ -5,7 +5,7 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 	[Packet(Packet)]
 	public class UpdateHealth : IPacketSerializable
 	{
-		public const int Packet = 0x41;
+		public const int Packet = 0x40;
 
 		public uint packetId
 		{

@@ -31,7 +31,6 @@ namespace Cubizer.Net.Server
 			list[(int)SessionStatus.Login] = new List<IPacketSerializable>(3);
 			list[(int)SessionStatus.Login].Add(new LoginStart());
 			list[(int)SessionStatus.Login].Add(new EncryptionResponse());
-			list[(int)SessionStatus.Login].Add(new SetCompression());
 
 			list[(int)SessionStatus.Play] = new List<IPacketSerializable>(33);
 			list[(int)SessionStatus.Play].Add(new TeleportConfirm());
@@ -90,10 +89,17 @@ namespace Cubizer.Net.Server
 
 						if (pack != null)
 						{
-							using (var br = new NetworkReader(packet.data))
-								pack.Deserialize(br);
+							try
+							{
+								using (var br = new NetworkReader(packet.data))
+									pack.Deserialize(br);
 
-							onDispatchIncomingPacket?.Invoke(status, pack);
+								onDispatchIncomingPacket?.Invoke(status, pack);
+							}
+							catch (System.NotImplementedException e)
+							{
+								UnityEngine.Debug.LogException(e);
+							}
 						}
 						else
 						{

@@ -5,7 +5,7 @@ namespace Cubizer.Net.Protocol.Play.Serverbound
 	[Packet(Packet)]
 	public class ConfirmTransaction : IPacketSerializable
 	{
-		public const int Packet = 0x05;
+		public const int Packet = 0x06;
 
 		public uint packetId
 		{

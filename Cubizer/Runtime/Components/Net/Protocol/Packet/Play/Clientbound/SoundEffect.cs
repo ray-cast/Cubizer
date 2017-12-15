@@ -5,7 +5,7 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 	[Packet(Packet)]
 	public class SoundEffect : IPacketSerializable
 	{
-		public const int Packet = 0x49;
+		public const int Packet = 0x48;
 
 		public uint packetId
 		{

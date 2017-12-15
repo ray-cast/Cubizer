@@ -5,7 +5,7 @@ namespace Cubizer.Net.Protocol.Play.Serverbound
 	[Packet(Packet)]
 	public class VehicleMove : IPacketSerializable
 	{
-		public const int Packet = 0x10;
+		public const int Packet = 0x11;
 
 		public uint packetId
 		{

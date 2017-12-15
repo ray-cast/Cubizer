@@ -5,7 +5,7 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 	[Packet(Packet)]
 	public class PlayerListHeaderAndFooter : IPacketSerializable
 	{
-		public const int Packet = 0x4A;
+		public const int Packet = 0x49;
 
 		public uint packetId
 		{

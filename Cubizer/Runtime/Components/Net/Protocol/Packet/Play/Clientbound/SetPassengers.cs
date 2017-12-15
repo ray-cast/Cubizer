@@ -5,7 +5,7 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 	[Packet(Packet)]
 	public class SetPassengers : IPacketSerializable
 	{
-		public const int Packet = 0x43;
+		public const int Packet = 0x42;
 
 		public uint packetId
 		{

@@ -5,7 +5,7 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 	[Packet(Packet)]
 	public class Teams : IPacketSerializable
 	{
-		public const int Packet = 0x44;
+		public const int Packet = 0x43;
 
 		public uint packetId
 		{

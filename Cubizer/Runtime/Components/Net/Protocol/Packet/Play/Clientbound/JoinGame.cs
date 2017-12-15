@@ -7,6 +7,14 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 	{
 		public const int Packet = 0x23;
 
+		public int entityID;
+		public byte gameMode;
+		public int dimension;
+		public byte difficulty;
+		public byte maxPlayers;
+		public string levelType;
+		public bool reducedDebugInfo;
+
 		public uint packetId
 		{
 			get
@@ -22,12 +30,24 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 
 		public void Deserialize(NetworkReader br)
 		{
-			throw new System.NotImplementedException();
+			br.Read(out entityID);
+			br.Read(out gameMode);
+			br.Read(out dimension);
+			br.Read(out difficulty);
+			br.Read(out maxPlayers);
+			br.Read(out levelType);
+			br.Read(out reducedDebugInfo);
 		}
 
 		public void Serialize(NetworkWrite bw)
 		{
-			throw new System.NotImplementedException();
+			bw.Write(entityID);
+			bw.Write(gameMode);
+			bw.Write(dimension);
+			bw.Write(difficulty);
+			bw.Write(maxPlayers);
+			bw.Write(levelType);
+			bw.Write(reducedDebugInfo);
 		}
 	}
 }

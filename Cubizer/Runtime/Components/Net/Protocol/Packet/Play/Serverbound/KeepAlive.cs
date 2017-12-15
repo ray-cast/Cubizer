@@ -5,7 +5,7 @@ namespace Cubizer.Net.Protocol.Play.Serverbound
 	[Packet(Packet)]
 	public class KeepAlive : IPacketSerializable
 	{
-		public const int Packet = 0x0B;
+		public const int Packet = 0x0C;
 
 		public long keepAliveID;
 

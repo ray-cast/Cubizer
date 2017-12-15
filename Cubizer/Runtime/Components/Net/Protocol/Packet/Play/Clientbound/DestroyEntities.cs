@@ -5,7 +5,7 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 	[Packet(Packet)]
 	public class DestroyEntities : IPacketSerializable
 	{
-		public const int Packet = 0x32;
+		public const int Packet = 0x31;
 
 		public uint packetId
 		{

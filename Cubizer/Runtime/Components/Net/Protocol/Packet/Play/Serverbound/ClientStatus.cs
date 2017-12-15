@@ -5,7 +5,7 @@ namespace Cubizer.Net.Protocol.Play.Serverbound
 	[Packet(Packet)]
 	public class ClientStatus : IPacketSerializable
 	{
-		public const int Packet = 0x03;
+		public const int Packet = 0x04;
 
 		public uint packetId
 		{

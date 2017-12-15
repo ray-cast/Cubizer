@@ -5,7 +5,7 @@ namespace Cubizer.Net.Protocol.Play.Serverbound
 	[Packet(Packet)]
 	public class PluginMessage : IPacketSerializable
 	{
-		public const int Packet = 0x09;
+		public const int Packet = 0x0A;
 
 		public uint packetId
 		{

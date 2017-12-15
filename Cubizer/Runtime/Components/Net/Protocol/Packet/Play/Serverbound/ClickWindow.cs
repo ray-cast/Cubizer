@@ -5,7 +5,7 @@ namespace Cubizer.Net.Protocol.Play.Serverbound
 	[Packet(Packet)]
 	public class ClickWindow : IPacketSerializable
 	{
-		public const int Packet = 0x07;
+		public const int Packet = 0x08;
 
 		public uint packetId
 		{

@@ -5,7 +5,7 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 	[Packet(Packet)]
 	public class TimeUpdate : IPacketSerializable
 	{
-		public const int Packet = 0x47;
+		public const int Packet = 0x46;
 
 		public uint packetId
 		{

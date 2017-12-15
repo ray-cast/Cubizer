@@ -5,7 +5,7 @@ namespace Cubizer.Net.Protocol.Play.Serverbound
 	[Packet(Packet)]
 	public class PlayerPositionAndLook : IPacketSerializable
 	{
-		public const int Packet = 0x0E;
+		public const int Packet = 0x0F;
 
 		public uint packetId
 		{

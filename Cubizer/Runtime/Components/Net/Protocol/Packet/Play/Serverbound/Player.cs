@@ -5,7 +5,7 @@ namespace Cubizer.Net.Protocol.Play.Serverbound
 	[Packet(Packet)]
 	public class Player : IPacketSerializable
 	{
-		public const int Packet = 0x0C;
+		public const int Packet = 0x0D;
 
 		public bool onGround;
 

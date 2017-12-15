@@ -5,7 +5,7 @@ namespace Cubizer.Net.Protocol.Play.Serverbound
 	[Packet(Packet)]
 	public class TabComplete : IPacketSerializable
 	{
-		public const int Packet = 0x01;
+		public const int Packet = 0x02;
 
 		public string text;
 		public bool assumeCommand;

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Cubizer.Chunk;
 using Cubizer.Net.Client;
 using Cubizer.Net.Protocol;
+using Cubizer.Net.Protocol.Login.Clientbound;
 using Cubizer.Net.Protocol.Login.Serverbound;
 using Cubizer.Net.Protocol.Handshake.Serverbound;
 
@@ -149,6 +150,11 @@ namespace Cubizer.Net
 
 		private void OnDispatchIncomingPacket(SessionStatus status, IPacketSerializable packet)
 		{
+			if (packet.GetType() == typeof(LoginSuccess))
+			{
+				_clientRouter.status = SessionStatus.Play;
+			}
+
 			UnityEngine.Debug.Log($"Status:{status} Packet：{packet.GetType().Name}");
 		}
 

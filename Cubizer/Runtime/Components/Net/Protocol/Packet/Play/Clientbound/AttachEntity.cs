@@ -5,7 +5,7 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 	[Packet(Packet)]
 	public class AttachEntity : IPacketSerializable
 	{
-		public const int Packet = 0x3D;
+		public const int Packet = 0x3C;
 
 		public uint packetId
 		{

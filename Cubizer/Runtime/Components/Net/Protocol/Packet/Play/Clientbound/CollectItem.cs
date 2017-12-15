@@ -5,7 +5,7 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 	[Packet(Packet)]
 	public class CollectItem : IPacketSerializable
 	{
-		public const int Packet = 0x4B;
+		public const int Packet = 0x4A;
 
 		public uint packetId
 		{

@@ -1,6 +1,6 @@
 ﻿using Cubizer.Net.Protocol.Serialization;
 
-namespace Cubizer.Net.Protocol.Login.Serverbound
+namespace Cubizer.Net.Protocol.Login.Clientbound
 {
 	[Packet(Packet)]
 	public sealed class SetCompression : IPacketSerializable

@@ -5,7 +5,7 @@ namespace Cubizer.Net.Protocol.Play.Serverbound
 	[Packet(Packet)]
 	public class EnchantItem : IPacketSerializable
 	{
-		public const int Packet = 0x06;
+		public const int Packet = 0x07;
 
 		public uint packetId
 		{

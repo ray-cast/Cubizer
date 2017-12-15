@@ -5,7 +5,7 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 	[Packet(Packet)]
 	public class UnlockRecipes : IPacketSerializable
 	{
-		public const int Packet = 0x31;
+		public const int Packet = 0x30;
 
 		public uint packetId
 		{

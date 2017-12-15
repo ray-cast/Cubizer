@@ -5,7 +5,7 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 	[Packet(Packet)]
 	public class Respawn : IPacketSerializable
 	{
-		public const int Packet = 0x35;
+		public const int Packet = 0x34;
 
 		public uint packetId
 		{

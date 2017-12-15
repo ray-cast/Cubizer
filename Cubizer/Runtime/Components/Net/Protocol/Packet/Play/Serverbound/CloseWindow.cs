@@ -5,7 +5,7 @@ namespace Cubizer.Net.Protocol.Play.Serverbound
 	[Packet(Packet)]
 	public class CloseWindow : IPacketSerializable
 	{
-		public const int Packet = 0x08;
+		public const int Packet = 0x09;
 
 		public uint packetId
 		{

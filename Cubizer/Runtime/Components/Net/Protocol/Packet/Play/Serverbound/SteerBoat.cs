@@ -5,7 +5,7 @@ namespace Cubizer.Net.Protocol.Play.Serverbound
 	[Packet(Packet)]
 	public class SteerBoat : IPacketSerializable
 	{
-		public const int Packet = 0x11;
+		public const int Packet = 0x12;
 
 		public uint packetId
 		{
