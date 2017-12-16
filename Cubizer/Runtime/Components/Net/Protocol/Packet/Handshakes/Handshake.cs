@@ -3,7 +3,7 @@ using System.IO;
 
 using Cubizer.Net.Protocol.Serialization;
 
-namespace Cubizer.Net.Protocol.Handshake.Serverbound
+namespace Cubizer.Net.Protocol.Handshakes.Serverbound
 {
 	[Packet(Packet)]
 	public sealed class Handshake : IPacketSerializable

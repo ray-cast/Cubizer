@@ -6,18 +6,23 @@ using Cubizer.Net.Protocol.Serialization;
 using Cubizer.Net.Protocol.Play.Serverbound;
 using Cubizer.Net.Protocol.Login.Serverbound;
 using Cubizer.Net.Protocol.Status.Serverbound;
-using Cubizer.Net.Protocol.Handshake.Serverbound;
+using Cubizer.Net.Protocol.Handshakes.Serverbound;
+using Cubizer.Net.Server.Header;
 
 namespace Cubizer.Net.Server
 {
-	public sealed class ServerPacketRouter : IPacketRouter
+	public class ServerPacketRouter : IPacketRouter
 	{
-		private readonly List<IPacketSerializable>[] list = new List<IPacketSerializable>[(int)SessionStatus.MaxEnum];
-
 		public SessionStatus status { get; set; }
 
-		public OnDispatchIncomingPacket onDispatchIncomingPacket { get; set; }
-		public OnDispatchInvalidPacket onDispatchInvalidPacket { get; set; }
+		public OnDispatchIncomingPacketDelegate onDispatchIncomingPacket { get; set; }
+		public OnDispatchInvalidPacketDelegate onDispatchInvalidPacket { get; set; }
+
+		private readonly IPacketHeader _statusHeader = new StatusHeader();
+		private readonly IPacketHeader _loginHeader = new LoginHeader();
+		private readonly IPacketHeader _playHeader = new PlayHeader();
+
+		private readonly List<IPacketSerializable>[] list = new List<IPacketSerializable>[(int)SessionStatus.MaxEnum];
 
 		public ServerPacketRouter()
 		{
@@ -68,7 +73,7 @@ namespace Cubizer.Net.Server
 			list[(int)SessionStatus.Play].Add(new UseItem());
 		}
 
-		Task IPacketRouter.DispatchIncomingPacket(UncompressedPacket packet)
+		public Task DispatchIncomingPacket(UncompressedPacket packet)
 		{
 			switch (status)
 			{
@@ -94,7 +99,7 @@ namespace Cubizer.Net.Server
 								using (var br = new NetworkReader(packet.data))
 									pack.Deserialize(br);
 
-								onDispatchIncomingPacket?.Invoke(status, pack);
+								this.InvokeDispatchIncomingPacket(status, pack);
 							}
 							catch (System.NotImplementedException e)
 							{
@@ -103,13 +108,51 @@ namespace Cubizer.Net.Server
 						}
 						else
 						{
-							onDispatchInvalidPacket?.Invoke(status, packet);
+							this.InvokeDispatchInvalidPacket(status, packet);
 						}
 					}
 					break;
 			}
 
 			return Task.CompletedTask;
+		}
+
+		private void InvokeDispatchInvalidPacket(SessionStatus status, UncompressedPacket packet)
+		{
+			if (onDispatchInvalidPacket != null)
+				onDispatchInvalidPacket(status, packet);
+
+			this.OnDispatchInvalidPacket(status, packet);
+		}
+
+		private void InvokeDispatchIncomingPacket(SessionStatus status, IPacketSerializable packet)
+		{
+			if (onDispatchIncomingPacket != null)
+				onDispatchIncomingPacket(status, packet);
+
+			this.OnDispatchIncomingPacket(status, packet);
+		}
+
+		protected virtual void OnDispatchInvalidPacket(SessionStatus status, UncompressedPacket packet)
+		{
+		}
+
+		protected virtual void OnDispatchIncomingPacket(SessionStatus status, IPacketSerializable packet)
+		{
+			switch (status)
+			{
+				case SessionStatus.Status:
+					_statusHeader.OnDispatchIncomingPacket(packet);
+					break;
+
+				case SessionStatus.Login:
+					_loginHeader.OnDispatchIncomingPacket(packet);
+					break;
+
+				case SessionStatus.Play:
+					_playHeader.OnDispatchIncomingPacket(packet);
+					break;
+			}
 		}
 	}
 }

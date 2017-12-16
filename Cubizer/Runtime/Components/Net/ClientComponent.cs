@@ -7,7 +7,7 @@ using Cubizer.Net.Client;
 using Cubizer.Net.Protocol;
 using Cubizer.Net.Protocol.Login.Serverbound;
 using Cubizer.Net.Protocol.Play.Serverbound;
-using Cubizer.Net.Protocol.Handshake.Serverbound;
+using Cubizer.Net.Protocol.Handshakes.Serverbound;
 
 using UnityEngine;
 
@@ -148,6 +148,11 @@ namespace Cubizer.Net
 			}
 		}
 
+		private void OnDispatchInvalidPacket(SessionStatus status, UncompressedPacket packet)
+		{
+			UnityEngine.Debug.Log($"Invalid Packet: {packet.packetId}.Length:[{packet.data.Count}byte]");
+		}
+
 		private void OnDispatchIncomingPacket(SessionStatus status, IPacketSerializable packet)
 		{
 			if (packet.GetType() == typeof(Protocol.Login.Clientbound.LoginSuccess))
@@ -158,13 +163,11 @@ namespace Cubizer.Net
 			{
 				_client.SendOutcomingPacket(new KeepAlive { keepAliveID = (uint)new System.Random().Next() });
 			}
+			else if (packet.GetType() == typeof(Protocol.Play.Clientbound.TimeUpdate))
+			{
+			}
 
 			UnityEngine.Debug.Log($"Packet：{packet.GetType().Name}");
-		}
-
-		private void OnDispatchInvalidPacket(SessionStatus status, UncompressedPacket packet)
-		{
-			UnityEngine.Debug.Log($"Invalid Packet: {packet.packetId}.Length:[{packet.data.Count}byte]");
 		}
 	}
 }

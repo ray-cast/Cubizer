@@ -1,11 +1,11 @@
 ﻿using Cubizer.Net.Protocol.Serialization;
 
-namespace Cubizer.Net.Protocol.Play.Clientbound
+namespace Cubizer.Net.Protocol.Play.Serverbound
 {
 	[Packet(Packet)]
-	public class RemoveEntityEffect : IPacketSerializable
+	public class PrepareCraftingGrid : IPacketSerializable
 	{
-		public const int Packet = 0x32;
+		public const int Packet = 0x1;
 
 		public uint packetId
 		{
@@ -17,7 +17,7 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 
 		public object Clone()
 		{
-			return new RemoveEntityEffect();
+			return new PrepareCraftingGrid();
 		}
 
 		public void Deserialize(NetworkReader br)

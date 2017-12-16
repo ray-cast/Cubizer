@@ -160,14 +160,14 @@ namespace Cubizer.Net
 			Debug.Log($"Outcoming connection of clisent session.");
 		}
 
-		private void OnDispatchIncomingPacket(SessionStatus status, IPacketSerializable packet)
-		{
-			UnityEngine.Debug.Log($"Status:{status} Packet：{packet.GetType().Name}");
-		}
-
 		private void OnDispatchInvalidPacket(SessionStatus status, UncompressedPacket packet)
 		{
 			UnityEngine.Debug.Log($"Invalid Packet: Status:{status} Packet：{packet.packetId}.Length:[{packet.data.Count}byte]");
+		}
+
+		private void OnDispatchIncomingPacket(SessionStatus status, IPacketSerializable packet)
+		{
+			UnityEngine.Debug.Log($"Status:{status} Packet：{packet.GetType().Name}");
 		}
 	}
 }
