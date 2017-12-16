@@ -11,10 +11,11 @@ namespace Cubizer
 	[Serializable]
 	public class CubizerProfile : ScriptableObject
 	{
-		public TerrainModel terrain = new TerrainModel();
+		public TerrainModels terrain = new TerrainModels();
 		public DbModels database = new DbModels();
 		public ChunkManagerModels chunk = new ChunkManagerModels();
 		public BiomeManagerModels biome = new BiomeManagerModels();
+		public TimeModels time = new TimeModels();
 		public LiveManagerModels lives = new LiveManagerModels();
 		public NetworkModels network = new NetworkModels();
 

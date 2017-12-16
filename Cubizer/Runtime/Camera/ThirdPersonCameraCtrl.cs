@@ -71,14 +71,14 @@ namespace Cubizer
 
 			if (_isCursorLocked)
 			{
-				Time.timeScale = 1;
+				UnityEngine.Time.timeScale = 1;
 
 				Cursor.lockState = CursorLockMode.Locked;
 				Cursor.visible = false;
 			}
 			else if (!_isCursorLocked)
 			{
-				Time.timeScale = 0;
+				UnityEngine.Time.timeScale = 0;
 
 				Cursor.lockState = CursorLockMode.None;
 				Cursor.visible = true;

@@ -8,6 +8,7 @@ using Cubizer.Net;
 using Cubizer.Chunk;
 using Cubizer.Biome;
 using Cubizer.Live;
+using Cubizer.Time;
 
 namespace Cubizer
 {
@@ -22,13 +23,14 @@ namespace Cubizer
 		private LiveManagerComponent _lives;
 		private ChunkManagerComponent _chunkManager;
 		private BiomeManagerComponent _biomeManager;
-		private DbComponent _database;
-		private ServerComponent _server;
-		private ClientComponent _client;
+		private TimeComponent _timeComponent;
+		private DbComponent _dbComponent;
+		private ServerComponent _serverComponent;
+		private ClientComponent _clientComponent;
 
 		private readonly List<ICubizerComponent> _components = new List<ICubizerComponent>();
 
-		private readonly PlayerManagerModel _players = new PlayerManagerModel();
+		private readonly PlayerManagerModels _players = new PlayerManagerModels();
 		private readonly CubizerDelegates _events = new CubizerDelegates();
 		private readonly static IVoxelMaterialManager _materialFactory = VoxelMaterialManager.GetInstance();
 
@@ -52,14 +54,19 @@ namespace Cubizer
 			get { return _chunkManager; }
 		}
 
+		public TimeComponent time
+		{
+			get { return _timeComponent; }
+		}
+
 		public ServerComponent server
 		{
-			get { return _server; }
+			get { return _serverComponent; }
 		}
 
 		public ClientComponent client
 		{
-			get { return _client; }
+			get { return _clientComponent; }
 		}
 
 		public void Connection(IPlayer player)
@@ -227,9 +234,10 @@ namespace Cubizer
 			_lives = AddComponent(new LiveManagerComponent());
 			_chunkManager = AddComponent(new ChunkManagerComponent());
 			_biomeManager = AddComponent(new BiomeManagerComponent());
-			_database = AddComponent(new DbComponent());
-			_server = AddComponent(new ServerComponent());
-			_client = AddComponent(new ClientComponent());
+			_timeComponent = AddComponent(new TimeComponent());
+			_dbComponent = AddComponent(new DbComponent());
+			_serverComponent = AddComponent(new ServerComponent());
+			_clientComponent = AddComponent(new ClientComponent());
 
 			_lives.Init(_context, _profile.lives);
 
@@ -243,9 +251,10 @@ namespace Cubizer
 			_chunkManager.callbacks.OnRemoveBlockAfter += this.OnRemoveBlockAfter;
 
 			_biomeManager.Init(_context, _profile.biome);
-			_database.Init(_context, _profile.database);
-			_server.Init(_context, _profile.network);
-			_client.Init(_context, _profile.network);
+			_timeComponent.Init(_context, _profile.time);
+			_dbComponent.Init(_context, _profile.database);
+			_serverComponent.Init(_context, _profile.network);
+			_clientComponent.Init(_context, _profile.network);
 
 			this.EnableComponents();
 

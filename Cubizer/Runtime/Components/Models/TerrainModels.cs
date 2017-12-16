@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Cubizer
 {
 	[Serializable]
-	public class TerrainModel : CubizerModel
+	public class TerrainModels : CubizerModel
 	{
 		[Serializable]
 		public struct TerrainSettings

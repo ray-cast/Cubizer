@@ -16,7 +16,7 @@ namespace Cubizer
 		private Camera _player;
 
 		[SerializeField]
-		private PlayerModel _model;
+		private PlayerModels _model;
 
 		[SerializeField]
 		private LiveBehaviour _block;
@@ -38,7 +38,7 @@ namespace Cubizer
 			get { return _player; }
 		}
 
-		public PlayerModel model
+		public PlayerModels model
 		{
 			get { return _model; }
 		}
@@ -130,9 +130,9 @@ namespace Cubizer
 		private void Update()
 		{
 			if (Cursor.visible)
-				Time.timeScale = 0;
+				UnityEngine.Time.timeScale = 0;
 			else
-				Time.timeScale = 1;
+				UnityEngine.Time.timeScale = 1;
 
 			_model.SetTransform(transform);
 		}

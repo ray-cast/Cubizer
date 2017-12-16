@@ -9,7 +9,7 @@ namespace Cubizer
 			get;
 		}
 
-		PlayerModel model
+		PlayerModels model
 		{
 			get;
 		}

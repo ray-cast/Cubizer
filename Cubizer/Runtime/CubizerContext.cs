@@ -5,7 +5,7 @@
 		public CubizerProfile profile;
 		public CubizerBehaviour behaviour;
 
-		public PlayerManagerModel players;
+		public PlayerManagerModels players;
 		public IVoxelMaterialManager materialFactory;
 	}
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Cubizer
 {
 	[Serializable]
-	public class PlayerModel : CubizerModel
+	public class PlayerModels : CubizerModel
 	{
 		[Serializable]
 		public struct PlayerSettings
