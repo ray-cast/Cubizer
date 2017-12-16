@@ -11,7 +11,7 @@ namespace Cubizer.Chunk
 	using ChunkNode = ChunkDataNode<Vector3<int>, ChunkPrimer>;
 
 	[Serializable]
-	public class ChunkDataManager : IChunkDataManager
+	public sealed class ChunkDataManager : IChunkDataManager
 	{
 		private int _count = 0;
 		private int _allocSize = 0;

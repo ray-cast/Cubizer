@@ -7,7 +7,7 @@ using Cubizer.Math;
 namespace Cubizer.Chunk
 {
 	[Serializable]
-	public class ChunkPrimer
+	public sealed class ChunkPrimer
 	{
 		private readonly Vector3<int> _position;
 		private readonly VoxelData<VoxelMaterial> _voxels;

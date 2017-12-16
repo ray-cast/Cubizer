@@ -11,7 +11,7 @@ using Cubizer.Biome;
 
 namespace Cubizer
 {
-	public class ChunkManagerComponent : CubizerComponent<ChunkManagerModels>
+	public sealed class ChunkManagerComponent : CubizerComponent<ChunkManagerModels>
 	{
 		private readonly string _name;
 		private readonly ChunkDelegates _callbacks;
