@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Cubizer.Biome
 {
-	public class BiomeManagerComponent : CubizerComponent<BiomeManagerModels>
+	public sealed class BiomeManagerComponent : CubizerComponent<BiomeManagerModels>
 	{
 		private readonly string _name;
 		private GameObject _biomeObject;

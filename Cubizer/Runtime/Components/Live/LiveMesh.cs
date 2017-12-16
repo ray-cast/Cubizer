@@ -2,7 +2,7 @@
 
 namespace Cubizer
 {
-	public class LiveMesh
+	public sealed class LiveMesh
 	{
 		public readonly Vector3[] vertices;
 		public readonly Vector3[] normals;

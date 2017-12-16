@@ -1,4 +1,5 @@
-﻿using Cubizer.Net.Protocol.Serialization;
+﻿using System;
+using Cubizer.Net.Protocol.Serialization;
 
 namespace Cubizer.Net.Protocol.Play.Clientbound
 {
@@ -8,8 +9,8 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 		public const int Packet = 0x0;
 
 		public uint entityID;
-		public byte objectUUID;
-		public uint type;
+		public Guid objectUUID;
+		public byte type;
 		public double x;
 		public double y;
 		public double z;
@@ -30,7 +31,7 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 
 		public object Clone()
 		{
-			return new SpawnMob();
+			return new SpawnObject();
 		}
 
 		public void Deserialize(NetworkReader br)

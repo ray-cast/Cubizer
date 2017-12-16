@@ -15,11 +15,10 @@ namespace Cubizer
 	{
 		private readonly string _name;
 		private readonly ChunkDelegates _callbacks;
+		private readonly ConcurrentQueue<ChunkPrimer> _deferredUpdater = new ConcurrentQueue<ChunkPrimer>();
 
 		private GameObject _chunkObject;
 		private Task[] _tasks;
-
-		private readonly ConcurrentQueue<ChunkPrimer> _deferredUpdater = new ConcurrentQueue<ChunkPrimer>();
 
 		public override bool active
 		{

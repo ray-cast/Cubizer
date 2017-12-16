@@ -7,7 +7,7 @@ using Cubizer.Math;
 namespace Cubizer.Biome
 {
 	[Serializable]
-	public class BiomeDataManager : IBiomeDataManager
+	public sealed class BiomeDataManager : IBiomeDataManager
 	{
 		private int _count;
 		private int _allocSize;

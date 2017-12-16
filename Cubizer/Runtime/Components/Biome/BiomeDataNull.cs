@@ -2,9 +2,9 @@
 
 namespace Cubizer.Biome
 {
-	public class BiomeDataNull : IBiomeData
+	public sealed class BiomeDataNull : IBiomeData
 	{
-		public virtual ChunkPrimer OnBuildChunk(CubizerBehaviour context, int x, int y, int z)
+		public ChunkPrimer OnBuildChunk(CubizerBehaviour context, int x, int y, int z)
 		{
 			return null;
 		}

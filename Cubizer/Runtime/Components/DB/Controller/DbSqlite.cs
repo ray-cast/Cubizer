@@ -6,7 +6,7 @@ using Cubizer.Chunk;
 
 namespace Cubizer.Db.Database
 {
-	public class DbSqlite : IDbController
+	public sealed class DbSqlite : IDbController
 	{
 		private string _path;
 

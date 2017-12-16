@@ -47,7 +47,7 @@ namespace Cubizer.Net.Protocol.Serialization
 
 		public void Read(out Guid value)
 		{
-			if (!Guid.TryParse(reader.ReadString(), out value))
+			if (!Guid.TryParse(new string(reader.ReadChars(32)), out value))
 				throw new InvalidDataException("Invalid Guid");
 		}
 

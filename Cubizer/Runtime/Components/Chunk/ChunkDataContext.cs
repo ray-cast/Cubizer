@@ -3,9 +3,7 @@
 	public struct ChunkDataContext
 	{
 		public readonly bool async;
-
 		public readonly int faceCount;
-
 		public readonly IChunkData parent;
 		public readonly IVoxelModel model;
 

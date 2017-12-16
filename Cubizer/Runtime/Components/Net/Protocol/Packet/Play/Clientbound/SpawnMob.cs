@@ -37,7 +37,7 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 
 		public void Deserialize(NetworkReader br)
 		{
-			/*br.ReadVarInt(out entityID);
+			br.ReadVarInt(out entityID);
 			br.Read(out entityUUID);
 			br.ReadVarInt(out type);
 			br.Read(out x);
@@ -49,7 +49,7 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 			br.Read(out velocityX);
 			br.Read(out velocityY);
 			br.Read(out velocityZ);
-			br.Read(out metaData);*/
+			br.Read(out metaData);
 		}
 
 		public void Serialize(NetworkWrite bw)
