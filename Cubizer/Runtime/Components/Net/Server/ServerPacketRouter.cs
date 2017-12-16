@@ -7,20 +7,17 @@ using Cubizer.Net.Protocol.Play.Serverbound;
 using Cubizer.Net.Protocol.Login.Serverbound;
 using Cubizer.Net.Protocol.Status.Serverbound;
 using Cubizer.Net.Protocol.Handshakes.Serverbound;
-using Cubizer.Net.Server.Header;
 
 namespace Cubizer.Net.Server
 {
-	public class ServerPacketRouter : IPacketRouter
+	public partial class ServerPacketRouter : IPacketRouter
 	{
 		public SessionStatus status { get; set; }
 
 		public OnDispatchIncomingPacketDelegate onDispatchIncomingPacket { get; set; }
 		public OnDispatchInvalidPacketDelegate onDispatchInvalidPacket { get; set; }
 
-		private readonly IPacketHeader _statusHeader = new StatusHeader();
-		private readonly IPacketHeader _loginHeader = new LoginHeader();
-		private readonly IPacketHeader _playHeader = new PlayHeader();
+		public IPacketListener packetListener = new ServerPacketListener();
 
 		private readonly List<IPacketSerializable>[] list = new List<IPacketSerializable>[(int)SessionStatus.MaxEnum];
 
@@ -133,24 +130,28 @@ namespace Cubizer.Net.Server
 			this.OnDispatchIncomingPacket(status, packet);
 		}
 
-		protected virtual void OnDispatchInvalidPacket(SessionStatus status, UncompressedPacket packet)
+		private void OnDispatchInvalidPacket(SessionStatus status, UncompressedPacket packet)
 		{
 		}
 
-		protected virtual void OnDispatchIncomingPacket(SessionStatus status, IPacketSerializable packet)
+		private void OnDispatchIncomingPacket(SessionStatus status, IPacketSerializable packet)
 		{
 			switch (status)
 			{
+				case SessionStatus.Handshaking:
+					this.DispatchHandshakingPacket(packet);
+					break;
+
 				case SessionStatus.Status:
-					_statusHeader.OnDispatchIncomingPacket(packet);
+					this.DispatchStatusPacket(packet);
 					break;
 
 				case SessionStatus.Login:
-					_loginHeader.OnDispatchIncomingPacket(packet);
+					this.DispatchLoginPacket(packet);
 					break;
 
 				case SessionStatus.Play:
-					_playHeader.OnDispatchIncomingPacket(packet);
+					this.DispatchStatusPacket(packet);
 					break;
 			}
 		}

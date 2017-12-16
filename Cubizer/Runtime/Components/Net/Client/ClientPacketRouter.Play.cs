@@ -1,11 +1,11 @@
 ﻿using Cubizer.Net.Protocol;
 using Cubizer.Net.Protocol.Play.Clientbound;
 
-namespace Cubizer.Net.Client.Header
+namespace Cubizer.Net.Client
 {
-	public sealed class PlayHeader : IPacketHeader
+	public partial class ClientPacketRouter
 	{
-		public void OnDispatchIncomingPacket(IPacketSerializable packet)
+		private void DispatchPlayPacket(IPacketSerializable packet)
 		{
 			switch (packet.packetId)
 			{
@@ -329,318 +329,397 @@ namespace Cubizer.Net.Client.Header
 
 		private void InvokeSpawnObject(SpawnObject packet)
 		{
+			packetListener.OnSpawnObject(packet);
 		}
 
 		private void InvokeSpawnExperienceOrb(SpawnExperienceOrb packet)
 		{
+			packetListener.OnSpawnExperienceOrb(packet);
 		}
 
 		private void InvokeSpawnGlobalEntity(SpawnGlobalEntity packet)
 		{
+			packetListener.OnSpawnGlobalEntity(packet);
 		}
 
 		private void InvokeSpawnMob(SpawnMob packet)
 		{
+			packetListener.OnSpawnMob(packet);
 		}
 
 		private void InvokeSpawnPainting(SpawnPainting packet)
 		{
+			packetListener.OnSpawnPainting(packet);
 		}
 
 		private void InvokeSpawnPlayer(SpawnPlayer packet)
 		{
+			packetListener.OnSpawnPlayer(packet);
 		}
 
 		private void InvokeAnimation(Animation packet)
 		{
+			packetListener.OnAnimation(packet);
 		}
 
 		private void InvokeStatistics(Statistics packet)
 		{
+			packetListener.OnStatistics(packet);
 		}
 
 		private void InvokeBlockBreakAnimation(BlockBreakAnimation packet)
 		{
+			packetListener.OnBlockBreakAnimation(packet);
 		}
 
 		private void InvokeUpdateBlockEntity(UpdateBlockEntity packet)
 		{
+			packetListener.OnUpdateBlockEntity(packet);
 		}
 
 		private void InvokeBlockAction(BlockAction packet)
 		{
+			packetListener.OnBlockAction(packet);
 		}
 
 		private void InvokeBlockChange(BlockChange packet)
 		{
+			packetListener.OnBlockChange(packet);
 		}
 
 		private void InvokeBossBar(BossBar packet)
 		{
+			packetListener.OnBossBar(packet);
 		}
 
 		private void InvokeServerDifficulty(ServerDifficulty packet)
 		{
+			packetListener.OnServerDifficulty(packet);
 		}
 
 		private void InvokeTabComplete(TabComplete packet)
 		{
+			packetListener.OnTabComplete(packet);
 		}
 
 		private void InvokeChatMessage(ChatMessage packet)
 		{
+			packetListener.OnChatMessage(packet);
 		}
 
 		private void InvokeMultiBlockChange(MultiBlockChange packet)
 		{
+			packetListener.OnMultiBlockChange(packet);
 		}
 
 		private void InvokeConfirmTransaction(ConfirmTransaction packet)
 		{
+			packetListener.OnConfirmTransaction(packet);
 		}
 
 		private void InvokeCloseWindow(CloseWindow packet)
 		{
+			packetListener.OnCloseWindow(packet);
 		}
 
 		private void InvokeOpenWindow(OpenWindow packet)
 		{
+			packetListener.OnOpenWindow(packet);
 		}
 
 		private void InvokeWindowItems(WindowItems packet)
 		{
+			packetListener.OnWindowItems(packet);
 		}
 
 		private void InvokeWindowProperty(WindowProperty packet)
 		{
+			packetListener.OnWindowProperty(packet);
 		}
 
 		private void InvokeSetSlot(SetSlot packet)
 		{
+			packetListener.OnSetSlot(packet);
 		}
 
 		private void InvokeSetCooldown(SetCooldown packet)
 		{
+			packetListener.OnSetCooldown(packet);
 		}
 
 		private void InvokePluginMessage(PluginMessage packet)
 		{
+			packetListener.OnPluginMessage(packet);
 		}
 
 		private void InvokeNamedSoundEffect(NamedSoundEffect packet)
 		{
+			packetListener.OnNamedSoundEffect(packet);
 		}
 
 		private void InvokeDisconnect(Disconnect packet)
 		{
+			packetListener.OnDisconnect(packet);
 		}
 
 		private void InvokeEntityStatus(EntityStatus packet)
 		{
+			packetListener.OnEntityStatus(packet);
 		}
 
 		private void InvokeExplosion(Explosion packet)
 		{
+			packetListener.OnExplosion(packet);
 		}
 
 		private void InvokeChunkUnload(ChunkUnload packet)
 		{
+			packetListener.OnChunkUnload(packet);
 		}
 
 		private void InvokeChangeGameState(ChangeGameState packet)
 		{
+			packetListener.OnChangeGameState(packet);
 		}
 
 		private void InvokeKeepAlive(KeepAlive packet)
 		{
+			packetListener.OnKeepAlive(packet);
 		}
 
 		private void InvokeChunkData(ChunkData packet)
 		{
+			packetListener.OnChunkData(packet);
 		}
 
 		private void InvokeEffect(Effect packet)
 		{
+			packetListener.OnEffect(packet);
 		}
 
 		private void InvokeParticle(Particle packet)
 		{
+			packetListener.OnParticle(packet);
 		}
 
 		private void InvokeJoinGame(JoinGame packet)
 		{
+			packetListener.OnJoinGame(packet);
 		}
 
 		private void InvokeMap(Map packet)
 		{
+			packetListener.OnMap(packet);
 		}
 
 		private void InvokeEntity(Entity packet)
 		{
+			packetListener.OnEntity(packet);
 		}
 
 		private void InvokeEntityRelativeMove(EntityRelativeMove packet)
 		{
+			packetListener.OnEntityRelativeMove(packet);
 		}
 
 		private void InvokeEntityLookAndRelativeMove(EntityLookAndRelativeMove packet)
 		{
+			packetListener.OnEntityLookAndRelativeMove(packet);
 		}
 
 		private void InvokeEntityLook(EntityLook packet)
 		{
+			packetListener.OnEntityLook(packet);
 		}
 
 		private void InvokeVehicleMove(VehicleMove packet)
 		{
+			packetListener.OnVehicleMove(packet);
 		}
 
 		private void InvokeOpenSignEditor(OpenSignEditor packet)
 		{
+			packetListener.OnOpenSignEditor(packet);
 		}
 
 		private void InvokePlayerAbilities(PlayerAbilities packet)
 		{
+			packetListener.OnPlayerAbilities(packet);
 		}
 
 		private void InvokeCombatEvent(CombatEvent packet)
 		{
+			packetListener.OnCombatEvent(packet);
 		}
 
 		private void InvokePlayerListItem(PlayerListItem packet)
 		{
+			packetListener.OnPlayerListItem(packet);
 		}
 
 		private void InvokePlayerPositionAndLook(PlayerPositionAndLook packet)
 		{
+			packetListener.OnPlayerPositionAndLook(packet);
 		}
 
 		private void InvokeUseBed(UseBed packet)
 		{
+			packetListener.OnUseBed(packet);
 		}
 
 		private void InvokeUnlockRecipes(UnlockRecipes packet)
 		{
+			packetListener.OnUnlockRecipes(packet);
 		}
 
 		private void InvokeDestroyEntities(DestroyEntities packet)
 		{
+			packetListener.OnDestroyEntities(packet);
 		}
 
 		private void InvokeRemoveEntityEffect(RemoveEntityEffect packet)
 		{
+			packetListener.OnRemoveEntityEffect(packet);
 		}
 
 		private void InvokeResourcePackSend(ResourcePackSend packet)
 		{
+			packetListener.OnResourcePackSend(packet);
 		}
 
 		private void InvokeRespawn(Respawn packet)
 		{
+			packetListener.OnRespawn(packet);
 		}
 
 		private void InvokeEntityHeadLook(EntityHeadLook packet)
 		{
+			packetListener.OnEntityHeadLook(packet);
 		}
 
 		private void InvokeSelectAdvancementTab(SelectAdvancementTab packet)
 		{
+			packetListener.OnSelectAdvancementTab(packet);
 		}
 
 		private void InvokeWorldBorder(WorldBorder packet)
 		{
+			packetListener.OnWorldBorder(packet);
 		}
 
 		private void InvokeCamera(Camera packet)
 		{
+			packetListener.OnCamera(packet);
 		}
 
 		private void InvokeHeldItemChange(HeldItemChange packet)
 		{
+			packetListener.OnHeldItemChange(packet);
 		}
 
 		private void InvokeDisplayScoreboard(DisplayScoreboard packet)
 		{
+			packetListener.OnDisplayScoreboard(packet);
 		}
 
 		private void InvokeEntityMetadata(EntityMetadata packet)
 		{
+			packetListener.OnEntityMetadata(packet);
 		}
 
 		private void InvokeAttachEntity(AttachEntity packet)
 		{
+			packetListener.OnAttachEntity(packet);
 		}
 
 		private void InvokeEntityVelocity(EntityVelocity packet)
 		{
+			packetListener.OnEntityVelocity(packet);
 		}
 
 		private void InvokeEntityEquipment(EntityEquipment packet)
 		{
+			packetListener.OnEntityEquipment(packet);
 		}
 
 		private void InvokeSetExperience(SetExperience packet)
 		{
+			packetListener.OnSetExperience(packet);
 		}
 
 		private void InvokeUpdateHealth(UpdateHealth packet)
 		{
+			packetListener.OnUpdateHealth(packet);
 		}
 
 		private void InvokeScoreboardObjective(ScoreboardObjective packet)
 		{
+			packetListener.OnScoreboardObjective(packet);
 		}
 
 		private void InvokeSetPassengers(SetPassengers packet)
 		{
+			packetListener.OnSetPassengers(packet);
 		}
 
 		private void InvokeTeams(Teams packet)
 		{
+			packetListener.OnTeams(packet);
 		}
 
 		private void InvokeUpdateScore(UpdateScore packet)
 		{
+			packetListener.OnUpdateScore(packet);
 		}
 
 		private void InvokeSpawnPosition(SpawnPosition packet)
 		{
+			packetListener.OnSpawnPosition(packet);
 		}
 
 		private void InvokeTimeUpdate(TimeUpdate packet)
 		{
+			packetListener.OnTimeUpdate(packet);
 		}
 
 		private void InvokeTitle(Title packet)
 		{
+			packetListener.OnTitle(packet);
 		}
 
 		private void InvokeSoundEffect(SoundEffect packet)
 		{
+			packetListener.OnSoundEffect(packet);
 		}
 
 		private void InvokePlayerListHeaderAndFooter(PlayerListHeaderAndFooter packet)
 		{
+			packetListener.OnPlayerListHeaderAndFooter(packet);
 		}
 
 		private void InvokeCollectItem(CollectItem packet)
 		{
+			packetListener.OnCollectItem(packet);
 		}
 
 		private void InvokeEntityTeleport(EntityTeleport packet)
 		{
+			packetListener.OnEntityTeleport(packet);
 		}
 
 		private void InvokeAdvancements(Advancements packet)
 		{
+			packetListener.OnAdvancements(packet);
 		}
 
 		private void InvokeEntityProperties(EntityProperties packet)
 		{
+			packetListener.OnEntityProperties(packet);
 		}
 
 		private void InvokeEntityEffect(EntityEffect packet)
 		{
+			packetListener.OnEntityEffect(packet);
 		}
 	}
 }

@@ -1,11 +1,11 @@
 ﻿using Cubizer.Net.Protocol;
 using Cubizer.Net.Protocol.Play.Serverbound;
 
-namespace Cubizer.Net.Server.Header
+namespace Cubizer.Net.Server
 {
-	public sealed class PlayHeader : IPacketHeader
+	public partial class ServerPacketRouter
 	{
-		public void OnDispatchIncomingPacket(IPacketSerializable packet)
+		public void DispatchPlayPacket(IPacketSerializable packet)
 		{
 			switch (packet.packetId)
 			{
@@ -145,134 +145,167 @@ namespace Cubizer.Net.Server.Header
 
 		private void InvokeTeleportConfirm(TeleportConfirm packet)
 		{
+			packetListener.OnTeleportConfirm(packet);
 		}
 
 		private void InvokePrepareCraftingGrid(PrepareCraftingGrid packet)
 		{
+			packetListener.OnPrepareCraftingGrid(packet);
 		}
 
 		private void InvokeTabComplete(TabComplete packet)
 		{
+			packetListener.OnTabComplete(packet);
 		}
 
 		private void InvokeChatMessage(ChatMessage packet)
 		{
+			packetListener.OnChatMessage(packet);
 		}
 
 		private void InvokeClientStatus(ClientStatus packet)
 		{
+			packetListener.OnClientStatus(packet);
 		}
 
 		private void InvokeClientSettings(ClientSettings packet)
 		{
+			packetListener.OnClientSettings(packet);
 		}
 
 		private void InvokeConfirmTransaction(ConfirmTransaction packet)
 		{
+			packetListener.OnConfirmTransaction(packet);
 		}
 
 		private void InvokeEnchantItem(EnchantItem packet)
 		{
+			packetListener.OnEnchantItem(packet);
 		}
 
 		private void InvokeClickWindow(ClickWindow packet)
 		{
+			packetListener.OnClickWindow(packet);
 		}
 
 		private void InvokeCloseWindow(CloseWindow packet)
 		{
+			packetListener.OnCloseWindow(packet);
 		}
 
 		private void InvokePluginMessage(PluginMessage packet)
 		{
+			packetListener.OnPluginMessage(packet);
 		}
 
 		private void InvokeUseEntity(UseEntity packet)
 		{
+			packetListener.OnUseEntity(packet);
 		}
 
 		private void InvokeKeepAlive(KeepAlive packet)
 		{
+			packetListener.OnKeepAlive(packet);
 		}
 
 		private void InvokePlayer(Player packet)
 		{
+			packetListener.OnPlayer(packet);
 		}
 
 		private void InvokePlayerPosition(PlayerPosition packet)
 		{
+			packetListener.OnPlayerPosition(packet);
 		}
 
 		private void InvokePlayerPositionAndLook(PlayerPositionAndLook packet)
 		{
+			packetListener.OnPlayerPositionAndLook(packet);
 		}
 
 		private void InvokePlayerLook(PlayerLook packet)
 		{
+			packetListener.OnPlayerLook(packet);
 		}
 
 		private void InvokeVehicleMove(VehicleMove packet)
 		{
+			packetListener.OnVehicleMove(packet);
 		}
 
 		private void InvokeSteerBoat(SteerBoat packet)
 		{
+			packetListener.OnSteerBoat(packet);
 		}
 
 		private void InvokePlayerAbilities(PlayerAbilities packet)
 		{
+			packetListener.OnPlayerAbilities(packet);
 		}
 
 		private void InvokePlayerDigging(PlayerDigging packet)
 		{
+			packetListener.OnPlayerDigging(packet);
 		}
 
 		private void InvokeEntityAction(EntityAction packet)
 		{
+			packetListener.OnEntityAction(packet);
 		}
 
 		private void InvokeSteerVehicle(SteerVehicle packet)
 		{
+			packetListener.OnSteerVehicle(packet);
 		}
 
 		private void InvokeCraftingBookData(CraftingBookData packet)
 		{
+			packetListener.OnCraftingBookData(packet);
 		}
 
 		private void InvokeResourcePackStatus(ResourcePackStatus packet)
 		{
+			packetListener.OnResourcePackStatus(packet);
 		}
 
 		private void InvokeAdvancementTab(AdvancementTab packet)
 		{
+			packetListener.OnAdvancementTab(packet);
 		}
 
 		private void InvokeHeldItemChange(HeldItemChange packet)
 		{
+			packetListener.OnHeldItemChange(packet);
 		}
 
 		private void InvokeCreativeInventoryAction(CreativeInventoryAction packet)
 		{
+			packetListener.OnCreativeInventoryAction(packet);
 		}
 
 		private void InvokeUpdateSign(UpdateSign packet)
 		{
+			packetListener.OnUpdateSign(packet);
 		}
 
 		private void InvokeAnimation(Animation packet)
 		{
+			packetListener.OnAnimation(packet);
 		}
 
 		private void InvokeSpectate(Spectate packet)
 		{
+			packetListener.OnSpectate(packet);
 		}
 
 		private void InvokePlayerBlockPlacement(PlayerBlockPlacement packet)
 		{
+			packetListener.OnPlayerBlockPlacement(packet);
 		}
 
 		private void InvokeUseItem(UseItem packet)
 		{
+			packetListener.OnUseItem(packet);
 		}
 	}
 }

@@ -6,20 +6,16 @@ using Cubizer.Net.Protocol.Serialization;
 using Cubizer.Net.Protocol.Status.Clientbound;
 using Cubizer.Net.Protocol.Login.Clientbound;
 using Cubizer.Net.Protocol.Play.Clientbound;
-using Cubizer.Net.Client.Header;
 
 namespace Cubizer.Net.Client
 {
-	public class ClientPacketRouter : IPacketRouter
+	public partial class ClientPacketRouter : IPacketRouter
 	{
 		public SessionStatus status { get; set; }
+		public IPacketListener packetListener = new ClientPacketListener();
 
 		public OnDispatchIncomingPacketDelegate onDispatchIncomingPacket { get; set; }
 		public OnDispatchInvalidPacketDelegate onDispatchInvalidPacket { get; set; }
-
-		private readonly IPacketHeader _statusHeader = new StatusHeader();
-		private readonly IPacketHeader _loginHeader = new LoginHeader();
-		private readonly IPacketHeader _playHeader = new PlayHeader();
 
 		private readonly List<IPacketSerializable>[] list = new List<IPacketSerializable>[(int)SessionStatus.MaxEnum];
 
@@ -178,24 +174,24 @@ namespace Cubizer.Net.Client
 			this.OnDispatchIncomingPacket(status, packet);
 		}
 
-		protected virtual void OnDispatchInvalidPacket(SessionStatus status, UncompressedPacket packet)
+		private void OnDispatchInvalidPacket(SessionStatus status, UncompressedPacket packet)
 		{
 		}
 
-		protected virtual void OnDispatchIncomingPacket(SessionStatus status, IPacketSerializable packet)
+		private void OnDispatchIncomingPacket(SessionStatus status, IPacketSerializable packet)
 		{
 			switch (status)
 			{
 				case SessionStatus.Status:
-					_statusHeader.OnDispatchIncomingPacket(packet);
+					this.DispatchStatusPacket(packet);
 					break;
 
 				case SessionStatus.Login:
-					_loginHeader.OnDispatchIncomingPacket(packet);
+					this.DispatchLoginPacket(packet);
 					break;
 
 				case SessionStatus.Play:
-					_playHeader.OnDispatchIncomingPacket(packet);
+					this.DispatchStatusPacket(packet);
 					break;
 			}
 		}

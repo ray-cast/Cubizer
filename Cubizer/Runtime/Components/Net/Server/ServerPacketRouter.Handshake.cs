@@ -1,11 +1,11 @@
 ﻿using Cubizer.Net.Protocol;
 using Cubizer.Net.Protocol.Handshakes.Serverbound;
 
-namespace Cubizer.Net.Server.Header
+namespace Cubizer.Net.Server
 {
-	public sealed class HandshakesHeader : IPacketHeader
+	public partial class ServerPacketRouter
 	{
-		public void OnDispatchIncomingPacket(IPacketSerializable packet)
+		public void DispatchHandshakingPacket(IPacketSerializable packet)
 		{
 			switch (packet.packetId)
 			{
@@ -17,6 +17,7 @@ namespace Cubizer.Net.Server.Header
 
 		public void InvokeHandshake(Handshake packet)
 		{
+			packetListener.OnHandshake(packet);
 		}
 	}
 }

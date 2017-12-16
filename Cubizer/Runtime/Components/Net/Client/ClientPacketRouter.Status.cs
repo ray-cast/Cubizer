@@ -1,11 +1,11 @@
 ﻿using Cubizer.Net.Protocol;
 using Cubizer.Net.Protocol.Status.Clientbound;
 
-namespace Cubizer.Net.Client.Header
+namespace Cubizer.Net.Client
 {
-	public sealed class StatusHeader : IPacketHeader
+	public partial class ClientPacketRouter
 	{
-		public void OnDispatchIncomingPacket(IPacketSerializable packet)
+		private void DispatchStatusPacket(IPacketSerializable packet)
 		{
 			switch (packet.packetId)
 			{
@@ -21,10 +21,12 @@ namespace Cubizer.Net.Client.Header
 
 		private void InvokePong(Pong packet)
 		{
+			packetListener.OnPong(packet);
 		}
 
 		private void InvokeResponse(Response packet)
 		{
+			packetListener.OnResponse(packet);
 		}
 	}
 }

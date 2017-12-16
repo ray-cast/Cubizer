@@ -1,11 +1,11 @@
 ﻿using Cubizer.Net.Protocol;
 using Cubizer.Net.Protocol.Login.Serverbound;
 
-namespace Cubizer.Net.Server.Header
+namespace Cubizer.Net.Server
 {
-	public sealed class LoginHeader : IPacketHeader
+	public partial class ServerPacketRouter
 	{
-		public void OnDispatchIncomingPacket(IPacketSerializable packet)
+		public void DispatchLoginPacket(IPacketSerializable packet)
 		{
 			switch (packet.packetId)
 			{
@@ -21,10 +21,12 @@ namespace Cubizer.Net.Server.Header
 
 		private void InvokeLoginStart(LoginStart packet)
 		{
+			packetListener.OnLoginStart(packet);
 		}
 
 		private void InvokeEncryptionResponse(EncryptionResponse packet)
 		{
+			packetListener.OnEncryptionResponse(packet);
 		}
 	}
 }
