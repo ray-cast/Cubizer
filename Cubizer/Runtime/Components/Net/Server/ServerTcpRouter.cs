@@ -6,8 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-using UnityEngine;
-
 using Cubizer.Net.Protocol;
 
 namespace Cubizer.Net.Server
@@ -79,7 +77,7 @@ namespace Cubizer.Net.Server
 
 		public ServerTcpRouter(string ip, int port, IPacketRouter protocol)
 		{
-			Debug.Assert(protocol != null && !string.IsNullOrEmpty(ip));
+			UnityEngine.Debug.Assert(protocol != null && !string.IsNullOrEmpty(ip));
 
 			_port = port;
 			_address = IPAddress.Parse(ip);
@@ -94,7 +92,7 @@ namespace Cubizer.Net.Server
 
 		public Task Start(CancellationToken cancellationToken)
 		{
-			Debug.Assert(_task == null);
+			UnityEngine.Debug.Assert(_task == null);
 
 			_task = Task.Run(async () =>
 			{

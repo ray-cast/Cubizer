@@ -1,6 +1,6 @@
 ﻿namespace Cubizer.Time
 {
-	public class TimeComponent : CubizerComponent<TimeModels>
+	public sealed class TimeComponent : CubizerComponent<TimeModels>
 	{
 		public long worldAge;
 		public long timeOfDay;
@@ -15,6 +15,12 @@
 			{
 				model.enabled = value;
 			}
+		}
+
+		public override void OnEnable()
+		{
+			worldAge = model.settings.worldAge;
+			timeOfDay = model.settings.timeOfDay;
 		}
 	}
 }

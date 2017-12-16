@@ -6,8 +6,6 @@ using Cubizer.Chunk;
 using Cubizer.Net.Server;
 using Cubizer.Net.Protocol;
 
-using UnityEngine;
-
 namespace Cubizer.Net
 {
 	public sealed class ServerComponent : CubizerComponent<NetworkModels>
@@ -103,7 +101,7 @@ namespace Cubizer.Net
 			}
 			else
 			{
-				throw new System.InvalidOperationException("A server has already working now.");
+				throw new InvalidOperationException("A server has already working now.");
 			}
 		}
 
@@ -131,12 +129,12 @@ namespace Cubizer.Net
 
 		private void OnStartTcpListener()
 		{
-			Debug.Log("Starting server listener...");
+			UnityEngine.Debug.Log("Starting server listener...");
 		}
 
 		private void OnStopTcpListener()
 		{
-			Debug.Log("Stop server listener...");
+			UnityEngine.Debug.Log("Stop server listener...");
 
 			if (_cancellationToken != null)
 			{
@@ -147,17 +145,17 @@ namespace Cubizer.Net
 
 		private void OnIncomingClient(TcpClient client)
 		{
-			Debug.Log($"Incoming connection of client from {client.Client.RemoteEndPoint}.");
+			UnityEngine.Debug.Log($"Incoming connection of client from {client.Client.RemoteEndPoint}.");
 		}
 
 		private void OnIncomingClientSession(ServerSession session)
 		{
-			Debug.Log($"Incoming connection of client session from {session.client.Client.RemoteEndPoint}.");
+			UnityEngine.Debug.Log($"Incoming connection of client session from {session.client.Client.RemoteEndPoint}.");
 		}
 
 		private void OnOutcomingClientSession(ServerSession session)
 		{
-			Debug.Log($"Outcoming connection of clisent session.");
+			UnityEngine.Debug.Log($"Outcoming connection of clisent session.");
 		}
 
 		private void OnDispatchInvalidPacket(SessionStatus status, UncompressedPacket packet)

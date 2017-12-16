@@ -4,8 +4,6 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
-using UnityEngine;
-
 using Cubizer.Net.Protocol;
 using Cubizer.Net.Protocol.Serialization;
 
@@ -73,7 +71,7 @@ namespace Cubizer.Net.Client
 
 		public ClientSession(string hostname, int port, IPacketRouter packetRouter, IPacketCompress packetCompress = null)
 		{
-			Debug.Assert(packetRouter != null);
+			System.Diagnostics.Debug.Assert(packetRouter != null);
 
 			_port = port;
 			_hostname = hostname;
@@ -88,7 +86,7 @@ namespace Cubizer.Net.Client
 
 		public bool Connect()
 		{
-			Debug.Assert(_tcpClient == null);
+			System.Diagnostics.Debug.Assert(_tcpClient == null);
 
 			try
 			{
@@ -123,10 +121,6 @@ namespace Cubizer.Net.Client
 
 						while (!cancellationToken.IsCancellationRequested)
 							await DispatchIncomingPacket(stream);
-					}
-					catch (Exception e)
-					{
-						Debug.LogException(e);
 					}
 					finally
 					{

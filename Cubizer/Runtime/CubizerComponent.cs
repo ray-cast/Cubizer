@@ -57,6 +57,21 @@ namespace Cubizer
 		public virtual void Update()
 		{
 		}
+
+		internal ICubizerComponent GetComponent(string name)
+		{
+			return context.behaviour.GetCubizerComponent(name);
+		}
+
+		internal ICubizerComponent GetComponent(System.Type type)
+		{
+			return context.behaviour.GetCubizerComponent(type);
+		}
+
+		internal ICubizerComponent GetComponent<_Tx>() where _Tx : ICubizerComponent
+		{
+			return context.behaviour.GetCubizerComponent<_Tx>();
+		}
 	}
 
 	public abstract class CubizerComponentCommandBuffer<T> : CubizerComponent<T>

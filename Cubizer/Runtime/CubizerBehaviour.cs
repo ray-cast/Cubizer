@@ -184,7 +184,7 @@ namespace Cubizer
 			return _components.Remove(component);
 		}
 
-		private ICubizerComponent GetCubizerComponent(string name)
+		internal ICubizerComponent GetCubizerComponent(string name)
 		{
 			foreach (var component in _components)
 			{
@@ -195,7 +195,7 @@ namespace Cubizer
 			return null;
 		}
 
-		private ICubizerComponent GetCubizerComponent(System.Type type)
+		internal ICubizerComponent GetCubizerComponent(System.Type type)
 		{
 			foreach (var component in _components)
 			{
@@ -206,7 +206,7 @@ namespace Cubizer
 			return null;
 		}
 
-		private ICubizerComponent GetCubizerComponent<T>() where T : ICubizerComponent
+		internal ICubizerComponent GetCubizerComponent<T>() where T : ICubizerComponent
 		{
 			return GetCubizerComponent(typeof(T));
 		}

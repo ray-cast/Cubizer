@@ -6,18 +6,15 @@ using Cubizer.Chunk;
 using Cubizer.Net.Client;
 using Cubizer.Net.Protocol;
 using Cubizer.Net.Protocol.Login.Serverbound;
-using Cubizer.Net.Protocol.Play.Serverbound;
 using Cubizer.Net.Protocol.Handshakes.Serverbound;
-
-using UnityEngine;
 
 namespace Cubizer.Net
 {
-	public sealed class ClientComponent : CubizerComponent<NetworkModels>
+	public sealed partial class ClientComponent : CubizerComponent<NetworkModels>
 	{
 		private Task _task;
 		private ClientSession _client;
-		private ClientPacketRouter _clientRouter = new ClientPacketRouter();
+		private ClientPacketRouter _clientRouter;
 		private CancellationTokenSource _cancellationToken;
 
 		public override bool active
@@ -48,14 +45,12 @@ namespace Cubizer.Net
 			}
 		}
 
-		public ClientComponent()
-		{
-			_clientRouter.onDispatchIncomingPacket = this.OnDispatchIncomingPacket;
-			_clientRouter.onDispatchInvalidPacket = this.OnDispatchInvalidPacket;
-		}
-
 		public override void OnEnable()
 		{
+			_clientRouter = new ClientPacketRouter(new PacketListener(this));
+			_clientRouter.onDispatchIncomingPacket = this.OnDispatchIncomingPacket;
+			_clientRouter.onDispatchInvalidPacket = this.OnDispatchInvalidPacket;
+
 			context.behaviour.events.OnLoadChunkAfter += this.OnLoadChunkDataAfter;
 			context.behaviour.events.OnAddBlockAfter += this.OnAddBlockAfter;
 			context.behaviour.events.OnRemoveBlockAfter += this.OnRemoveBlockAfter;
@@ -134,12 +129,12 @@ namespace Cubizer.Net
 
 		private void OnStartClientListener()
 		{
-			Debug.Log("Starting client listener...");
+			UnityEngine.Debug.Log("Starting client listener...");
 		}
 
 		private void OnStopClientListener()
 		{
-			Debug.Log("Stop client listener...");
+			UnityEngine.Debug.Log("Stop client listener...");
 
 			if (_cancellationToken != null)
 			{
@@ -155,18 +150,6 @@ namespace Cubizer.Net
 
 		private void OnDispatchIncomingPacket(SessionStatus status, IPacketSerializable packet)
 		{
-			if (packet.GetType() == typeof(Protocol.Login.Clientbound.LoginSuccess))
-			{
-				_clientRouter.status = SessionStatus.Play;
-			}
-			else if (packet.GetType() == typeof(Protocol.Play.Clientbound.KeepAlive))
-			{
-				_client.SendOutcomingPacket(new KeepAlive { keepAliveID = (uint)new System.Random().Next() });
-			}
-			else if (packet.GetType() == typeof(Protocol.Play.Clientbound.TimeUpdate))
-			{
-			}
-
 			UnityEngine.Debug.Log($"Packet：{packet.GetType().Name}");
 		}
 	}

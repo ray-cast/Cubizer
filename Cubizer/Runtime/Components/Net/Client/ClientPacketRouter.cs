@@ -12,15 +12,17 @@ namespace Cubizer.Net.Client
 	public partial class ClientPacketRouter : IPacketRouter
 	{
 		public SessionStatus status { get; set; }
-		public IPacketListener packetListener = new ClientPacketListener();
 
 		public OnDispatchIncomingPacketDelegate onDispatchIncomingPacket { get; set; }
 		public OnDispatchInvalidPacketDelegate onDispatchInvalidPacket { get; set; }
 
+		private readonly IPacketListener packetListener;
 		private readonly List<IPacketSerializable>[] list = new List<IPacketSerializable>[(int)SessionStatus.MaxEnum];
 
-		public ClientPacketRouter()
+		public ClientPacketRouter(IPacketListener listener = null)
 		{
+			packetListener = listener ?? new ClientPacketListenerNull();
+
 			list[(int)SessionStatus.Status] = new List<IPacketSerializable>(2);
 			list[(int)SessionStatus.Status].Add(new Pong());
 			list[(int)SessionStatus.Status].Add(new Response());

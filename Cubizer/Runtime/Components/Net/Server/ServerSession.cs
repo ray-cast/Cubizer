@@ -4,8 +4,6 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
-using UnityEngine;
-
 using Cubizer.Net.Protocol;
 using Cubizer.Net.Protocol.Serialization;
 
@@ -30,7 +28,7 @@ namespace Cubizer.Net.Server
 
 		public ServerSession(TcpClient client, IPacketRouter packRouter = null, IPacketCompress packetCompress = null)
 		{
-			Debug.Assert(client != null && packRouter != null);
+			System.Diagnostics.Debug.Assert(client != null && packRouter != null);
 
 			_tcpClient = client;
 			_packRouter = packRouter ?? new ServerPacketRouter();
