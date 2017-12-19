@@ -1,6 +1,6 @@
 ﻿namespace Cubizer.Net.Protocol
 {
-	public enum SessionStatus
+	public enum SessionStatus : uint
 	{
 		Handshaking = 0,
 		Status = 1,
