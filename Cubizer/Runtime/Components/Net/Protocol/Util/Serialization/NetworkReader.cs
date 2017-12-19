@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text;
 
+using Cubizer.Net.Protocol.Struct;
 using Cubizer.Net.Protocol.Extensions;
 
 namespace Cubizer.Net.Protocol.Serialization
@@ -128,8 +129,17 @@ namespace Cubizer.Net.Protocol.Serialization
 			}
 		}
 
+		public void ReadPos(out Vector3Int pos)
+		{
+			ulong value;
+			this.Read(out value);
+			pos.x = (int)(value >> 38) & 0x3FFFFFF;
+			pos.y = (int)(value >> 26) & 0xFFF;
+			pos.z = (int)(value) & 0x3FFFFFF;
+		}
+
 		public void Read<T>(IReadOnlyList<T> array)
-		where T : IPacketSerializable
+			where T : IPacketSerializable
 		{
 			foreach (var it in array)
 				it.Deserialize(this);

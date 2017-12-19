@@ -1,4 +1,5 @@
-﻿using Cubizer.Net.Protocol.Serialization;
+﻿using Cubizer.Net.Protocol.Struct;
+using Cubizer.Net.Protocol.Serialization;
 
 namespace Cubizer.Net.Protocol.Play.Clientbound
 {
@@ -6,6 +7,9 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 	public class UseBed : IPacketSerializable
 	{
 		public const int Packet = 0x2F;
+
+		public uint entityID;
+		public Vector3Int localtion;
 
 		public uint packetId
 		{
@@ -22,12 +26,14 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 
 		public void Deserialize(NetworkReader br)
 		{
-			throw new System.NotImplementedException();
+			br.ReadVarInt(out entityID);
+			br.ReadPos(out localtion);
 		}
 
 		public void Serialize(NetworkWrite bw)
 		{
-			throw new System.NotImplementedException();
+			bw.WriteVarInt(entityID);
+			bw.WritePos(localtion);
 		}
 	}
 }

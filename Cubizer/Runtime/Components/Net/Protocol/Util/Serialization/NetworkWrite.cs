@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text;
 
+using Cubizer.Net.Protocol.Struct;
 using Cubizer.Net.Protocol.Extensions;
 
 namespace Cubizer.Net.Protocol.Serialization
@@ -93,6 +94,11 @@ namespace Cubizer.Net.Protocol.Serialization
 		{
 			this.WriteVarInt((uint)value.Length);
 			this.Write(value);
+		}
+
+		public void WritePos(Vector3Int value)
+		{
+			this.Write((ulong)((uint)value.x & 0x3FFFFFF) << 38 | (ulong)((uint)value.y & 0xFFF) << 26 | (ulong)((uint)value.z & 0x3FFFFFF));
 		}
 
 		public void WritePakcets<T>(IReadOnlyList<T> array)
