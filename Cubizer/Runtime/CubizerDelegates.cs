@@ -26,9 +26,6 @@ namespace Cubizer
 		public OnBlockEvent OnRemoveBlockBefore;
 		public OnBlockEvent OnRemoveBlockAfter;
 
-		public OnConnectionPlayer OnPlayerConnection;
-		public OnDisconnectPlayer OnPlayerDisconnect;
-
 		public OnServerEvent OnOpenServer;
 		public OnServerEvent OnCloseServer;
 	}

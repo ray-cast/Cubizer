@@ -3,7 +3,7 @@
 using UnityEngine;
 using Cubizer.Chunk;
 
-namespace Cubizer
+namespace Cubizer.Players
 {
 	[DisallowMultipleComponent]
 	[AddComponentMenu("Cubizer/PlayerCreator")]
@@ -96,12 +96,12 @@ namespace Cubizer
 			if (_drawPickMaterial == null)
 				Debug.LogError("Please assign a mesh on the inspector");
 
-			_world.Connection(this);
+			_world.players.Connection(this);
 		}
 
 		public void OnDestroy()
 		{
-			_world.Disconnect(this);
+			_world.players.Disconnect(this);
 		}
 
 		public void Reset()

@@ -9,6 +9,7 @@ using Cubizer.Chunk;
 using Cubizer.Biome;
 using Cubizer.Live;
 using Cubizer.Time;
+using Cubizer.Players;
 
 namespace Cubizer
 {
@@ -23,6 +24,7 @@ namespace Cubizer
 		private LiveManagerComponent _lives;
 		private ChunkManagerComponent _chunkManager;
 		private BiomeManagerComponent _biomeManager;
+		private PlayerComponent _playerComponent;
 		private TimeComponent _timeComponent;
 		private DbComponent _dbComponent;
 		private ServerComponent _serverComponent;
@@ -30,7 +32,6 @@ namespace Cubizer
 
 		private readonly List<ICubizerComponent> _components = new List<ICubizerComponent>();
 
-		private readonly PlayerManagerModels _players = new PlayerManagerModels();
 		private readonly CubizerDelegates _events = new CubizerDelegates();
 		private readonly static IVoxelMaterialManager _materialFactory = VoxelMaterialManager.GetInstance();
 
@@ -54,6 +55,11 @@ namespace Cubizer
 			get { return _chunkManager; }
 		}
 
+		public PlayerComponent players
+		{
+			get { return _playerComponent; }
+		}
+
 		public TimeComponent time
 		{
 			get { return _timeComponent; }
@@ -67,36 +73,6 @@ namespace Cubizer
 		public ClientComponent client
 		{
 			get { return _clientComponent; }
-		}
-
-		public void Connection(IPlayer player)
-		{
-			if (player != null)
-			{
-				_players.settings.players.Add(player);
-
-				if (_events.OnPlayerConnection != null)
-					_events.OnPlayerConnection.Invoke(player);
-			}
-			else
-			{
-				throw new System.ArgumentNullException("Connection() fail");
-			}
-		}
-
-		public void Disconnect(IPlayer player)
-		{
-			if (player != null)
-			{
-				_players.settings.players.Remove(player);
-
-				if (_events.OnPlayerDisconnect != null)
-					_events.OnPlayerDisconnect.Invoke(player);
-			}
-			else
-			{
-				throw new System.ArgumentNullException("Disconnect() fail");
-			}
 		}
 
 		private void OnLoadChunkDataBefore(int x, int y, int z, ref ChunkPrimer chunk)
@@ -229,11 +205,11 @@ namespace Cubizer
 			_context.profile = _profile;
 			_context.behaviour = this;
 			_context.materialFactory = _materialFactory;
-			_context.players = _players;
 
 			_lives = AddComponent(new LiveManagerComponent());
 			_chunkManager = AddComponent(new ChunkManagerComponent());
 			_biomeManager = AddComponent(new BiomeManagerComponent());
+			_playerComponent = AddComponent(new PlayerComponent());
 			_timeComponent = AddComponent(new TimeComponent());
 			_dbComponent = AddComponent(new DbComponent());
 			_serverComponent = AddComponent(new ServerComponent());
@@ -251,6 +227,7 @@ namespace Cubizer
 			_chunkManager.callbacks.OnRemoveBlockAfter += this.OnRemoveBlockAfter;
 
 			_biomeManager.Init(_context, _profile.biome);
+			_playerComponent.Init(_context, _profile.players);
 			_timeComponent.Init(_context, _profile.time);
 			_dbComponent.Init(_context, _profile.database);
 			_serverComponent.Init(_context, _profile.network);

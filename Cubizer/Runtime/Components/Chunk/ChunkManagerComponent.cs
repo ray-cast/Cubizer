@@ -493,7 +493,7 @@ namespace Cubizer
 
 			this.AutoGC();
 
-			var players = context.players.settings.players;
+			var players = context.behaviour.players.players;
 			foreach (var it in players)
 				DestroyChunk(it.player.transform.position, it.model.settings.chunkRadiusGC);
 

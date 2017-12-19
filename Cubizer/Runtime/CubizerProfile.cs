@@ -15,6 +15,7 @@ namespace Cubizer
 		public DbModels database = new DbModels();
 		public ChunkManagerModels chunk = new ChunkManagerModels();
 		public BiomeManagerModels biome = new BiomeManagerModels();
+		public PlayerManagerModels players = new PlayerManagerModels();
 		public TimeModels time = new TimeModels();
 		public LiveManagerModels lives = new LiveManagerModels();
 		public NetworkModels network = new NetworkModels();
