@@ -61,6 +61,8 @@ namespace Cubizer.Net
 			context.behaviour.events.OnLoadChunkAfter -= this.OnLoadChunkDataAfter;
 			context.behaviour.events.OnAddBlockAfter -= this.OnAddBlockAfter;
 			context.behaviour.events.OnRemoveBlockAfter -= this.OnRemoveBlockAfter;
+
+			this.Disconnect();
 		}
 
 		public bool Connect()

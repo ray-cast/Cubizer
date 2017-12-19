@@ -7,6 +7,10 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 	{
 		public const int Packet = 0x3F;
 
+		public float experienceBar;
+		public uint level;
+		public uint totalExperience;
+
 		public uint packetId
 		{
 			get
@@ -22,12 +26,16 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 
 		public void Deserialize(NetworkReader br)
 		{
-			throw new System.NotImplementedException();
+			br.Read(out experienceBar);
+			br.ReadVarInt(out level);
+			br.ReadVarInt(out totalExperience);
 		}
 
 		public void Serialize(NetworkWrite bw)
 		{
-			throw new System.NotImplementedException();
+			bw.Write(experienceBar);
+			bw.WriteVarInt(level);
+			bw.WriteVarInt(totalExperience);
 		}
 	}
 }

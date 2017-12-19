@@ -7,6 +7,10 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 	{
 		public const int Packet = 0x40;
 
+		public float health;
+		public uint food;
+		public float foodSaturation;
+
 		public uint packetId
 		{
 			get
@@ -22,12 +26,16 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 
 		public void Deserialize(NetworkReader br)
 		{
-			throw new System.NotImplementedException();
+			br.Read(out health);
+			br.ReadVarInt(out food);
+			br.Read(out foodSaturation);
 		}
 
 		public void Serialize(NetworkWrite bw)
 		{
-			throw new System.NotImplementedException();
+			bw.Write(health);
+			bw.WriteVarInt(food);
+			bw.Write(foodSaturation);
 		}
 	}
 }

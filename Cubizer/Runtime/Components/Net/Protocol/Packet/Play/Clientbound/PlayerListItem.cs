@@ -7,6 +7,10 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 	{
 		public const int Packet = 0x2D;
 
+		public uint action;
+
+		public uint numberOfPlayers;
+
 		public uint packetId
 		{
 			get
@@ -22,12 +26,14 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 
 		public void Deserialize(NetworkReader br)
 		{
-			throw new System.NotImplementedException();
+			br.ReadVarInt(out action);
+			br.ReadVarInt(out numberOfPlayers);
 		}
 
 		public void Serialize(NetworkWrite bw)
 		{
-			throw new System.NotImplementedException();
+			bw.WriteVarInt(action);
+			bw.WriteVarInt(numberOfPlayers);
 		}
 	}
 }

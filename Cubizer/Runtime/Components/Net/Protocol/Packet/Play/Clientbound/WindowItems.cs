@@ -7,6 +7,9 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 	{
 		public const int Packet = 0x14;
 
+		public byte windowID;
+		public short count;
+
 		public uint packetId
 		{
 			get
@@ -22,12 +25,14 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 
 		public void Deserialize(NetworkReader br)
 		{
-			throw new System.NotImplementedException();
+			br.Read(out windowID);
+			br.Read(out count);
 		}
 
 		public void Serialize(NetworkWrite bw)
 		{
-			throw new System.NotImplementedException();
+			bw.Write(windowID);
+			bw.Write(count);
 		}
 	}
 }
