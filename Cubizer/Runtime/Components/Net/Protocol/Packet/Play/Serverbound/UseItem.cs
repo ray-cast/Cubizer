@@ -7,7 +7,7 @@ namespace Cubizer.Net.Protocol.Play.Serverbound
 	{
 		public const int Packet = 0x20;
 
-		public byte[] hand;
+		public Hand hand;
 
 		public uint packetId
 		{
@@ -24,12 +24,27 @@ namespace Cubizer.Net.Protocol.Play.Serverbound
 
 		public void Deserialize(NetworkReader br)
 		{
-			br.ReadVarBytes(out hand);
+			uint value;
+			br.ReadVarInt(out value);
+
+			switch (value)
+			{
+				case (int)Hand.Main:
+					hand = Hand.Main;
+					break;
+
+				case (int)Hand.Off:
+					hand = Hand.Off;
+					break;
+
+				default:
+					throw new System.IO.InvalidDataException("Invalid Hand Enum");
+			}
 		}
 
 		public void Serialize(NetworkWrite bw)
 		{
-			bw.Write(hand);
+			bw.WriteVarInt((uint)hand);
 		}
 	}
 }

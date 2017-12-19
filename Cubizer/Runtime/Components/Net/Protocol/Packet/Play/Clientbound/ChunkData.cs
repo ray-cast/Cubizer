@@ -28,10 +28,8 @@ namespace Cubizer.Net.Protocol.Play.Clientbound
 			bw.Write(chunkZ);
 			bw.Write(groundUpContinuous);
 			bw.WriteVarInt(primaryBitMask);
-			bw.WriteVarInt(data.Length);
-			bw.Write(data);
-			bw.WriteVarInt(entities.Length);
-			bw.Write(entities);
+			bw.WriteVarBytes(data);
+			bw.WriteVarBytes(entities);
 		}
 
 		public void Deserialize(NetworkReader br)

@@ -27,7 +27,7 @@ namespace Cubizer.Net.Protocol.Play.Serverbound
 
 		public void Deserialize(NetworkReader br)
 		{
-			br.Read(out text);
+			br.ReadVarString(out text);
 			br.Read(out assumeCommand);
 			br.Read(out hasPosition);
 

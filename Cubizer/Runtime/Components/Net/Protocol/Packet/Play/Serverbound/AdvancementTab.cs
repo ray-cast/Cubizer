@@ -25,13 +25,13 @@ namespace Cubizer.Net.Protocol.Play.Serverbound
 
 		public void Deserialize(NetworkReader br)
 		{
-			br.Read(out action);
+			br.ReadVarInt(out action);
 			br.ReadVarString(out tabID);
 		}
 
 		public void Serialize(NetworkWrite bw)
 		{
-			bw.Write(action);
+			bw.WriteVarInt(action);
 			bw.WriteVarString(tabID);
 		}
 	}

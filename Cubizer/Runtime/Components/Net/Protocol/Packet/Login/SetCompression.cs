@@ -7,7 +7,7 @@ namespace Cubizer.Net.Protocol.Login.Clientbound
 	{
 		public const int Packet = 0x03;
 
-		public int threshold;
+		public uint threshold;
 
 		public uint packetId
 		{
@@ -19,12 +19,12 @@ namespace Cubizer.Net.Protocol.Login.Clientbound
 
 		public void Serialize(NetworkWrite bw)
 		{
-			bw.Write(threshold);
+			bw.WriteVarInt(threshold);
 		}
 
 		public void Deserialize(NetworkReader br)
 		{
-			br.Read(out threshold);
+			br.ReadVarInt(out threshold);
 		}
 
 		public object Clone()
