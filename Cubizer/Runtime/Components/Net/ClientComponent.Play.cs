@@ -292,8 +292,11 @@ namespace Cubizer.Net
 
 			void IPacketListener.OnTimeUpdate(Protocol.Play.Clientbound.TimeUpdate packet)
 			{
-				_time.worldAge = packet.worldAge;
-				_time.timeOfDay = packet.timeOfDay;
+				if (_time != null)
+				{
+					_time.worldAge = packet.worldAge;
+					_time.timeOfDay = packet.timeOfDay;
+				}
 			}
 
 			void IPacketListener.OnTitle(Protocol.Play.Clientbound.Title packet)

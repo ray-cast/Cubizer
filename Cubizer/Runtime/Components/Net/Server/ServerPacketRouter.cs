@@ -151,7 +151,7 @@ namespace Cubizer.Net.Server
 					break;
 
 				case SessionStatus.Play:
-					this.DispatchStatusPacket(packet);
+					this.DispatchPlayPacket(packet);
 					break;
 			}
 		}

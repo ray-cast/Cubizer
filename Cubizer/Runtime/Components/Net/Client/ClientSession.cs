@@ -122,6 +122,10 @@ namespace Cubizer.Net.Client
 						while (!cancellationToken.IsCancellationRequested)
 							await DispatchIncomingPacket(stream);
 					}
+					catch (Exception e)
+					{
+						UnityEngine.Debug.LogException(e);
+					}
 					finally
 					{
 						if (onStopClientListener != null)
@@ -214,8 +218,6 @@ namespace Cubizer.Net.Client
 			int count = await compressedPacket.DeserializeAsync(stream);
 			if (count > 0)
 				await SendIncomingUncompressedPacket(_packetCompress.Decompress(compressedPacket));
-			else
-				throw new EndOfStreamException();
 		}
 	}
 }

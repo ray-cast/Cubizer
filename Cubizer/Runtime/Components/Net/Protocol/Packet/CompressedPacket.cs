@@ -48,10 +48,10 @@ namespace Cubizer.Net.Protocol
 
 				if (length > 0 && length < maxLength)
 				{
-					byte packLength = br.ReadVarInt(out packetId);
+					byte dataLength = br.ReadVarInt(out packetId);
 
-					data = new ArraySegment<byte>(new byte[length - packLength]);
-					return await stream.ReadAsync(data.Array, data.Offset, data.Count);
+					data = new ArraySegment<byte>(new byte[length - dataLength]);
+					await br.ReadBytesAsync(data.Array, 0, data.Count);
 				}
 
 				return (int)length;

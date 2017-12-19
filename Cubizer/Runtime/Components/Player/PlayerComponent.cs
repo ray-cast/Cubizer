@@ -5,7 +5,7 @@ namespace Cubizer.Players
 {
 	public sealed class PlayerComponent : CubizerComponent<PlayerManagerModels>
 	{
-		public List<IPlayer> players = new List<IPlayer>();
+		public readonly List<IPlayer> players = new List<IPlayer>();
 
 		public override bool active
 		{

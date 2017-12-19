@@ -2,6 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 using Cubizer.Net.Protocol.Struct;
 using Cubizer.Net.Protocol.Extensions;
@@ -136,6 +137,18 @@ namespace Cubizer.Net.Protocol.Serialization
 			pos.x = (int)(value >> 38) & 0x3FFFFFF;
 			pos.y = (int)(value >> 26) & 0xFFF;
 			pos.z = (int)(value) & 0x3FFFFFF;
+		}
+
+		public async Task ReadBytesAsync(byte[] buffer, int offset, int count)
+		{
+			while (count != 0)
+			{
+				var numRead = await reader.BaseStream.ReadAsync(buffer, offset, count);
+				if (numRead == 0)
+					throw new EndOfStreamException();
+				offset += numRead;
+				count -= numRead;
+			}
 		}
 
 		public void Read<T>(IReadOnlyList<T> array)
