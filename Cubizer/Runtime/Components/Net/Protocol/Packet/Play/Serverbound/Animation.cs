@@ -1,4 +1,5 @@
-﻿using Cubizer.Net.Protocol.Serialization;
+﻿using Cubizer.Net.Protocol.Extensions;
+using Cubizer.Net.Protocol.Serialization;
 
 namespace Cubizer.Net.Protocol.Play.Serverbound
 {
@@ -24,27 +25,12 @@ namespace Cubizer.Net.Protocol.Play.Serverbound
 
 		public void Deserialize(NetworkReader br)
 		{
-			uint value;
-			br.ReadVarInt(out value);
-
-			switch (value)
-			{
-				case (int)Hand.Main:
-					hand = Hand.Main;
-					break;
-
-				case (int)Hand.Off:
-					hand = Hand.Off;
-					break;
-
-				default:
-					throw new System.IO.InvalidDataException("Invalid Hand Enum");
-			}
+			br.Read(out hand);
 		}
 
 		public void Serialize(NetworkWrite bw)
 		{
-			bw.WriteVarInt((uint)hand);
+			bw.Write(hand);
 		}
 	}
 }
