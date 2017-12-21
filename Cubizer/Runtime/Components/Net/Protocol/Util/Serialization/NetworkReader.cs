@@ -47,11 +47,9 @@ namespace Cubizer.Net.Protocol.Serialization
 		public void Read(out double value) => value = BitConverter.Int64BitsToDouble(reader.ReadInt64().ToBigEndian());
 		public void Read(out byte[] value, int count) => value = reader.ReadBytes(count);
 
-		public void Read(out Guid value)
+		public void Read(out Guid value, int length = 16)
 		{
-			var chars = new string(reader.ReadChars(16));
-			if (!Guid.TryParse(chars, out value))
-				throw new InvalidDataException("Invalid Guid");
+			value = new Guid(reader.ReadBytes(length));
 		}
 
 		public byte ReadVarInt(out uint varint)
